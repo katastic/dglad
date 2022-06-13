@@ -1,0 +1,156 @@
+
+	- metadata for texture atlas and isPassable
+
+	- pgymentizePrinter works but it writes to STDOUT itself. It also doesn't typesafe the input. Also formatting is broken and you have to manually use format() since its just using strings.
+		--> It might be possible to use a "persistentPrettyPrinter" (PPP?) with the pygments method because you can start a process
+		here and leave it running and pipe your input to it. (Though the harder part might be constantly getting data back without it closing.)  
+		
+			https://dlang.org/library/std/process/pipe_process.html
+			
+		- there are alternative syntax highlighters that are supposedly faster. CodeRay is ruby. there's rust ones. etc.
+			https://github.com/rubychan/shootout
+			benchmark
+			
+			
+	- create water splashes upon entering water tile
+			
+			
+
+	- If I'm doing IMPLIED viewport drawing, why am I passing viewport v's to everything?
+
+
+	- DEBUGGING with tagging. A debug channel (that can be piped to stdout + color) but it only applies to objects with the tag isDebugging (and we could use assert)
+	
+	
+	
+	+ generators
+	- multiple resources or just $$$
+
+
+
+
+	- what kind of "traps" protections do we have, because basically this is a horizontal tower defense game.
+	
+		- non-damaging types that do things like: 
+			- decrease speed (sludge)
+				- increase speed? (why? maybe for timing something)
+			- bait?
+			- burning traps? (that does damage, but also burning can be a debuff)
+			- wet traps (+wet)
+			- electrical traps (/w wet)
+			- oil traps? (+flammable, +sticky)
+			- ice traps? (+slow)
+			
+		contrast status effect turrets with primary turrets:
+
+			- arrow (anti-infantry, arc, anything straight line?)
+			- cannon (low arc)
+			- catapult/trebuchet (high arc)
+			- lightning tower? now it's just a normal tower defense game...
+
+
+	- we could have (certain) enemies DESTROY FORTIFICATIONS
+		- wood, stone, improved stone/metal gate/portcullis
+		
+		we could make the world HARDCODED and have traps let you extend out from that and block certian paths.
+		 the problem is we've gone far away from "Oriam".
+		 
+		Oriam could be more like "mario maker" where you can build any kind of world layout (with costs the more you change it from the starting setup, whether adding or subtracting). But if we have some sort of "value" function based on "my map layout"
+		that equates difficulty of monsters to get to home (A* path difficulty), then how we basically know the monsters will always
+		win or fail based on that value function.
+
+
+
+D notes
+--------------------------------------------------------------------------------
+ - scope(exit) statement; seems like an incredibly dumb and dangerous construct that 
+ ruins your normal flow of code worse than goto. You could easily have nested if statements that
+ "add" things onto the end of the code block and who knows which one gets called in which order!
+	their own example might have an error:
+		https://dlang.org/library/std/process/pipe_process.html	
+
+	there's TWO scope(exits)! But the first one needs(?) to get used up by time the second one is, but
+	the scopes should be at the end of the code block? Which might be doing a scope exit on the second 
+	variable reference, twice, instead of one on each.
+
+ - the first assignment of a variable in a constructor ... is actually an initializer. So the .init value is set. Any further uses will however be an [assignment] which could(?) have different effectss if you're say, initing then setting another class object inside your constructor.
+
+
+--------------------------------------------------------------------------------
+
+pygmentize -L
+
+Styles:
+~~~~~~~
+* default:
+    The default style (inspired by Emacs 22).
+* emacs:
+    The default style (inspired by Emacs 22).
+* friendly:
+    A modern style based on the VIM pyte theme.
+* colorful:
+    A colorful style, inspired by CodeRay.
+* autumn:
+    A colorful style, inspired by the terminal highlighting style.
+* murphy:
+    Murphy's style from CodeRay.
+* manni:
+    A colorful style, inspired by the terminal highlighting style.
+* monokai:
+    This style mimics the Monokai color scheme.
+* perldoc:
+    Style similar to the style used in the perldoc code blocks.
+* pastie:
+    Style similar to the pastie default style.
+* borland:
+    Style similar to the style used in the borland IDEs.
+* trac:
+    Port of the default trac highlighter design.
+* native:
+    Pygments version of the "native" vim theme.
+* fruity:
+    Pygments version of the "native" vim theme.
+* bw:
+    
+* vim:
+    Styles somewhat like vim 7.0
+* vs:
+    
+* tango:
+    The Crunchy default Style inspired from the color palette from the Tango Icon Theme Guidelines.
+* rrt:
+    Minimalistic "rrt" theme, based on Zap and Emacs defaults.
+* xcode:
+    Style similar to the Xcode default colouring theme.
+* igor:
+    Pygments version of the official colors for Igor Pro procedures.
+* paraiso-light:
+    
+* paraiso-dark:
+    
+* lovelace:
+    The style used in Lovelace interactive learning environment. Tries to avoid the "angry fruit salad" effect with desaturated and dim colours.
+* algol:
+    
+* algol_nu:
+    
+* arduino:
+    The Arduino® language style. This style is designed to highlight the Arduino source code, so exepect the best results with it.
+* rainbow_dash:
+    A bright and colorful syntax highlighting theme.
+* abap:
+    
+* solarized-dark:
+    The solarized style, dark.
+* solarized-light:
+    The solarized style, light.
+* sas:
+    Style inspired by SAS' enhanced program editor. Note This is not meant to be a complete style. It's merely meant to mimic SAS' program editor syntax highlighting.
+* stata:
+    Light mode style inspired by Stata's do-file editor. This is not meant to be a complete style, just for use with Stata.
+* stata-light:
+    Light mode style inspired by Stata's do-file editor. This is not meant to be a complete style, just for use with Stata.
+* stata-dark:
+    
+* inkpot:
+    
