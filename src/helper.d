@@ -102,10 +102,10 @@ void drawAngleHelper(baseObject o, viewport v, float angle, float distance, ALLE
 	float cx = cos(angle)*distance;
 	float cy = sin(angle)*distance;
 	al_draw_line(
-		o.x + v.x - v.ox, 
-		o.y + v.y - v.oy, 
-		o.x + cx + v.x - v.ox, 
-		o.y + cy + v.y - v.oy, 
+		o.pos.x + v.x - v.ox, 
+		o.pos.y + v.y - v.oy, 
+		o.pos.x + cx + v.x - v.ox, 
+		o.pos.y + cy + v.y - v.oy, 
 		color, 1);
 	}
 

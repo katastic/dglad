@@ -269,7 +269,7 @@ void testLogger()
 	{
 	writeln("start------------------");
 	log3 = new logger;
-	unit u = new unit(0, 1, 2, 3, 4, g.grass_bmp);
+	unit u = new unit(0, pair(1, 2), pair(3, 4), g.grass_bmp);
 	u.isDebugging = true;
 	log3.logB(u, "guy died [%d]", 23);
 	log3.log(u, "word(12, 15.0f)");
@@ -413,7 +413,7 @@ struct ipair
 	this(T)(T obj, float xOffset, float yOffset)
 		{
 		alias v=IMPLIED_VIEWPORT;
-		this = ipair(cast(int)(obj.x+xOffset)/TILE_W, cast(int)(obj.y+yOffset)/TILE_H);
+		this = ipair(cast(int)(obj.pos.x+xOffset)/TILE_W, cast(int)(obj.pos.y+yOffset)/TILE_H);
 		}
 	}
 
@@ -453,12 +453,6 @@ struct pair
 		}
 
 	this(float _x, float _y)
-		{
-		x = _x;
-		y = _y;
-		}
-		
-	this(double _x, double _y)
 		{
 		x = _x;
 		y = _y;
@@ -530,7 +524,9 @@ class world_t
 			{
 			float cx = uniform!"[]"(1, map.width*TILE_W-32);
 			float cy = 100;
-			auto u = new unit(0, cx, cy, objects.WALK_SPEED, 0, g.dwarf_bmp);
+			auto u = new unit(0, pair(cx, cy),
+				pair(uniform(-objects.WALK_SPEED, objects.WALK_SPEED), uniform(-objects.WALK_SPEED, objects.WALK_SPEED))
+				, g.dwarf_bmp);
 			u.isDebugging = false;
 			units ~= u;
 			}

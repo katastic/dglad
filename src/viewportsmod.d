@@ -46,8 +46,8 @@ class viewport
 		if(attachedUnit is null)isAttached = false;
 		if(isAttached)
 			{
-			ox = (attachedUnit.x - w/2);
-			oy = (attachedUnit.y - h/2);
+			ox = (attachedUnit.pos.x - w/2);
+			oy = (attachedUnit.pos.y - h/2);
 			}
 		}
 	}

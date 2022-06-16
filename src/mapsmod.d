@@ -151,7 +151,7 @@ class map_t
 				{
 			//	writeln(i, " ",j);
 				auto val = bmpIndex[i][j];
-				if(val == 0) continue;
+//				if(val == 0) continue;
 				if(val+1 > bmps.length) continue; // avoiding val > length-1 because if (unsigned)length=0-1 = overflow not -1 . I might just disable the warning.
 //				al_draw_bitmap(bmps[bmpIndex[i][j]], i*32 + v.x - v.ox, j*32 + v.y - v.oy, 0);
 				drawBitmap(bmps[bmpIndex[i][j]], vpair(i*32, j*32), 0);

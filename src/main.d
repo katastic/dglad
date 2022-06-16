@@ -229,7 +229,7 @@ struct display_t
 		al_draw_filled_rounded_rectangle(16, 32, 64+800, last_position_plus_one+32, 8, 8, ALLEGRO_COLOR(.7, .7, .7, .7));
 
 		unit u = g.world.units[0];
-		drawText2(20, "obj[%.2f,%.2f][%.2f %.2f]", u.x, u.y, u.vx, u.vy);
+		drawText2(20, "obj[%.2f,%.2f][%.2f %.2f]", u.pos.x, u.pos.y, u.vel.x, u.vel.y);
 		drawText2(20, "fps[%d] objrate[%d]", g.stats.fps, 
 					(g.stats.number_of_drawn_particles +
 					g.stats.number_of_drawn_units + 
