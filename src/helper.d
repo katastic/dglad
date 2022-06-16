@@ -15,6 +15,10 @@ import g;
 import objects;
 import planetsmod;
 
+import std.datetime;
+import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
+
+
 COLOR white  = COLOR(1,1,1,1);
 COLOR black  = COLOR(0,0,0,1);
 COLOR red    = COLOR(1,0,0,1);
@@ -27,6 +31,41 @@ COLOR orange = COLOR(1,0.65,0,1);
 	//{
 	//COLOR(w, w, w, 1);
 	//}
+
+
+/// This function corrects a bug/error/oversight in al_save_bitmap that dumps ALPHA channel from the screen into the picture
+///
+void al_save_screen(string path)
+	{
+	auto sw = StopWatch(AutoStart.yes);
+	auto disp = al_get_backbuffer(al_display);
+	auto w = disp.w;
+	auto h = disp.h;
+	ALLEGRO_BITMAP* temp = al_create_bitmap(w, h);
+	al_lock_bitmap(temp, al_get_bitmap_format(temp), ALLEGRO_LOCK_WRITEONLY);
+	al_lock_bitmap(disp, al_get_bitmap_format(temp), ALLEGRO_LOCK_READONLY); // makes HUGE difference (6.4 seconds vs 270 milliseconds)
+	al_set_target_bitmap(temp);
+//	al_clear_to_color(ALLEGRO_COLOR(0,0,0,1));
+//	al_draw_bitmap(disp, 0, 0, 0);
+	for(int j = 0; j < h; j++)
+		for(int i = 0; i < w; i++)
+			{
+			auto pixel = al_get_pixel(disp, i, j);
+			pixel.a = 1.0; // remove alpha
+			al_put_pixel(i, j, pixel);
+			}
+	al_unlock_bitmap(disp);
+	al_unlock_bitmap(temp);
+	al_save_bitmap(path.toStringz, temp);
+	al_reset_target();
+	al_destroy_bitmap(temp);
+	
+	sw.stop();
+	int secs, msecs;
+	sw.peek.split!("seconds", "msecs")(secs, msecs);
+	writefln("Saving screenshot took %d.%ds", secs, msecs);
+	}
+
 
 void tick(T)(ref T obj)
 	{

@@ -25,7 +25,7 @@ immutable float FALL_ACCEL = .1;
 immutable float WALK_SPEED = 1;
 immutable float JUMP_SPEED = 5;
 
-enum DIM
+enum DIR
 	{
 		UP = 0,	// some only have 1 direction and stop here.
 		DOWN,
@@ -39,8 +39,32 @@ enum DIM
 
 class animation
 	{
-	int maxGlyphs; //same as bmps.length? for assert checking if someone is trying to use a higher glyph than supposed to 
-	BITMAP[] bmps;
+	// do we want/care to reset walk cycle when you change direction? 
+    import std.traits;
+	int numDirections; 
+	int numFrames;
+	int index = 0; /// frame index
+	bool usesFlippedGraphics = false; /// NYI. use half the sideways graphics and flips them based on direction given. Usually meaningless given RAM amounts.
+	BITMAP*[][DIR] bmps;
+	
+	this(int _numFrames)
+		{
+		foreach(immutable d; [EnumMembers!DIR])
+			{
+			bmps[d] ~= al_create_bitmap(32,32);
+			}
+		}
+		
+	void nextFrame()
+		{
+		index++;
+		if(index == numFrames)index = 0;
+		}
+		
+	void draw(pair pos, DIR dir) /// implied viewport
+		{
+		drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
+		}
 	}
 
 class soldier : unit
@@ -49,15 +73,28 @@ class soldier : unit
 		{
 		super(0, pair(0, 0), pair(0, 0), g.grass_bmp);
 		}
-		
-	void actionAttack()
+	
+	int chargeCooldown=0;
+	void charge() // "HUURRRLL"
 		{
+		chargeCooldown = 100;
 		}
-	void actionSpecial()
+	
+	override void onTick()
 		{
+		if(chargeCooldown) // can't do anything except run forward during charge.
+			{
+			pos += vel;
+			chargeCooldown--;
+			return;
+			}
+			
+		// normal stuff
 		}
-	void actionShifter()
+	
+	override void actionSpecial()
 		{
+		charge();
 		}
 	}
 
@@ -186,11 +223,24 @@ class baseObject
 	
 	// INPUTS (do we support mouse input?)
 	// ------------------------------------------
-	void up(){ pos.y-= 10;}
-	void down(){pos.y+= 10;}
-	void left(){pos.x-= 10;}
-	void right(){pos.x+= 10;}
+	void actionUp(){ pos.y-= 10;}
+	void actionDown(){pos.y+= 10;}
+	void actionLeft(){pos.x-= 10;}
+	void actionRight(){pos.x+= 10;}
+	
 	void actionFire()
+		{
+		}
+		
+	void actionSpecial()
+		{
+		}
+
+	void actionShifter()
+		{
+		}
+
+	void actionFour() // four button controller. find better name when applicable
 		{
 		}
 	
@@ -259,11 +309,15 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 			}
 		
 //		checkAbove();
-			
-		pos.y += vel.y;				
-		pos.x += vel.x;
+		if(isPlayerControlled == false)
+			{
+			pos.y += vel.y;				
+			pos.x += vel.x;
+			}
 		if(pos.x < 0){pos.x = 0; vel.x = -vel.x; isFlipped=true;}
 		if(pos.x >= (g.world.map.width)*TILE_W){pos.x = (g.world.map.width)*TILE_W-1; vel.x = -vel.x; isFlipped=true;}
+		if(pos.y < 0){pos.y = 0; vel.y = -vel.y;}
+		if(pos.y >= (g.world.map.height)*TILE_W){pos.y = (g.world.map.height)*TILE_H-1; vel.y = -vel.y;}
 		}
 		
 	void onCollision(baseObject who)

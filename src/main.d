@@ -298,39 +298,6 @@ void logic()
 	g.world.logic();
 	}
 
-/// This function corrects a bug/error/oversight in al_save_bitmap that dumps ALPHA channel from the screen into the picture
-///
-void al_save_screen(string path)
-	{
-	auto sw = StopWatch(AutoStart.yes);
-	auto disp = al_get_backbuffer(al_display);
-	auto w = disp.w;
-	auto h = disp.h;
-	ALLEGRO_BITMAP* temp = al_create_bitmap(w, h);
-	al_lock_bitmap(temp, al_get_bitmap_format(temp), ALLEGRO_LOCK_WRITEONLY);
-	al_lock_bitmap(disp, al_get_bitmap_format(temp), ALLEGRO_LOCK_READONLY); // makes HUGE difference (6.4 seconds vs 270 milliseconds)
-	al_set_target_bitmap(temp);
-//	al_clear_to_color(ALLEGRO_COLOR(0,0,0,1));
-//	al_draw_bitmap(disp, 0, 0, 0);
-	for(int j = 0; j < h; j++)
-		for(int i = 0; i < w; i++)
-			{
-			auto pixel = al_get_pixel(disp, i, j);
-			pixel.a = 1.0; // remove alpha
-			al_put_pixel(i, j, pixel);
-			}
-	al_unlock_bitmap(disp);
-	al_unlock_bitmap(temp);
-	al_save_bitmap(path.toStringz, temp);
-	al_reset_target();
-	al_destroy_bitmap(temp);
-	
-	sw.stop();
-	int secs, msecs;
-	sw.peek.split!("seconds", "msecs")(secs, msecs);
-	writefln("Saving screenshot took %d.%ds", secs, msecs);
-	}
-
 void mouseLeft()
 	{
 	if(isMouseInsideMap())
@@ -395,61 +362,15 @@ void execute()
 					break;
 					}
 				case ALLEGRO_EVENT_KEY_DOWN:
-					{
+					{						
 					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
-
-					isKeySet(ALLEGRO_KEY_SPACE, g.key_space_down);
-					isKeySet(ALLEGRO_KEY_W, g.key_w_down);
-					isKeySet(ALLEGRO_KEY_S, g.key_s_down);
-					isKeySet(ALLEGRO_KEY_A, g.key_a_down);
-					isKeySet(ALLEGRO_KEY_D, g.key_d_down);		
-
-					isKeySet(ALLEGRO_KEY_M, g.key_m_down);
-					isKeySet(ALLEGRO_KEY_I, g.key_i_down);
-					isKeySet(ALLEGRO_KEY_J, g.key_j_down);
-					isKeySet(ALLEGRO_KEY_K, g.key_k_down);
-					isKeySet(ALLEGRO_KEY_L, g.key_l_down);
-					isKeySet(ALLEGRO_KEY_Q, g.key_q_down);
-					
-					isKeySet(ALLEGRO_KEY_0, g.key_0_down);
-					isKeySet(ALLEGRO_KEY_1, g.key_1_down);
-					isKeySet(ALLEGRO_KEY_2, g.key_2_down);
-					isKeySet(ALLEGRO_KEY_3, g.key_3_down);
-					isKeySet(ALLEGRO_KEY_4, g.key_4_down);
-					isKeySet(ALLEGRO_KEY_5, g.key_5_down);
-					isKeySet(ALLEGRO_KEY_6, g.key_6_down);
-					isKeySet(ALLEGRO_KEY_7, g.key_7_down);
-					isKeySet(ALLEGRO_KEY_8, g.key_8_down);
-					isKeySet(ALLEGRO_KEY_9, g.key_9_down);
-					
+					keyPressed[event.keyboard.keycode] = true;
 					break;
 					}
 					
 				case ALLEGRO_EVENT_KEY_UP:				
 					{
-					isKeyRel(ALLEGRO_KEY_SPACE, g.key_space_down);
-					isKeyRel(ALLEGRO_KEY_W, g.key_w_down);
-					isKeyRel(ALLEGRO_KEY_S, g.key_s_down);
-					isKeyRel(ALLEGRO_KEY_A, g.key_a_down);
-					isKeyRel(ALLEGRO_KEY_D, g.key_d_down);
-
-					isKeyRel(ALLEGRO_KEY_M, g.key_m_down);
-					isKeyRel(ALLEGRO_KEY_I, g.key_i_down);
-					isKeyRel(ALLEGRO_KEY_J, g.key_j_down);
-					isKeyRel(ALLEGRO_KEY_K, g.key_k_down);
-					isKeyRel(ALLEGRO_KEY_L, g.key_l_down);
-					isKeyRel(ALLEGRO_KEY_Q, g.key_q_down);
-
-					isKeyRel(ALLEGRO_KEY_0, g.key_0_down);
-					isKeyRel(ALLEGRO_KEY_1, g.key_1_down);
-					isKeyRel(ALLEGRO_KEY_2, g.key_2_down);
-					isKeyRel(ALLEGRO_KEY_3, g.key_3_down);
-					isKeyRel(ALLEGRO_KEY_4, g.key_4_down);
-					isKeyRel(ALLEGRO_KEY_5, g.key_5_down);
-					isKeyRel(ALLEGRO_KEY_6, g.key_6_down);
-					isKeyRel(ALLEGRO_KEY_7, g.key_7_down);
-					isKeyRel(ALLEGRO_KEY_8, g.key_8_down);
-					isKeyRel(ALLEGRO_KEY_9, g.key_9_down);
+					keyPressed[event.keyboard.keycode] = false;
 					break;
 					}
 

@@ -35,6 +35,7 @@ ALLEGRO_DISPLAY* 		al_display;
 ALLEGRO_EVENT_QUEUE* 	queue;
 ALLEGRO_TIMER* 			fps_timer;
 ALLEGRO_TIMER* 			screencap_timer;
+bool[256] keyPressed = false;
 
 FONT* 	font1;
 
@@ -423,7 +424,7 @@ struct apair
 	float m; /// magnitude
 	} // idea: some sort of automatic convertion between angle/magnitude, and xy velocities?
 
-struct rpair // relative pair. not sure best way to implement conversions
+struct rpair // relative pair. not sure best way to implement automatic conversions
 	{
 	float rx; //'rx' to not conflict with x/y duct typing.
 	float ry;
@@ -434,6 +435,46 @@ struct pair
 	float x;
 	float y;
 	
+	auto opOpAssign(string op)(pair p)
+		{
+		static if(op == "+=")
+		{
+			x += p.x;
+			y += p.y;
+		}else static if(op == "+")
+		{
+			x += p.x;
+			y += p.y;
+			return this;
+		}
+		else static assert(0, "Operator "~op~" not implemented");
+			
+		}
+	
+	/+
+	//https://dlang.org/spec/operatoroverloading.html
+    // this ~ rhs
+	T opBinary(string op)(T rhs)		// add two pairs
+		{
+		static if (op == "+") 
+			{
+			pragma(msg, "hello");
+			return pair(this, rhs.x, rhs.y);
+			}
+//		else static if (op == "-") return data - rhs.data;
+		else static assert(0, "Operator "~op~" not implemented");
+		}	
+	
+	// http://ddili.org/ders/d.en/operator_overloading.html
+    auto opOpAssign(string op)(pair p) 
+		if(op =="+=" || op == "-=")
+		{
+			pragma(msg, "hello2");
+        //mixin("ptr"~op~"i;");
+//        ptr += p;
+		return this; 
+		}
+	+/
 	this(T)(T t) //give it any object that has fields x and y
 		{
 		x = t.x;
@@ -528,6 +569,7 @@ class world_t
 				pair(uniform(-objects.WALK_SPEED, objects.WALK_SPEED), uniform(-objects.WALK_SPEED, objects.WALK_SPEED))
 				, g.dwarf_bmp);
 			u.isDebugging = false;
+			if(i == 0)u.isPlayerControlled = true;
 			units ~= u;
 			}
 			
@@ -602,24 +644,30 @@ class world_t
 		viewports[0].onTick();
 		players[0].onTick();
 
-		if(key_w_down)viewports[0].oy-=SCROLL_SPEED;
-		if(key_s_down)viewports[0].oy+=SCROLL_SPEED;
-		if(key_a_down)viewports[0].ox-=SCROLL_SPEED;
-		if(key_d_down)viewports[0].ox+=SCROLL_SPEED;
+		if(keyPressed[ALLEGRO_KEY_W])viewports[0].oy-=SCROLL_SPEED;
+		if(keyPressed[ALLEGRO_KEY_S])viewports[0].oy+=SCROLL_SPEED;
+		if(keyPressed[ALLEGRO_KEY_A])viewports[0].ox-=SCROLL_SPEED;
+		if(keyPressed[ALLEGRO_KEY_D])viewports[0].ox+=SCROLL_SPEED;
 	
-		if(key_i_down)map.save();
-		if(key_j_down)map.load();
+		if(keyPressed[ALLEGRO_KEY_I])map.save();
+		if(keyPressed[ALLEGRO_KEY_J])map.load();
 		
-		if(key_0_down)mouseSetTile(0);
-		if(key_1_down)mouseSetTile(1);
-		if(key_2_down)mouseSetTile(2);
-		if(key_3_down)mouseSetTile(3);
-		if(key_4_down)mouseSetTile(4);
-		if(key_5_down)mouseSetTile(5);
-		if(key_6_down)mouseSetTile(6);
-		if(key_7_down)mouseSetTile(7);
-		if(key_8_down)mouseSetTile(8);
-		if(key_9_down)mouseSetTile(9);
+		if(keyPressed[ALLEGRO_KEY_1])mouseSetTile(0);
+		if(keyPressed[ALLEGRO_KEY_2])mouseSetTile(1);
+		if(keyPressed[ALLEGRO_KEY_2])mouseSetTile(2);
+		if(keyPressed[ALLEGRO_KEY_3])mouseSetTile(3);
+		if(keyPressed[ALLEGRO_KEY_4])mouseSetTile(4);
+		if(keyPressed[ALLEGRO_KEY_5])mouseSetTile(5);
+		if(keyPressed[ALLEGRO_KEY_6])mouseSetTile(6);
+		if(keyPressed[ALLEGRO_KEY_7])mouseSetTile(7);
+		if(keyPressed[ALLEGRO_KEY_8])mouseSetTile(8);
+		if(keyPressed[ALLEGRO_KEY_0])mouseSetTile(9);
+		
+		if(keyPressed[ALLEGRO_KEY_T])world.units[0].actionUp();
+		if(keyPressed[ALLEGRO_KEY_G])world.units[0].actionDown();
+		if(keyPressed[ALLEGRO_KEY_F])world.units[0].actionLeft();
+		if(keyPressed[ALLEGRO_KEY_H])world.units[0].actionRight();
+		if(keyPressed[ALLEGRO_KEY_R])world.units[0].actionFire();
 		/+
 		if(key_space_down)players[0].currentShip.actionFire();
 		if(key_q_down)players[0].findNextShip();
@@ -695,28 +743,3 @@ int mouse_x = 0; //cached, obviously. for helper routines.
 int mouse_y = 0;
 int mouse_lmb = 0;
 int mouse_in_window = 0;
-bool key_w_down = false;
-bool key_s_down = false;
-bool key_a_down = false;
-bool key_d_down = false;
-bool key_q_down = false;
-bool key_e_down = false;
-bool key_f_down = false;
-bool key_space_down = false;
-
-bool key_i_down = false;
-bool key_j_down = false;
-bool key_k_down = false;
-bool key_l_down = false;
-bool key_m_down = false;
-
-bool key_1_down = false;
-bool key_2_down = false;
-bool key_3_down = false;
-bool key_4_down = false;
-bool key_5_down = false;
-bool key_6_down = false;
-bool key_7_down = false;
-bool key_8_down = false;
-bool key_9_down = false;
-bool key_0_down = false;

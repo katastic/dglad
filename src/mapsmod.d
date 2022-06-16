@@ -31,7 +31,7 @@ class map_t
 	immutable uint MAX_WIDTH = 256;
 	immutable uint MAX_HEIGHT = 256;
 	uint width = 64;
-	uint height = 16;
+	uint height = 64;
 	
 	tile[MAX_HEIGHT][MAX_WIDTH] isPassable;
 	tile[MAX_HEIGHT][MAX_WIDTH] bmpIndex;
