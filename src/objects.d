@@ -264,11 +264,20 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 
 	override void onTick()
 		{			
-		bool isMapValid(int i, int j)
+/+		bool isMapValid(int i, int j)
 			{
 			if(i < 0 || j < 0)return false;
 			if(i > (g.world.map.width-1)*TILE_W)return false;
 			if(j > (g.world.map.height-1)*TILE_H)return false;
+	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+			return true;
+			} no function overloading on nested functions maybe? odd+/
+			
+		bool isMapValid(ipair p)
+			{
+			if(p.i < 0 || p.j < 0)return false;
+			if(p.i >= g.world.map.width)return false;
+			if(p.j >= g.world.map.height)return false;
 	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
 			return true;
 			}
@@ -296,7 +305,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 			rowcol.j = j;
 			return true;
 			}
-
+/+
 		void checkAbove()
 			{ 
 			ipair ip3 = ipair(this, 0, -cast(float)(TILE_H)); 
@@ -306,13 +315,19 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 				vel.y = 0;
 				pos.y++;
 				}
-			}
+			}+/
 		
 //		checkAbove();
 		if(isPlayerControlled == false)
 			{
-			pos.y += vel.y;				
-			pos.x += vel.x;
+			pos += vel;
+			ipair ip3 = ipair(this, 0, -cast(float)(TILE_H)); 
+			if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				{
+				pos -= vel;	
+				pos -= vel;
+				vel = 0;
+				}
 			}
 		if(pos.x < 0){pos.x = 0; vel.x = -vel.x; isFlipped=true;}
 		if(pos.x >= (g.world.map.width)*TILE_W){pos.x = (g.world.map.width)*TILE_W-1; vel.x = -vel.x; isFlipped=true;}

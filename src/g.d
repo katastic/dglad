@@ -435,16 +435,27 @@ struct pair
 	float x;
 	float y;
 	
+	
+	void opAssign(int val)
+		{
+		assert(val == 0, "Did you really mean to set a pair to something other than 0,0?");
+		x = cast(float)val;
+		y = cast(float)val;
+		}
+	 
 	auto opOpAssign(string op)(pair p)
 		{
 		static if(op == "+=")
 		{
+			pragma(msg, "+= THIS HASNT BEEN VERIFIED");
 			x += p.x;
 			y += p.y;
-		}else static if(op == "+")
+			return this;
+		}else static if(op == "+" || op == "-")
 		{
-			x += p.x;
-			y += p.y;
+			pragma(msg, op);
+			mixin("x = x "~op~" p.x;");
+			mixin("y = y "~op~" p.y;");
 			return this;
 		}
 		else static assert(0, "Operator "~op~" not implemented");
