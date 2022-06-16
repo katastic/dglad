@@ -305,23 +305,11 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 			rowcol.j = j;
 			return true;
 			}
-/+
-		void checkAbove()
-			{ 
-			ipair ip3 = ipair(this, 0, -cast(float)(TILE_H)); 
-			if(isMapValid(ip3.i, ip3.j) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
-				{
-				// contact above
-				vel.y = 0;
-				pos.y++;
-				}
-			}+/
-		
-//		checkAbove();
+
 		if(isPlayerControlled == false)
 			{
 			pos += vel;
-			ipair ip3 = ipair(this, 0, -cast(float)(TILE_H)); 
+			ipair ip3 = ipair(this.pos); 
 			if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
 				{
 				pos -= vel;	
@@ -329,6 +317,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 				vel = 0;
 				}
 			}
+
 		if(pos.x < 0){pos.x = 0; vel.x = -vel.x; isFlipped=true;}
 		if(pos.x >= (g.world.map.width)*TILE_W){pos.x = (g.world.map.width)*TILE_W-1; vel.x = -vel.x; isFlipped=true;}
 		if(pos.y < 0){pos.y = 0; vel.y = -vel.y;}
@@ -374,14 +363,14 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		{
 		if(!isWideInsideScreen(vpair(this.pos), bmp))return false;
 		// NOTE we're drawing with "center" being at the bottom of the image.
-		drawBitmap(bmp, vpair(this.pos, -bmp.w/2, 0), isFlipped);
+		drawCenteredBitmap(bmp, vpair(this.pos), isFlipped);
 //		if(isDebugging) drawTextCenter(vpair(this, 0, -32), black, "J%1dF%1d V%3.1f,%3.1f", isJumping, isFalling, vx, vy);
 		
 		if(isPlayerControlled) 
 			{
 			}
 	
-		draw_hp_bar(pos.x, pos.y - bmp.w/2, v, hp, 100);		
+		draw_hp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2, v, 0, 100);		
 		return true;
 		}
 	}

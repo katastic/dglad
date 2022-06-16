@@ -570,7 +570,7 @@ class world_t
 		//map.save();
 		map.load();
 	
-		immutable NUM_UNITS = 1_000;
+		immutable NUM_UNITS = 1;
 		
 		for(int i = 0; i < NUM_UNITS; i++)
 			{
@@ -580,7 +580,8 @@ class world_t
 				pair(uniform(-objects.WALK_SPEED, objects.WALK_SPEED), uniform(-objects.WALK_SPEED, objects.WALK_SPEED))
 				, g.dwarf_bmp);
 			u.isDebugging = false;
-			if(i == 0)u.isPlayerControlled = true;
+			
+			if(i == 0){u.isPlayerControlled = false; u.isDebugging = false;}
 			units ~= u;
 			}
 			
