@@ -47,7 +47,6 @@ display_t display;
 
 //=============================================================================
 
-
 bool initialize()
 	{
 	al_set_config_value(al_get_system_config(), "trace", "level", "info"); // enable logging. see https://github.com/liballeg/allegro5/issues/1339

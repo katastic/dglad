@@ -21,8 +21,8 @@ import turretmod;
 import bulletsmod;
 import mapsmod;
 	
-immutable float FALL_ACCEL = .1;
-immutable float WALK_SPEED = 1;
+//immutable float FALL_ACCEL = .1;
+immutable float WALK_SPEED = 2.5;
 immutable float JUMP_SPEED = 5;
 
 enum DIR
@@ -67,17 +67,47 @@ class animation
 		}
 	}
 
+float toAngle(DIR d)
+	{
+	switch(d)
+		{
+		case DIR.RIGHT:
+			return degToRad(0);
+		break;
+		case DIR.DOWN:
+			return degToRad(90);
+		break;
+		case DIR.LEFT:
+			return degToRad(180);
+		break;
+		case DIR.UP:
+			return degToRad(270);
+		break;
+		default:
+		break;
+		}
+	
+	assert(0, "fail");	
+	}
+
 class soldier : unit
 	{
+	immutable float CHARGE_SPEED = 10.0;
+	immutable int COOLDOWN_TIME = 30;
+	
 	this(float _x, float _y)
 		{
-		super(0, pair(0, 0), pair(0, 0), g.grass_bmp);
+		super(0, pair(0, 0), pair(0, 0), g.dude_bmp);
 		}
 	
 	int chargeCooldown=0;
 	void charge() // "HUURRRLL"
 		{
-		chargeCooldown = 100;
+		if(chargeCooldown == 0 && mp > 80)
+			{
+			mp -= 80; 
+			chargeCooldown = COOLDOWN_TIME;
+			}
 		}
 	
 	override void onTick()
@@ -88,7 +118,7 @@ class soldier : unit
 			chargeCooldown--;
 			return;
 			}
-			
+		super.onTick();
 		// normal stuff
 		}
 	
@@ -96,8 +126,32 @@ class soldier : unit
 		{
 		charge();
 		}
-	}
 
+	override void actionUp()
+		{
+		if(chargeCooldown)return;
+		vel = apair(toAngle(DIR.UP), CHARGE_SPEED);
+		super.actionUp();
+		}
+	override void actionDown()
+		{
+		if(chargeCooldown)return;
+		vel = apair(toAngle(DIR.DOWN), CHARGE_SPEED);
+		super.actionDown();
+		}
+	override void actionLeft()
+		{
+		if(chargeCooldown)return;
+		vel = apair(toAngle(DIR.LEFT), CHARGE_SPEED);
+		super.actionLeft();
+		}
+	override void actionRight()
+		{
+		if(chargeCooldown)return;
+		vel = apair(toAngle(DIR.RIGHT), CHARGE_SPEED);
+		super.actionRight();
+		}
+	}
 
 /+
 class item : baseObject
@@ -221,12 +275,12 @@ class baseObject
 		return true;
 		}
 	
-	// INPUTS (do we support mouse input?)
+	// INPUTS 
 	// ------------------------------------------
-	void actionUp(){ pos.y-= 10;}
-	void actionDown(){pos.y+= 10;}
-	void actionLeft(){pos.x-= 10;}
-	void actionRight(){pos.x+= 10;}
+	void actionUp(){ pos.y-= WALK_SPEED;}
+	void actionDown(){pos.y+= WALK_SPEED;}
+	void actionLeft(){pos.x-= WALK_SPEED;}
+	void actionRight(){pos.x+= WALK_SPEED;}
 	
 	void actionFire()
 		{
@@ -257,74 +311,50 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
 	float armor=0; /// flat reduction (or percentage) on damages, haven't decided.
+	
+	float mp=100;
+	float maxMP=100;
+	float manaChargeRate = 2;
+	
+	
 	int myTeamIndex=0;
 	bool isPlayerControlled=false;
 	float weapon_damage = 5;
 	bool isFlipped = false; // flip horizontal
 
-	override void onTick()
-		{			
-/+		bool isMapValid(int i, int j)
-			{
-			if(i < 0 || j < 0)return false;
-			if(i > (g.world.map.width-1)*TILE_W)return false;
-			if(j > (g.world.map.height-1)*TILE_H)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			return true;
-			} no function overloading on nested functions maybe? odd+/
-			
-		bool isMapValid(ipair p)
-			{
-			if(p.i < 0 || p.j < 0)return false;
-			if(p.i >= g.world.map.width)return false;
-			if(p.j >= g.world.map.height)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			return true;
-			}
-			
-		bool isMapValid_px(int x, int y)
-			{
-			long i = cast(long)x/TILE_W;
-			long j = cast(long)y/TILE_H;
-			if(i < 0 || j < 0)return false;
-			if(i > (g.world.map.width-1)*TILE_W)return false;
-			if(j > (g.world.map.height-1)*TILE_H)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			return true;
-			}
-
-		bool isMapValidref(float x, float y, ref ipair rowcol)
-			{
-			int i = cast(int)x/TILE_W;
-			int j = cast(int)y/TILE_H;
-			if(i < 0 || j < 0)return false;
-			if(i > (g.world.map.width-1)*TILE_W)return false;
-			if(j > (g.world.map.height-1)*TILE_H)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			rowcol.i = i;
-			rowcol.j = j;
-			return true;
-			}
-
-		if(isPlayerControlled == false)
-			{
-			pos += vel;
-			ipair ip3 = ipair(this.pos); 
-			if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
-				{
-				pos -= vel;	
-				pos -= vel;
-				vel = 0;
-				}else
-				{
-				if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
-				}
-			}
-
+	void worldClipping()
+		{
 		if(pos.x < 0){pos.x = 0; vel.x = -vel.x; isFlipped=true;}
 		if(pos.x >= (g.world.map.width)*TILE_W){pos.x = (g.world.map.width)*TILE_W-1; vel.x = -vel.x; isFlipped=true;}
 		if(pos.y < 0){pos.y = 0; vel.y = -vel.y;}
 		if(pos.y >= (g.world.map.height)*TILE_W){pos.y = (g.world.map.height)*TILE_H-1; vel.y = -vel.y;}
+		}
+	
+	void travel()
+		{
+		pos += vel;
+		ipair ip3 = ipair(this.pos); 
+		if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+			{
+			pos -= vel;	
+			pos -= vel;
+			vel = 0;
+			}else
+			{
+			if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
+			}
+		}
+	
+	override void onTick()
+		{			
+		if(mp < maxMP)mp += manaChargeRate;			
+
+		if(isPlayerControlled == false)
+			{
+			travel();
+			}
+	
+		worldClipping();
 		}
 		
 	void onCollision(baseObject who)
@@ -373,7 +403,8 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 			{
 			}
 	
-		draw_hp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2, v, 0, 100);		
+		draw_hp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2, v, hp, maxHP);		
+		draw_mp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2 + 5, v, mp, maxMP);		
 		return true;
 		}
 	}

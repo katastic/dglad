@@ -1,3 +1,60 @@
+programming notes
+------------
+	- if two values (like x and y) are LINKED and represent something like a POSITION. then MAKE THEM A OBJECT. and NAME IT.
+		al_draw_bitmap(bitmap, x=500, y=300, 0); // no.
+		drawBitmap(bitmap, pair(x,y), 0); // yes. NOW we know that this is some kind of position or a velocity.
+		
+		now watch as we scale up:
+		
+		al_draw_rectangle(bitmap, 32, 63, 20, 250, 230);
+		drawRectangle(bitmap, pair(32, 64), pair(20, 250), 20);  
+		
+		see how much easier that is broken up? You specifying THINGS, in this case positions, and not just numbers.
+		
+		it may not be "upper left, lower right" but it's super obvious we have two points now. And, in the function signature now we can name those variables pair upperLeft, pair upperRight instead of x1, y1, x2, y2.
+		
+	- name EVERYTHING
+		- variables. structures. and nested functions. THE CODE IS DOCUMENTATION. Instead of a block of code with a COMMENT above it describing what it does, replace that with a function that DESCRIBES what the code is doing.
+	- if you're using a language that doesn't have those features. Use a language that does. Or enjoy clunking rocks together to make a fire.
+	- The API SHOULD IMPLY both whats going on, and how to use it.
+	- You shouldn't BE ABLE TO use an API wrong.
+		- Allegro 5. instead of letting people call functions without first setting up an allegro_init():
+			- make allegro init return a CONTEXT and the ONLY way to even CALL allegro functions (that need allegro live first), is to use that CONTEXT to interact with them. And if the context is null? Congrats, it's obvious it failed to initialize.
+		- Don't over-generalize. Your code is going to be used. Make it work for that use and work to generalize it later. Don't start with some metaphorical abstract use case that works for literally everything but basically contributes to nothing because it has to cover 5000 edge cases. 
+
+	- don't assume the PERFORMANCE of what you CAN SEE, matters compared to what you CANNOT SEE.
+		- just because sending a bunch of structs means you'll be using pair[0] == x, pair[1] == y instead of just x,y in functions
+		(a single level of indirection) means NOTHING compared to the indirection you don't see: virtual functions, for 
+		example, but ORDERS OF A MAGNITUDE worse are a single call to a math function like SQRT and orders of a magnitude 
+		worse than that, DRAWING A BITMAP.
+		
+		If you can call 4 if statements, comparing floats to see if a bitmap is even on the screen before drawing it? For every bitmap?
+		that's "overhead" right? Wrong. Compared to the amount of logic that goes into drawing an Allegro bitmap, checking pixel formats, 
+		checking parent bitmaps, and actually drawing it? Nothing you do even comes close unless you're doing something terribly wrong like
+		using an O^3 formula.
+
+	- don't repeat yourself. Even in a function, use a nested function which now gives a NAME to that block of code you kept repeating.
+	- Even if you're using a more archiac language like C or C++, GCC (and LLVM) often times have extensions that add things like nested functions into the langauge outside of the spec.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+oriam notes
+------------
 
 	- metadata for texture atlas and isPassable
 

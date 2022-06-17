@@ -18,7 +18,6 @@ import planetsmod;
 import std.datetime;
 import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 
-
  // <--- older keyboard code
 // ----------------------------------------------------------------------------------
 //https://www.allegro.cc/manual/5/keyboard.html
@@ -49,7 +48,6 @@ enum keys_label
 	ACTION_KEY
 	}
 // ----------------------------------------------------------------------------------
-
 
 /+
  see (d) allegro5/keycodes.d
@@ -164,7 +162,6 @@ enum keys_label
 	ALLEGRO_KEY KEY_PAUSE      = 93;
 // ---------------------------------------------------------------------------------------------------
 
-
 COLOR white  = COLOR(1,1,1,1);
 COLOR black  = COLOR(0,0,0,1);
 COLOR red    = COLOR(1,0,0,1);
@@ -177,7 +174,6 @@ COLOR orange = COLOR(1,0.65,0,1);
 	//{
 	//COLOR(w, w, w, 1);
 	//}
-
 
 /// This function corrects a bug/error/oversight in al_save_bitmap that dumps ALPHA channel from the screen into the picture
 ///
@@ -211,7 +207,6 @@ void al_save_screen(string path)
 	sw.peek.split!("seconds", "msecs")(secs, msecs);
 	writefln("Saving screenshot took %d.%ds", secs, msecs);
 	}
-
 
 void tick(T)(ref T obj)
 	{
@@ -488,19 +483,71 @@ int textHelper(bool doReset=false)
 	return starting_height + text_height*number_of_entries;
 	}
 
+
+		bool isMapValid(ipair p)
+			{
+			if(p.i < 0 || p.j < 0)return false;
+			if(p.i >= g.world.map.width)return false;
+			if(p.j >= g.world.map.height)return false;
+	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+			return true;
+			}
+			
+		bool isMapValid_px(int x, int y)
+			{
+			long i = cast(long)x/TILE_W;
+			long j = cast(long)y/TILE_H;
+			if(i < 0 || j < 0)return false;
+			if(i > (g.world.map.width-1)*TILE_W)return false;
+			if(j > (g.world.map.height-1)*TILE_H)return false;
+	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+			return true;
+			}
+
+		bool isMapValidref(float x, float y, ref ipair rowcol)
+			{
+			int i = cast(int)x/TILE_W;
+			int j = cast(int)y/TILE_H;
+			if(i < 0 || j < 0)return false;
+			if(i > (g.world.map.width-1)*TILE_W)return false;
+			if(j > (g.world.map.height-1)*TILE_H)return false;
+	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+			rowcol.i = i;
+			rowcol.j = j;
+			return true;
+			}
+
+	
+	
+
 void draw_hp_bar(float x, float y, viewport v, float hp, float max)
 	{
 	float _x = x;
 	float _y = y - 10;
 	float _hp = hp/max*20.0;
 
-	if(hp != max)
+//	if(hp != max)
 		al_draw_filled_rectangle(
 			_x - 20/2 + v.x - v.ox, 
 			_y + v.y - v.oy, 
 			_x + _hp/2  + v.x - v.ox, 
 			_y + 5 + v.y - v.oy, 
 			ALLEGRO_COLOR(1, 0, 0, 0.70));
+	}
+
+void draw_mp_bar(float x, float y, viewport v, float hp, float max)
+	{
+	float _x = x;
+	float _y = y - 10;
+	float _hp = hp/max*20.0;
+
+//	if(hp != max)
+		al_draw_filled_rectangle(
+			_x - 20/2 + v.x - v.ox, 
+			_y + v.y - v.oy, 
+			_x + _hp/2  + v.x - v.ox, 
+			_y + 5 + v.y - v.oy, 
+			ALLEGRO_COLOR(0, 0, 1, 0.70));
 	}
 
 // Helper functions

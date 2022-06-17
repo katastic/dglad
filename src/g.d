@@ -117,7 +117,6 @@ alias FONT = ALLEGRO_FONT;
 /// and we can choose to only display certain channels like 
 /// movement or finite state machine.
 
-
 /// Do we need a MAPPING setup? "debug" includes "object,error,info,etc"
 enum logChannel : string
 	{
@@ -591,6 +590,12 @@ class world_t
 		//map.save();
 		map.load();
 	
+		
+			units ~= new soldier(200, 200);
+			units[0].isPlayerControlled = true;
+			units[0].isDebugging = true;
+	
+	
 		immutable NUM_UNITS = 2;
 		
 		for(int i = 0; i < NUM_UNITS; i++)
@@ -602,7 +607,7 @@ class world_t
 				pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED)), g.dwarf_bmp);
 			u.isDebugging = false;
 			
-			if(i == 0){u.isPlayerControlled = true; u.isDebugging = true;}
+//			if(i == 0){u.isPlayerControlled = true; u.isDebugging = true;}
 			units ~= u;
 			}
 			
@@ -701,16 +706,8 @@ class world_t
 		if(keyPressed[KEY_J])world.units[0].actionLeft();
 		if(keyPressed[KEY_L])world.units[0].actionRight();
 		if(keyPressed[KEY_U])world.units[0].actionFire();
-		/+
-		if(key_space_down)players[0].currentShip.actionFire();
-		if(key_q_down)players[0].findNextShip();
+		if(keyPressed[KEY_H])world.units[0].actionSpecial();
 		
-		if(key_i_down)p2.up();
-		if(key_k_down)p2.down();
-		if(key_j_down)p2.left();
-		if(key_l_down)p2.right();
-		if(key_m_down)p2.actionFire();
-+/
 		tick(particles);
 		tick(units);
 		tick(bullets);
