@@ -47,33 +47,6 @@ display_t display;
 
 //=============================================================================
 
-//https://www.allegro.cc/manual/5/keyboard.html
-//	(instead of individual KEYS touching ANY OBJECT METHOD. Because what if we 
-// 		change objects? We have to FIND all keys associated with that object and 
-// 		change them.)
-alias ALLEGRO_KEY = ubyte;
-struct keyset_t
-		{
-		baseObject obj;
-		ALLEGRO_KEY [ __traits(allMembers, keys_label).length] key;
-		// If we support MOUSE clicks, we could simply attach a MOUSE in here 
-		// and have it forward to the object's click_on() method.
-		// But again, that kills the idea of multiplayer.
-		}
-		
-enum keys_label
-	{
-	ERROR = 0,
-	UP_KEY,
-	DOWN_KEY,
-	LEFT_KEY,
-	RIGHT_KEY,
-	FIRE_UP_KEY,
-	FIRE_DOWN_KEY,
-	FIRE_LEFT_KEY,
-	FIRE_RIGHT_KEY,
-	ACTION_KEY
-	}
 
 bool initialize()
 	{
@@ -363,7 +336,7 @@ void execute()
 					}
 				case ALLEGRO_EVENT_KEY_DOWN:
 					{						
-					isKeySet(ALLEGRO_KEY_ESCAPE, exit);
+					isKeySet(KEY_ESCAPE, exit);
 					keyPressed[event.keyboard.keycode] = true;
 					break;
 					}

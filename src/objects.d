@@ -315,6 +315,9 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 				pos -= vel;	
 				pos -= vel;
 				vel = 0;
+				}else
+				{
+				if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
 				}
 			}
 

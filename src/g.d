@@ -206,8 +206,8 @@ class pygmentize// : prettyPrinter
 		
 	~this()
 		{
-		writeln("total stats.msLogging time", stats.msLogging);
-		writeln("total log entries", stats.number_of_log_entries);
+		writefln("total stats.msLogging time", stats.msLogging);
+		writefln("total log entries", stats.number_of_log_entries);
 		if(hasStreamStarted)pipes.stdin.close();
 		}
 	}
@@ -434,13 +434,28 @@ struct pair
 	{
 	float x;
 	float y;
-	
+
+	bool opEquals(int val) // what about float/double scenarios?
+		{
+		assert(val == 0, "Did you really mean to check a pair to something other than 0 == 0,0? This should only be for velocity pairs = 0");
+		if(x == val && y == val)
+			{
+			return true;
+			}
+		return false;
+		}
 	
 	void opAssign(int val)
 		{
-		assert(val == 0, "Did you really mean to set a pair to something other than 0,0?");
+		assert(val == 0, "Did you really mean to set a pair to something other than 0,0? This is an unlikely case.");
 		x = cast(float)val;
 		y = cast(float)val;
+		}
+
+	void opAssign(apair val) // for velocity vectors
+		{
+		x = cos(val.a)*val.m;
+		y = sin(val.a)*val.m;
 		}
 	 
 	auto opOpAssign(string op)(pair p)
@@ -509,6 +524,12 @@ struct pair
 		x = _x;
 		y = _y;
 		}
+
+	this(apair val)
+		{
+		x = cos(val.a)*val.m;
+		y = sin(val.a)*val.m;
+		}
 	}
 
 world_t world;
@@ -570,18 +591,18 @@ class world_t
 		//map.save();
 		map.load();
 	
-		immutable NUM_UNITS = 1;
+		immutable NUM_UNITS = 2;
 		
 		for(int i = 0; i < NUM_UNITS; i++)
 			{
-			float cx = uniform!"[]"(1, map.width*TILE_W-32);
+//			float cx = uniform!"[]"(1, map.width*TILE_W-32);
+			float cx = uniform!"[]"(1, 200);
 			float cy = 100;
 			auto u = new unit(0, pair(cx, cy),
-				pair(uniform(-objects.WALK_SPEED, objects.WALK_SPEED), uniform(-objects.WALK_SPEED, objects.WALK_SPEED))
-				, g.dwarf_bmp);
+				pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED)), g.dwarf_bmp);
 			u.isDebugging = false;
 			
-			if(i == 0){u.isPlayerControlled = false; u.isDebugging = false;}
+			if(i == 0){u.isPlayerControlled = true; u.isDebugging = true;}
 			units ~= u;
 			}
 			
@@ -656,30 +677,30 @@ class world_t
 		viewports[0].onTick();
 		players[0].onTick();
 
-		if(keyPressed[ALLEGRO_KEY_W])viewports[0].oy-=SCROLL_SPEED;
-		if(keyPressed[ALLEGRO_KEY_S])viewports[0].oy+=SCROLL_SPEED;
-		if(keyPressed[ALLEGRO_KEY_A])viewports[0].ox-=SCROLL_SPEED;
-		if(keyPressed[ALLEGRO_KEY_D])viewports[0].ox+=SCROLL_SPEED;
+		if(keyPressed[KEY_W])viewports[0].oy-=SCROLL_SPEED;
+		if(keyPressed[KEY_S])viewports[0].oy+=SCROLL_SPEED;
+		if(keyPressed[KEY_A])viewports[0].ox-=SCROLL_SPEED;
+		if(keyPressed[KEY_D])viewports[0].ox+=SCROLL_SPEED;
 	
-		if(keyPressed[ALLEGRO_KEY_I])map.save();
-		if(keyPressed[ALLEGRO_KEY_J])map.load();
+		if(keyPressed[KEY_O])map.save();
+		if(keyPressed[KEY_P])map.load();
 		
-		if(keyPressed[ALLEGRO_KEY_1])mouseSetTile(0);
-		if(keyPressed[ALLEGRO_KEY_2])mouseSetTile(1);
-		if(keyPressed[ALLEGRO_KEY_2])mouseSetTile(2);
-		if(keyPressed[ALLEGRO_KEY_3])mouseSetTile(3);
-		if(keyPressed[ALLEGRO_KEY_4])mouseSetTile(4);
-		if(keyPressed[ALLEGRO_KEY_5])mouseSetTile(5);
-		if(keyPressed[ALLEGRO_KEY_6])mouseSetTile(6);
-		if(keyPressed[ALLEGRO_KEY_7])mouseSetTile(7);
-		if(keyPressed[ALLEGRO_KEY_8])mouseSetTile(8);
-		if(keyPressed[ALLEGRO_KEY_0])mouseSetTile(9);
+		if(keyPressed[KEY_1])mouseSetTile(0);
+		if(keyPressed[KEY_2])mouseSetTile(1);
+		if(keyPressed[KEY_2])mouseSetTile(2);
+		if(keyPressed[KEY_3])mouseSetTile(3);
+		if(keyPressed[KEY_4])mouseSetTile(4);
+		if(keyPressed[KEY_5])mouseSetTile(5);
+		if(keyPressed[KEY_6])mouseSetTile(6);
+		if(keyPressed[KEY_7])mouseSetTile(7);
+		if(keyPressed[KEY_8])mouseSetTile(8);
+		if(keyPressed[KEY_0])mouseSetTile(9);
 		
-		if(keyPressed[ALLEGRO_KEY_T])world.units[0].actionUp();
-		if(keyPressed[ALLEGRO_KEY_G])world.units[0].actionDown();
-		if(keyPressed[ALLEGRO_KEY_F])world.units[0].actionLeft();
-		if(keyPressed[ALLEGRO_KEY_H])world.units[0].actionRight();
-		if(keyPressed[ALLEGRO_KEY_R])world.units[0].actionFire();
+		if(keyPressed[KEY_I])world.units[0].actionUp();
+		if(keyPressed[KEY_K])world.units[0].actionDown();
+		if(keyPressed[KEY_J])world.units[0].actionLeft();
+		if(keyPressed[KEY_L])world.units[0].actionRight();
+		if(keyPressed[KEY_U])world.units[0].actionFire();
 		/+
 		if(key_space_down)players[0].currentShip.actionFire();
 		if(key_q_down)players[0].findNextShip();

@@ -19,6 +19,152 @@ import std.datetime;
 import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 
 
+ // <--- older keyboard code
+// ----------------------------------------------------------------------------------
+//https://www.allegro.cc/manual/5/keyboard.html
+//	(instead of individual KEYS touching ANY OBJECT METHOD. Because what if we 
+// 		change objects? We have to FIND all keys associated with that object and 
+// 		change them.)
+alias ALLEGRO_KEY = ubyte;
+struct keyset_t
+		{
+		baseObject obj;
+		ALLEGRO_KEY [ __traits(allMembers, keys_label).length] key;
+		// If we support MOUSE clicks, we could simply attach a MOUSE in here 
+		// and have it forward to the object's click_on() method.
+		// But again, that kills the idea of multiplayer.
+		}
+		
+enum keys_label
+	{
+	ERROR = 0,
+	UP_KEY,
+	DOWN_KEY,
+	LEFT_KEY,
+	RIGHT_KEY,
+	FIRE_UP_KEY,
+	FIRE_DOWN_KEY,
+	FIRE_LEFT_KEY,
+	FIRE_RIGHT_KEY,
+	ACTION_KEY
+	}
+// ----------------------------------------------------------------------------------
+
+
+/+
+ see (d) allegro5/keycodes.d
+
+	converted ALLEGRO_KEY ALLEGRO_KEY_X to
+	ALLEGRO_KEY KEY_X
+	because that's incredibly needlessly redundant and verbose. How could you
+    possibly mistake say, KEY_X, for anything but a keyboard key in videogame code?
+   
+   it also reduces on the text length of code making it easier to read
++/
+// ---------------------------------------------------------------------------------------------------
+	ALLEGRO_KEY KEY_A      = 1;
+	ALLEGRO_KEY KEY_B      = 2;
+	ALLEGRO_KEY KEY_C      = 3;
+	ALLEGRO_KEY KEY_D      = 4;
+	ALLEGRO_KEY KEY_E      = 5;
+	ALLEGRO_KEY KEY_F      = 6;
+	ALLEGRO_KEY KEY_G      = 7;
+	ALLEGRO_KEY KEY_H      = 8;
+	ALLEGRO_KEY KEY_I      = 9;
+	ALLEGRO_KEY KEY_J      = 10;
+	ALLEGRO_KEY KEY_K      = 11;
+	ALLEGRO_KEY KEY_L      = 12;
+	ALLEGRO_KEY KEY_M      = 13;
+	ALLEGRO_KEY KEY_N      = 14;
+	ALLEGRO_KEY KEY_O      = 15;
+	ALLEGRO_KEY KEY_P      = 16;
+	ALLEGRO_KEY KEY_Q      = 17;
+	ALLEGRO_KEY KEY_R      = 18;
+	ALLEGRO_KEY KEY_S      = 19;
+	ALLEGRO_KEY KEY_T      = 20;
+	ALLEGRO_KEY KEY_U      = 21;
+	ALLEGRO_KEY KEY_V      = 22;
+	ALLEGRO_KEY KEY_W      = 23;
+	ALLEGRO_KEY KEY_X      = 24;
+	ALLEGRO_KEY KEY_Y      = 25;
+	ALLEGRO_KEY KEY_Z      = 26;
+
+	ALLEGRO_KEY KEY_0      = 27;
+	ALLEGRO_KEY KEY_1      = 28;
+	ALLEGRO_KEY KEY_2      = 29;
+	ALLEGRO_KEY KEY_3      = 30;
+	ALLEGRO_KEY KEY_4      = 31;
+	ALLEGRO_KEY KEY_5      = 32;
+	ALLEGRO_KEY KEY_6      = 33;
+	ALLEGRO_KEY KEY_7      = 34;
+	ALLEGRO_KEY KEY_8      = 35;
+	ALLEGRO_KEY KEY_9      = 36;
+
+	ALLEGRO_KEY KEY_PAD_0      = 37;
+	ALLEGRO_KEY KEY_PAD_1      = 38;
+	ALLEGRO_KEY KEY_PAD_2      = 39;
+	ALLEGRO_KEY KEY_PAD_3      = 40;
+	ALLEGRO_KEY KEY_PAD_4      = 41;
+	ALLEGRO_KEY KEY_PAD_5      = 42;
+	ALLEGRO_KEY KEY_PAD_6      = 43;
+	ALLEGRO_KEY KEY_PAD_7      = 44;
+	ALLEGRO_KEY KEY_PAD_8      = 45;
+	ALLEGRO_KEY KEY_PAD_9      = 46;
+
+	ALLEGRO_KEY KEY_F1      = 47;
+	ALLEGRO_KEY KEY_F2      = 48;
+	ALLEGRO_KEY KEY_F3      = 49;
+	ALLEGRO_KEY KEY_F4      = 50;
+	ALLEGRO_KEY KEY_F5      = 51;
+	ALLEGRO_KEY KEY_F6      = 52;
+	ALLEGRO_KEY KEY_F7      = 53;
+	ALLEGRO_KEY KEY_F8      = 54;
+	ALLEGRO_KEY KEY_F9      = 55;
+	ALLEGRO_KEY KEY_F10      = 56;
+	ALLEGRO_KEY KEY_F11      = 57;
+	ALLEGRO_KEY KEY_F12      = 58;
+
+	ALLEGRO_KEY KEY_ESCAPE   = 59;
+	ALLEGRO_KEY KEY_TILDE      = 60;
+	ALLEGRO_KEY KEY_MINUS      = 61;
+	ALLEGRO_KEY KEY_EQUALS   = 62;
+	ALLEGRO_KEY KEY_BACKSPACE   = 63;
+	ALLEGRO_KEY KEY_TAB      = 64;
+	ALLEGRO_KEY KEY_OPENBRACE   = 65;
+	ALLEGRO_KEY KEY_CLOSEBRACE   = 66;
+	ALLEGRO_KEY KEY_ENTER      = 67;
+	ALLEGRO_KEY KEY_SEMICOLON   = 68;
+	ALLEGRO_KEY KEY_QUOTE      = 69;
+	ALLEGRO_KEY KEY_BACKSLASH   = 70;
+	ALLEGRO_KEY KEY_BACKSLASH2   = 71; /* DirectInput calls this DIK_OEM_102: "< > | on UK/Germany keyboards" */
+	ALLEGRO_KEY KEY_COMMA      = 72;
+	ALLEGRO_KEY KEY_FULLSTOP   = 73;
+	ALLEGRO_KEY KEY_SLASH      = 74;
+	ALLEGRO_KEY KEY_SPACE      = 75;
+
+	ALLEGRO_KEY KEY_INSERT   = 76;
+	ALLEGRO_KEY KEY_DELETE   = 77;
+	ALLEGRO_KEY KEY_HOME      = 78;
+	ALLEGRO_KEY KEY_END      = 79;
+	ALLEGRO_KEY KEY_PGUP      = 80;
+	ALLEGRO_KEY KEY_PGDN      = 81;
+	ALLEGRO_KEY KEY_LEFT      = 82;
+	ALLEGRO_KEY KEY_RIGHT      = 83;
+	ALLEGRO_KEY KEY_UP      = 84;
+	ALLEGRO_KEY KEY_DOWN      = 85;
+
+	ALLEGRO_KEY KEY_PAD_SLASH   = 86;
+	ALLEGRO_KEY KEY_PAD_ASTERISK   = 87;
+	ALLEGRO_KEY KEY_PAD_MINUS   = 88;
+	ALLEGRO_KEY KEY_PAD_PLUS   = 89;
+	ALLEGRO_KEY KEY_PAD_DELETE   = 90;
+	ALLEGRO_KEY KEY_PAD_ENTER   = 91;
+
+	ALLEGRO_KEY KEY_PRINTSCREEN   = 92;
+	ALLEGRO_KEY KEY_PAUSE      = 93;
+// ---------------------------------------------------------------------------------------------------
+
+
 COLOR white  = COLOR(1,1,1,1);
 COLOR black  = COLOR(0,0,0,1);
 COLOR red    = COLOR(1,0,0,1);
