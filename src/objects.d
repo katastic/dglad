@@ -90,10 +90,65 @@ float toAngle(DIR d)
 	assert(0, "fail");	
 	}
 
+class archer : unit
+	{
+	float spinAngle = 0;
+	float SPIN_SPEED = degToRad(10);
+	int COOLDOWN_TIME = 30;
+
+	bool isSpinning = false;
+
+//	int spinCooldown=0;
+	void spin()
+		{
+		if(!isSpinning && mp > 80)
+			{
+			mp -= 80; 
+	//		spinCooldown = COOLDOWN_TIME;
+			spinAngle = 0;
+			isSpinning = true;
+			}
+		}
+
+	override void actionSpecial()
+		{
+		spin();
+		}
+		
+	override void onTick()
+		{
+		if(isSpinning)
+			{
+			writefln("%3.2f", spinAngle);
+			immutable int NUM_SHOTS = 10;
+			if(fmod(spinAngle,2f*PI/NUM_SHOTS) < .1) // fixme: this needs to be different. divide distance into number of shots, and a total time for action so you can adjust that for balance.
+				{
+				// fireShot();
+				g.world.bullets ~= new bullet( this.pos, pair(apair( spinAngle, 10)), spinAngle, red, 100, 0, this, 0);
+				
+//	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, bool _isAffectedByGravity, unit _myOwner, bool _isDebugging)
+
+				
+				writefln("firing shot at %3.2f", spinAngle);
+				}
+			spinAngle += SPIN_SPEED;
+			if(spinAngle > 2*PI){isSpinning = false; spinAngle = 0;}
+			}else{
+			super.onTick();
+			}
+		}
+
+
+	this(float _x, float _y)
+		{
+		super(0, pair(0, 0), pair(0, 0), g.dude_bmp);
+		}
+	}
+
 class soldier : unit
 	{
-	immutable float CHARGE_SPEED = 10.0;
-	immutable int COOLDOWN_TIME = 30;
+	float CHARGE_SPEED = 10.0;
+	int COOLDOWN_TIME = 30;
 	
 	this(float _x, float _y)
 		{

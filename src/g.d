@@ -591,7 +591,7 @@ class world_t
 		map.load();
 	
 		
-			units ~= new soldier(200, 200);
+			units ~= new archer(200, 200);
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
 	

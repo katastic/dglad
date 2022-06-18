@@ -24,10 +24,9 @@ class bullet : baseObject
 	int lifetime; // frames passed since firing
 	bool isDead=false; // to trim
 	unit myOwner;
-	bool isAffectedByGravity=true;
 	COLOR c;
 	
-	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, bool _isAffectedByGravity, unit _myOwner, bool _isDebugging)
+	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, unit _myOwner, bool _isDebugging)
 		{
 		isDebugging = _isDebugging;
 		c = _c;
@@ -39,7 +38,6 @@ class bullet : baseObject
 		type = _type;
 		lifetime = _lifetime;
 		angle = _angle;
-		isAffectedByGravity = _isAffectedByGravity;
 		super(pair(this.pos), pair(this.vel), g.bullet_bmp);
 		}
 	
