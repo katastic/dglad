@@ -483,42 +483,38 @@ int textHelper(bool doReset=false)
 	return starting_height + text_height*number_of_entries;
 	}
 
-
-		bool isMapValid(ipair p)
-			{
-			if(p.i < 0 || p.j < 0)return false;
-			if(p.i >= g.world.map.width)return false;
-			if(p.j >= g.world.map.height)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			return true;
-			}
-			
-		bool isMapValid_px(int x, int y)
-			{
-			long i = cast(long)x/TILE_W;
-			long j = cast(long)y/TILE_H;
-			if(i < 0 || j < 0)return false;
-			if(i > (g.world.map.width-1)*TILE_W)return false;
-			if(j > (g.world.map.height-1)*TILE_H)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			return true;
-			}
-
-		bool isMapValidref(float x, float y, ref ipair rowcol)
-			{
-			int i = cast(int)x/TILE_W;
-			int j = cast(int)y/TILE_H;
-			if(i < 0 || j < 0)return false;
-			if(i > (g.world.map.width-1)*TILE_W)return false;
-			if(j > (g.world.map.height-1)*TILE_H)return false;
-	// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
-			rowcol.i = i;
-			rowcol.j = j;
-			return true;
-			}
-
+bool isMapValid(ipair p)
+	{
+	if(p.i < 0 || p.j < 0)return false;
+	if(p.i >= g.world.map.width)return false;
+	if(p.j >= g.world.map.height)return false;
+// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+	return true;
+	}
 	
-	
+bool isMapValid_px(int x, int y)
+	{
+	long i = cast(long)x/TILE_W;
+	long j = cast(long)y/TILE_H;
+	if(i < 0 || j < 0)return false;
+	if(i > (g.world.map.width-1)*TILE_W)return false;
+	if(j > (g.world.map.height-1)*TILE_H)return false;
+// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+	return true;
+	}
+
+bool isMapValidref(float x, float y, ref ipair rowcol)
+	{
+	int i = cast(int)x/TILE_W;
+	int j = cast(int)y/TILE_H;
+	if(i < 0 || j < 0)return false;
+	if(i > (g.world.map.width-1)*TILE_W)return false;
+	if(j > (g.world.map.height-1)*TILE_H)return false;
+// writefln("                  = %d", g.world.map.data[cx][cy].isPassable);
+	rowcol.i = i;
+	rowcol.j = j;
+	return true;
+	}
 
 void draw_hp_bar(float x, float y, viewport v, float hp, float max)
 	{
@@ -566,7 +562,6 @@ bool percent(float chance)
 		capRefLow?	(reference versions)
 		rCapLow	
 		refCapLow
-	
 	
 	also is cap ambiguous? I like that it's smaller than 'clamp'
 		cap:
@@ -892,8 +887,7 @@ void al_draw_gouraud_bitmap_5pt(ALLEGRO_BITMAP* bmp, float x, float y, COLOR tl,
 
 	al_draw_prim(cast(void*)vtx, null, bmp, 0, vtx.length, ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_FAN);
 	}
-	
-	
+
 /// al_draw_line_segment for pairs
 void al_draw_line_segment(pair[] pairs, COLOR color, float thickness)
 	{

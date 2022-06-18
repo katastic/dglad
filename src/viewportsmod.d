@@ -40,7 +40,7 @@ class viewport
 		attachedUnit = u;
 		isAttached = true;
 		}
-		
+	
 	void onTick()
 		{
 		if(attachedUnit is null)isAttached = false;

@@ -81,11 +81,9 @@ class map_t
 //				bmp[i][height-2] = g.stone_bmp;
 				bmpIndex[i][height-2] = 1;
 				}
-			}
-			
+			}	
 		//writeln(data);
-		}
-		
+		}	
 
 	//https://forum.dlang.org/post/t3ljgm$16du$1@digitalmars.com
 	//big 'ol wtf case.

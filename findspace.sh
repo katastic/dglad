@@ -16,7 +16,7 @@ echo
 
 echo "Searching for multiple consecutive newlines in source files."
 echo "--------------------------------------------------------------------------"
-pcregrep -nM '\n\n\n' ./src/*.d
+pcregrep -nM '\n[\t]*\n[\t]*\n' ./src/*.d
 echo
 
 echo "Searching for closing curley brackets with extra space after them"

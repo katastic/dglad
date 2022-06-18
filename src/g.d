@@ -590,11 +590,9 @@ class world_t
 		//map.save();
 		map.load();
 	
-		
 			units ~= new archer(200, 200);
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-	
 	
 		immutable NUM_UNITS = 2;
 		
