@@ -21,7 +21,7 @@ import std.json;
 
 bool isPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 3, 5, 6])
+	foreach(i; [0, 2, 3, 5, 6])
 		if(tileType == i) return true;
 	return false;
 	}
@@ -45,7 +45,7 @@ class map_t
 		{
 		bmps ~= g.grass_bmp; // 0 passable, note zero is empty/not used/blank so ignore this file for now
 		bmps ~= g.grass_bmp; // 1 !passable
-		bmps ~= g.stone_bmp; // 2 !passable
+		bmps ~= g.stone_bmp; // 2 passable
 		bmps ~= g.water_bmp; // 3 passable
 		bmps ~= g.wood_bmp;  // 4 !passable
 		bmps ~= g.reinforced_wall_bmp; // 5 passable (dark bg wall)

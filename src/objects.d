@@ -37,21 +37,49 @@ enum DIR
 		DOWNLEFT,
 	}
 
+ipair[] soldier_coords = [ipair(0,0), ipair(72,0), ipair(144,0), ipair(217,0), 
+					      ipair(288,0), ipair(72+288,0), ipair(144+288,0), ipair(217+288,0)];
+ipair[] archer_coords = [ipair(0,70), ipair(72,70), ipair(144,70), ipair(217,70),
+						ipair(288,70), ipair(72+288,70), ipair(144+288,70), ipair(217+288,70)];
+
 class animation
 	{
+	BITMAP* atlas;
+
+	void parseMap3(ipair[] pt)
+		{
+		atlas = getBitmap("./data/extra/gauntlet.png");
+		int w = 32;
+		int h = 32;
+		int wo = w + 4; // width plus padding offset
+		bmps[DIR.UP][0] = al_create_sub_bitmap(atlas, pt[0].i, pt[0].j, w, h);
+		bmps[DIR.RIGHT][0] = al_create_sub_bitmap(atlas, pt[1].i, pt[1].j, w, h);
+		bmps[DIR.DOWN][0] = al_create_sub_bitmap(atlas, pt[2].i, pt[2].j, w, h);
+		bmps[DIR.LEFT][0] = al_create_sub_bitmap(atlas, pt[3].i, pt[3].j, w, h);
+
+		bmps[DIR.UP][1] = al_create_sub_bitmap(atlas, pt[4].i, pt[4].j, w, h);
+		bmps[DIR.RIGHT][1] = al_create_sub_bitmap(atlas, pt[5].i, pt[5].j, w, h);
+		bmps[DIR.DOWN][1] = al_create_sub_bitmap(atlas, pt[6].i, pt[6].j, w, h);
+		bmps[DIR.LEFT][1] = al_create_sub_bitmap(atlas, pt[7].i, pt[7].j, w, h);
+		}
+
 	// do we want/care to reset walk cycle when you change direction? 
     import std.traits;
 	int numDirections; 
-	int numFrames;
+	int numFrames=2;
 	int index = 0; /// frame index
 	bool usesFlippedGraphics = false; /// NYI. use half the sideways graphics and flips them based on direction given. Usually meaningless given RAM amounts.
-	BITMAP*[][DIR] bmps;
+	BITMAP*[2][DIR.max] bmps;
 	
-	this(int _numFrames)
+	this(int _numFrames, ipair[] coordinates)
 		{
+		parseMap3(coordinates);
+		writeln("----------21353523521");
 		foreach(immutable d; [EnumMembers!DIR])
 			{
-			bmps[d] ~= al_create_bitmap(32,32);
+			writeln(d);
+//			bmps[d][0] = new ALLEGRO_BITMAP;
+	//		bmps[d][1] = new ALLEGRO_BITMAP;
 			}
 		}
 		
@@ -61,9 +89,16 @@ class animation
 		if(index == numFrames)index = 0;
 		}
 		
-	void draw(pair pos, DIR dir) /// implied viewport
+	bool draw(pair pos, DIR dir) /// implied viewport
 		{
-		drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
+		float cx = pos.x + IMPLIED_VIEWPORT.x - IMPLIED_VIEWPORT.ox;
+		float cy = pos.y + IMPLIED_VIEWPORT.y - IMPLIED_VIEWPORT.oy;
+		if(cx > 0 && cx < SCREEN_W && cy > 0 && cy < SCREEN_H)
+			{
+			drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
+			return true;
+		}else{
+			return false;}
 		}
 	}
 
@@ -92,6 +127,7 @@ float toAngle(DIR d)
 
 class archer : unit
 	{
+	animation anim;
 	float spinAngle = 0;
 	float SPIN_SPEED = degToRad(10);
 	int COOLDOWN_TIME = 30;
@@ -138,18 +174,33 @@ class archer : unit
 
 	this(float _x, float _y)
 		{
-		super(0, pair(0, 0), pair(0, 0), g.dude_bmp);
+		super(0, pair(_x, _y), pair(0, 0), g.dude_bmp);
+		anim = new animation(1, archer_coords);
+		}
+		
+	override bool draw(viewport v)
+		{
+		return anim.draw(this.pos, direction);
 		}
 	}
 
 class soldier : unit
 	{
+	animation anim;
 	float CHARGE_SPEED = 10.0;
 	int COOLDOWN_TIME = 30;
 	
 	this(float _x, float _y)
 		{
-		super(0, pair(0, 0), pair(0, 0), g.dude_bmp);
+		super(0, pair(_x, _y), pair(0, 0), g.dude_bmp);
+		anim = new animation(1, soldier_coords);
+		}
+
+	override bool draw(viewport v)
+		{
+		anim.nextFrame();
+		anim.draw(this.pos, direction);
+		return true;
 		}
 	
 	int chargeCooldown=0;
@@ -317,6 +368,21 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	bool isFlipped = false; // flip horizontal
 	bool freezeMovement = false; /// for special abilities/etc. NOT the same as being frozen by a spell or something like that.
 
+	bool attemptMove(pair offset)
+		{
+		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
+		writeln(this.pos);
+		writeln(ip3);
+		if(isMapValid(ip3) && isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+			{
+			this.pos += offset;
+			return true;
+			}else{
+			return false;
+			}
+		}
+
+
 	void worldClipping()
 		{
 		if(pos.x < 0){pos.x = 0; vel.x = -vel.x; isFlipped=true;}
@@ -408,10 +474,40 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
 		}
 
-	override void actionUp(){if(!freezeMovement){pos.y -= WALK_SPEED; direction = DIR.UP;} }
-	override void actionDown(){if(!freezeMovement){pos.y += WALK_SPEED; direction = DIR.DOWN;} }
-	override void actionLeft(){if(!freezeMovement){pos.x -= WALK_SPEED; direction = DIR.LEFT;} }
-	override void actionRight(){if(!freezeMovement){pos.x += WALK_SPEED; direction = DIR.RIGHT;} }
+	override void actionUp()
+		{
+		if(!freezeMovement)
+			{
+			attemptMove(pair(0, -WALK_SPEED));
+			direction = DIR.UP;
+			} 
+		}
+		
+	override void actionDown()
+		{
+		if(!freezeMovement)
+			{
+			attemptMove(pair(0, WALK_SPEED));
+			direction = DIR.DOWN;
+			}
+		}
+		
+	override void actionLeft()
+		{
+		if(!freezeMovement)
+			{
+			attemptMove(pair(-WALK_SPEED, 0));
+			direction = DIR.LEFT;
+			}
+		}
+	override void actionRight()
+		{
+		if(!freezeMovement)
+			{
+			attemptMove(pair(WALK_SPEED, 0));
+			direction = DIR.RIGHT;
+			}
+		}
 
 	}
 
