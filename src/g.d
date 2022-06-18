@@ -700,8 +700,8 @@ class world_t
 		if(keyPressed[KEY_A])viewports[0].ox-=SCROLL_SPEED;
 		if(keyPressed[KEY_D])viewports[0].ox+=SCROLL_SPEED;
 	
-		if(keyPressed[KEY_O])map.save();
-		if(keyPressed[KEY_P])map.load();
+		if(keyPressed[KEY_N])map.save();
+		if(keyPressed[KEY_M])map.load();
 		
 		if(keyPressed[KEY_1])mouseSetTile(0);
 		if(keyPressed[KEY_2])mouseSetTile(1);
@@ -718,8 +718,8 @@ class world_t
 		if(keyPressed[KEY_K])world.units[0].actionDown();
 		if(keyPressed[KEY_J])world.units[0].actionLeft();
 		if(keyPressed[KEY_L])world.units[0].actionRight();
-		if(keyPressed[KEY_U])world.units[0].actionFire();
-		if(keyPressed[KEY_H])world.units[0].actionSpecial();
+		if(keyPressed[KEY_O])world.units[0].actionFire();
+		if(keyPressed[KEY_P])world.units[0].actionSpecial();
 		
 		tick(particles);
 		tick(units);

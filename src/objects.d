@@ -207,10 +207,6 @@ class soldier : unit
 		super.actionRight();
 		}
 		
-	override void actionFire()
-		{
-		g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
-		}		
 	}
 
 /+
@@ -339,10 +335,10 @@ class baseObject
 	
 	// INPUTS 
 	// ------------------------------------------
-	void actionUp(){ pos.y-= WALK_SPEED;}
-	void actionDown(){pos.y+= WALK_SPEED;}
-	void actionLeft(){pos.x-= WALK_SPEED;}
-	void actionRight(){pos.x+= WALK_SPEED;}
+	void actionUp(){ pos.y-= WALK_SPEED; direction = DIR.UP; }
+	void actionDown(){pos.y+= WALK_SPEED; direction = DIR.DOWN; }
+	void actionLeft(){pos.x-= WALK_SPEED; direction = DIR.LEFT; }
+	void actionRight(){pos.x+= WALK_SPEED; direction = DIR.RIGHT; }
 	
 	void actionFire()
 		{
@@ -373,12 +369,9 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
 	float armor=0; /// flat reduction (or percentage) on damages, haven't decided.
-	
 	float mp=100;
 	float maxMP=100;
 	float manaChargeRate = 2;
-	
-	
 	int myTeamIndex=0;
 	bool isPlayerControlled=false;
 	float weapon_damage = 5;
@@ -469,4 +462,9 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		draw_mp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2 + 5, v, mp, maxMP);		
 		return true;
 		}
+	
+	override void actionFire()
+		{
+		g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
+		}		
 	}
