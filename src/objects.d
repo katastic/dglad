@@ -107,6 +107,7 @@ class archer : unit
 	//		spinCooldown = COOLDOWN_TIME;
 			spinAngle = 0;
 			isSpinning = true;
+			freezeMovement = true;
 			}
 		}
 
@@ -129,7 +130,7 @@ class archer : unit
 				writefln("firing shot at %3.2f", spinAngle);
 				}
 			spinAngle += SPIN_SPEED;
-			if(spinAngle > 2*PI){isSpinning = false; spinAngle = 0;}
+			if(spinAngle > 2*PI){isSpinning = false; freezeMovement = false; spinAngle = 0;}
 			}else{
 			super.onTick();
 			}
@@ -158,6 +159,7 @@ class soldier : unit
 			{
 			mp -= 80; 
 			chargeCooldown = COOLDOWN_TIME;
+			freezeMovement = true;
 			}
 		}
 	
@@ -167,6 +169,7 @@ class soldier : unit
 			{
 			pos += vel;
 			chargeCooldown--;
+			if(chargeCooldown == 0)freezeMovement = false;
 			return;
 			}
 		super.onTick();
@@ -299,67 +302,8 @@ class structure : baseObject
 		}
 	}
 
-class baseObject
-	{
-	ALLEGRO_BITMAP* bmp;
-	@disable this(); 
-	bool isDead = false;	
-	pair pos; 	/// baseObjects are centered at X/Y (not top-left) so we can easily follow other baseObjects.
-	pair vel; /// Velocities.
-	float w=0, h=0;   /// width, height 
-	float angle=0;	/// pointing angle 
-	DIR direction;
-
-	this(pair _pos, pair _vel, BITMAP* _bmp)
-		{
-		pos = _pos;
-		vel = _vel;
-		bmp = _bmp;
-//		writeln("I set x y", _x, " ", _y);
-		}
-		
-	bool draw(viewport v)
-		{
-		al_draw_center_rotated_bitmap(bmp, 
-			pos.x - v.ox + v.x, 
-			pos.y - v.oy + v.y, 
-			angle, 0);
-
-		return true;
-		}
-	
-	// INPUTS 
-	// ------------------------------------------
-	void actionUp(){pos.y -= WALK_SPEED; direction = DIR.UP; }
-	void actionDown(){pos.y += WALK_SPEED; direction = DIR.DOWN; }
-	void actionLeft(){pos.x -= WALK_SPEED; direction = DIR.LEFT; }
-	void actionRight(){pos.x += WALK_SPEED; direction = DIR.RIGHT; }
-	
-	void actionFire()
-		{
-		}
-		
-	void actionSpecial()
-		{
-		}
-
-	void actionShifter()
-		{
-		}
-
-	void actionFour() // four button controller. find better name when applicable
-		{
-		}
-	
-	void onTick()
-		{
-		// THOU. SHALT. NOT. PUT. PHYSICS. IN BASE. baseObject.
-		}
-	}	
-
 class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
-	bool isDebugging=true;
 	float maxHP=100.0; /// Maximum health points
 	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
@@ -371,6 +315,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	bool isPlayerControlled=false;
 	float weapon_damage = 5;
 	bool isFlipped = false; // flip horizontal
+	bool freezeMovement = false; /// for special abilities/etc. NOT the same as being frozen by a spell or something like that.
 
 	void worldClipping()
 		{
@@ -399,7 +344,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		{			
 		if(mp < maxMP)mp += manaChargeRate;			
 
-		if(isPlayerControlled == false)
+		if(!isPlayerControlled && !freezeMovement)
 			{
 			travel();
 			}
@@ -461,5 +406,58 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	override void actionFire()
 		{
 		g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
-		}		
+		}
+
+	override void actionUp(){if(!freezeMovement){pos.y -= WALK_SPEED; direction = DIR.UP;} }
+	override void actionDown(){if(!freezeMovement){pos.y += WALK_SPEED; direction = DIR.DOWN;} }
+	override void actionLeft(){if(!freezeMovement){pos.x -= WALK_SPEED; direction = DIR.LEFT;} }
+	override void actionRight(){if(!freezeMovement){pos.x += WALK_SPEED; direction = DIR.RIGHT;} }
+
 	}
+
+class baseObject
+	{
+	ALLEGRO_BITMAP* bmp;
+	@disable this(); 
+	bool isDead = false;	
+	pair pos; 	/// baseObjects are centered at X/Y (not top-left) so we can easily follow other baseObjects.
+	pair vel; /// Velocities.
+	float w=0, h=0;   /// width, height 
+	float angle=0;	/// pointing angle 
+	DIR direction;
+	bool isDebugging=true;
+
+	this(pair _pos, pair _vel, BITMAP* _bmp)
+		{
+		pos = _pos;
+		vel = _vel;
+		bmp = _bmp;
+//		writeln("I set x y", _x, " ", _y);
+		}
+		
+	bool draw(viewport v)
+		{
+		al_draw_center_rotated_bitmap(bmp, 
+			pos.x - v.ox + v.x, 
+			pos.y - v.oy + v.y, 
+			angle, 0);
+
+		return true;
+		}
+	
+	// INPUTS 
+	// ------------------------------------------
+	void actionUp(){}
+	void actionDown(){}
+	void actionLeft(){}
+	void actionRight(){}
+	void actionFire(){}
+	void actionSpecial(){}
+	void actionShifter(){}
+	void actionFour(){} // four button controller. find better name when applicable{
+
+	void onTick()
+		{
+		// THOU. SHALT. NOT. PUT. PHYSICS. IN BASE. baseObject.
+		}
+	}	

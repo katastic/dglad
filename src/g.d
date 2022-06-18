@@ -654,7 +654,7 @@ class world_t
 				}
 			}
 
-		void drawStat3(T)(ref T obj, ulong[2] stat)
+		void drawStat3(T)(ref T obj, ref ulong[2] stat)
 			{
 			foreach(ref o; obj)
 				{
