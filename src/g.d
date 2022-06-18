@@ -655,11 +655,24 @@ class world_t
 					}
 				}
 			}
+
+		void drawStat3(T)(ref T obj, ulong[2] stat)
+			{
+			foreach(ref o; obj)
+				{
+				if(o.draw(v))
+					{
+					stat[0]++;
+					}else{
+					stat[1]++;
+					}
+				}
+			}
 		
-		drawStat2(bullets, 	stats.number_of_drawn_bullets, 	stats.number_of_drawn_bullets_clipped);
-		drawStat2(particles, stats.number_of_drawn_particles, stats.number_of_drawn_particles_clipped);
-		drawStat2(units, 	stats.number_of_drawn_units, stats.number_of_drawn_units_clipped);
-		drawStat2(structures, stats.number_of_drawn_structures, stats.number_of_drawn_structures_clipped);		
+		drawStat3(bullets, 	stats.number_of_drawn_bullets);
+		drawStat3(particles, stats.number_of_drawn_particles);
+		drawStat3(units, 	stats.number_of_drawn_units);
+		drawStat3(structures, stats.number_of_drawn_structures);		
 
 		testGraph.draw(v);
 		testGraph2.draw(v);
@@ -726,25 +739,25 @@ class world_t
 
 struct frameStats_t
 	{	
-	ulong number_of_drawn_units=0;
-	ulong number_of_drawn_particles=0;
-	ulong number_of_drawn_structures=0;
-	ulong number_of_drawn_asteroids=0;
-	ulong number_of_drawn_bullets=0;
-	ulong number_of_drawn_dudes=0;
-
+	ulong[2] number_of_drawn_units=0;
+	ulong[2] number_of_drawn_particles=0;
+	ulong[2] number_of_drawn_structures=0;
+	ulong[2] number_of_drawn_asteroids=0;
+	ulong[2] number_of_drawn_bullets=0;
+	ulong[2] number_of_drawn_dudes=0;
+/+
 	ulong number_of_drawn_units_clipped=0;
 	ulong number_of_drawn_particles_clipped=0;
 	ulong number_of_drawn_structures_clipped=0;
 	ulong number_of_drawn_asteroids_clipped=0;
 	ulong number_of_drawn_bullets_clipped=0;
-	ulong number_of_drawn_dudes_clipped=0;
+	ulong number_of_drawn_dudes_clipped=0;+/
 	}
 
 struct statistics_t
 	{
 	ulong number_of_log_entries=0;
-	frameStats_t frameStats;	// per frame statistics
+	frameStats_t frameStats;	// per frame statistics, array: [0] nonclipped stast, [1] is for clipped units
 	alias frameStats this;
 	
 	ulong fps=0;

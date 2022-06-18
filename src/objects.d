@@ -206,6 +206,11 @@ class soldier : unit
 		vel = apair(toAngle(DIR.RIGHT), CHARGE_SPEED);
 		super.actionRight();
 		}
+		
+	override void actionFire()
+		{
+		g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
+		}		
 	}
 
 /+
@@ -262,6 +267,7 @@ class dude : baseObject
 		pos.x += vel.x;
 		pos.y += vel.y;
 		}
+
 	}
 	
 class structure : baseObject
@@ -270,7 +276,6 @@ class structure : baseObject
 	float hp=maxHP;
 	int level=1; //ala upgrade level
 	int team=0;
-	int direction=0;
 	immutable int countdown_rate = 200; // 60 fps, 60 ticks = 1 second
 	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
 	
@@ -300,6 +305,7 @@ class structure : baseObject
 		countdown--;
 		if(countdown < 0){countdown = countdown_rate; spawnDude();}
 		}
+	
 	}
 
 class baseObject
@@ -311,6 +317,7 @@ class baseObject
 	pair vel; /// Velocities.
 	float w=0, h=0;   /// width, height 
 	float angle=0;	/// pointing angle 
+	DIR direction;
 
 	this(pair _pos, pair _vel, BITMAP* _bmp)
 		{

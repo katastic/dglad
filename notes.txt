@@ -1,5 +1,9 @@
 programming notes
 ------------
+	- ERROR HANDLING IS NOT OPT-IN. Do not design anything that requires you to REMEMBER to do it correctly. You WILL forget that bit of important information. It WILL happen. The less implied information you have to remember the more your brain is free to focus its brain on the complexity of the problem at hand--not the complexity of the interface itself. (see lower where Allegro should't ALLOW you to use itself without iniializing itself first. I think the OpenGL interface does this. You request a openglhandle 
+	which you use to get pointers to the functions you want. and this decoupling also means if the BINARY location of those functions changes with newer revisions of code/DLLs, the code 'should' still work.)
+
+
 	- if two values (like x and y) are LINKED and represent something like a POSITION. then MAKE THEM A OBJECT. and NAME IT.
 		al_draw_bitmap(bitmap, x=500, y=300, 0); // no.
 		drawBitmap(bitmap, pair(x,y), 0); // yes. NOW we know that this is some kind of position or a velocity.
@@ -38,14 +42,41 @@ programming notes
 
 
 
-
-
-
-
-
-
-
-
+	--> Inheritance has its flaws and beware of baseGenericObject.
+		- lets say you have baseObject, unit, soldier, and bigSolder
+			- do we really need baseObject? I mean, how many non-unit objects NEED the same interface as units?
+			- every extra layer, means you have to EACH of those layers to ensure logic.
+			- Dangerous/difficult to ensure logic is called IN ORDER. Some things could be:
+			
+				child.do()
+					{
+					// super.do();  // BEFORE our stuff? parent setup code then we change the default
+					//my stuff 
+					// super.do(); // or AFTER our stuff? we change our stuff then call the base default!
+					}
+			
+			the answer is not always obvious
+			
+		- The diamond problem.
+			- And they say use composition and just add pieces you want. Instead of man, redman, bigman ,bigredman
+				just have 'man':
+					- and if you want a redman, he adds a pointer to a "red" handler.
+					- if you want a bigredman, add a pointer to a "big" handler and a "red" handler.
+			- However, not so clear what to do when things have to INTERACT. Now you need a common interface!
+				- You have 'sound's. Each soundhandler has a set of sounds. One for attack, one for hit, one for die, etc. 
+					- through common interface, physics code can say, call specific sounds.
+						- but now you've got to understand the usage and setup an interface so that these other pieces CAN use it!
+							---> often easier to make pieces (not TENS OF THOUSANDS of lines of code!) of "spaghetti" code, write whatever you need, as you see it (because you can't understand what you need before you even start writing the code!). Write the crap code, and then FORCE YOURSELF (through discipline and paradigms (2)) to rewrite it with a proper interface for further code. The danger is if you are too lazy, and keep writing, the more you're going to have to FIX later which means you'll be even more procrastinating to not change it. 
+							
+							(2) if you do something like write "bad" code, then use helpful type checking like GLOBAL interface 
+							markers (like g) and PRIVATE methods and fields that are no longer "good practice" to use (like manually spawning bullets instead of using a handler), then the COMPILER will help you.
+					
+					
+					
+		- BEWARE of any junctions that cross/break encapsulation!
+			- physics code directly calling sounds instead of requesting some handler do it.
+			- physics code directly SENDING NETWORK PACKETS is dangerous and error prone. 
+				- you change the ALGORITHM in your physics to optimize it and all a sudden NETWORK PACKETS aren't being sent at the same rate, or worse, at some very specific timing (now it's slightly earlier, or slightly later)!
 
 
 

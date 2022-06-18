@@ -203,44 +203,44 @@ struct display_t
 		unit u = g.world.units[0];
 		drawText2(20, "obj[%.2f,%.2f][%.2f %.2f]", u.pos.x, u.pos.y, u.vel.x, u.vel.y);
 		drawText2(20, "fps[%d] objrate[%d]", g.stats.fps, 
-					(g.stats.number_of_drawn_particles +
-					g.stats.number_of_drawn_units + 
-					g.stats.number_of_drawn_particles + 
-					g.stats.number_of_drawn_bullets + 
-					g.stats.number_of_drawn_dudes +  
-					g.stats.number_of_drawn_structures) * g.stats.fps ); 
+					(g.stats.number_of_drawn_particles[0] +
+					g.stats.number_of_drawn_units[0] + 
+					g.stats.number_of_drawn_particles[0] + 
+					g.stats.number_of_drawn_bullets[0] + 
+					g.stats.number_of_drawn_dudes[0] +  
+					g.stats.number_of_drawn_structures[0]) * g.stats.fps ); 
 		
 //		drawText2(20, "money [%d] deaths [%d]", g.world.players[0].myTeamIndex.money, g.world.players[0].deaths);
 		drawText2(20, "drawn  : structs [%d] particles [%d] bullets [%d] dudes [%d] units [%d]", 
-			g.stats.number_of_drawn_structures, 
-			g.stats.number_of_drawn_particles,
-			g.stats.number_of_drawn_bullets,
-			g.stats.number_of_drawn_dudes,
-			g.stats.number_of_drawn_units);
+			g.stats.number_of_drawn_structures[0], 
+			g.stats.number_of_drawn_particles[0],
+			g.stats.number_of_drawn_bullets[0],
+			g.stats.number_of_drawn_dudes[0],
+			g.stats.number_of_drawn_units[0]);
 
 		drawText2(20, "clipped: structs [%d] particles [%d] bullets [%d] dudes [%d] units [%d]", 
-			g.stats.number_of_drawn_structures_clipped, 
-			g.stats.number_of_drawn_particles_clipped,
-			g.stats.number_of_drawn_bullets_clipped,
-			g.stats.number_of_drawn_dudes_clipped,
-			g.stats.number_of_drawn_units_clipped);
+			g.stats.number_of_drawn_structures[1], 
+			g.stats.number_of_drawn_particles[1],
+			g.stats.number_of_drawn_bullets[1],
+			g.stats.number_of_drawn_dudes[1],
+			g.stats.number_of_drawn_units[1]);
 
-		float ifNotZeroPercent(T)(T drawn, T clipped)
+		float ifNotZeroPercent(T)(T stat)
 			{
-			if(drawn + clipped == 0)
+			if(stat[0] + stat[1] == 0)
 				return 100;
 			else
-				return cast(float)clipped / (cast(float)drawn + cast(float)clipped) * 100.0;
+				return cast(float)stat[1] / (cast(float)stat[0] + cast(float)stat[1]) * 100.0;
 			}
 
 		with(g.stats)
 			{
 		drawText2(20, "percent: structs [%3.1f%%] particles [%3.1f%%] bullets [%3.1f%%] dudes [%3.1f%%] units [%3.1f%%]", 
-			ifNotZeroPercent(number_of_drawn_structures, number_of_drawn_structures_clipped), 
-			ifNotZeroPercent(number_of_drawn_particles, number_of_drawn_particles_clipped), 
-			ifNotZeroPercent(number_of_drawn_bullets, number_of_drawn_bullets_clipped),
-			ifNotZeroPercent(number_of_drawn_dudes, number_of_drawn_dudes_clipped),
-			ifNotZeroPercent(number_of_drawn_units, number_of_drawn_units_clipped));
+			ifNotZeroPercent(number_of_drawn_structures), 
+			ifNotZeroPercent(number_of_drawn_particles), 
+			ifNotZeroPercent(number_of_drawn_bullets),
+			ifNotZeroPercent(number_of_drawn_dudes),
+			ifNotZeroPercent(number_of_drawn_units));
 			}
 		
 		draw_target_dot(g.mouse_x, g.mouse_y);		// DRAW MOUSE PIXEL HELPER/FINDER
