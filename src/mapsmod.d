@@ -21,7 +21,7 @@ import std.json;
 
 bool isPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 2, 3, 5, 6])
+	foreach(i; [0, 2, 4, 3, 5, 6])
 		if(tileType == i) return true;
 	return false;
 	}
@@ -47,7 +47,7 @@ class map_t
 		bmps ~= g.grass_bmp; // 1 !passable
 		bmps ~= g.stone_bmp; // 2 passable
 		bmps ~= g.water_bmp; // 3 passable
-		bmps ~= g.wood_bmp;  // 4 !passable
+		bmps ~= g.wood_bmp;  // 4 passable
 		bmps ~= g.reinforced_wall_bmp; // 5 passable (dark bg wall)
 		bmps ~= g.lava_bmp;  // 6 passable
 		bmps ~= g.wall_bmp;  // 7 !passable
@@ -152,7 +152,21 @@ class map_t
 //				if(val == 0) continue;
 				if(val+1 > bmps.length) continue; // avoiding val > length-1 because if (unsigned)length=0-1 = overflow not -1 . I might just disable the warning.
 //				al_draw_bitmap(bmps[bmpIndex[i][j]], i*32 + v.x - v.ox, j*32 + v.y - v.oy, 0);
-				drawBitmap(bmps[bmpIndex[i][j]], vpair(i*32, j*32), 0);
+				if(!g.useLighting)
+					{
+					drawBitmap(bmps[bmpIndex[i][j]], vpair(i*32, j*32), 0);
+				}else{
+					// trick like the secret of mana idea. we could have "walls" sit on a "higher" layer (for blood map)
+					// but also draw them brighter as if light is hitting and reflecting off them more to us
+				
+					pair p = g.world.units[0].pos;
+					pair p2 = pair(i * TILE_W, j * TILE_H);
+					float d = 1 - sqrt((p.x - p2.x)^^2 + (p.y - p2.y)^^2)/700.0;
+					if(d > 1)d = 1;
+					if(d < 0)d = 0;
+					auto c = COLOR(d, d, d, 1);
+					drawTintedBitmap(bmps[bmpIndex[i][j]], c, vpair(i*32, j*32), 0);
+					}
 				}
 		}
 		

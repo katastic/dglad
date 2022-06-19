@@ -227,11 +227,31 @@ void prune(T)(ref T obj)
 	//see https://forum.dlang.org/post/sagacsjdtwzankyvclxn@forum.dlang.org
 	}
 
-pair deViewport(pair p, viewport v)
+
+
+// these are semi-duplicates of later functions. fixme.
+bool isOnScreen(T)(T obj)
 	{
-	pair p2 = pair(p.x + v.x - v.ox, p.y + v.y - v.oy);
-	return p2;
+	float cx = obj.pos.x + IMPLIED_VIEWPORT.x - IMPLIED_VIEWPORT.ox;
+	float cy = obj.pos.y + IMPLIED_VIEWPORT.y - IMPLIED_VIEWPORT.oy;
+	if(cx >= 0 && cx < SCREEN_W && cy >= 0 && cy < SCREEN_H)
+		{
+		return true;
+		}
+	return false;
 	}
+
+bool isOnScreen(pair pos)
+	{
+	float cx = pos.x + IMPLIED_VIEWPORT.x - IMPLIED_VIEWPORT.ox;
+	float cy = pos.y + IMPLIED_VIEWPORT.y - IMPLIED_VIEWPORT.oy;
+	if(cx >= 0 && cx < SCREEN_W && cy >= 0 && cy < SCREEN_H)
+		{
+		return true;
+		}
+	return false;
+	}
+
 
 /// Draws a rectangle but it's missing the inside of lines. Currently just top left and bottom right corners.
 void drawSplitRectangle(pair ul, pair lr, float legSize, float thickness, COLOR c)
@@ -695,9 +715,19 @@ void drawBitmap(ALLEGRO_BITMAP* b, vpair pos, int flags=0)
 	al_draw_bitmap(b, pos.r, pos.s, flags);
 	}
 
+void drawTintedBitmap(ALLEGRO_BITMAP* b, COLOR c, vpair pos, int flags=0)
+	{
+	al_draw_tinted_bitmap(b, c, pos.r, pos.s, flags);
+	}
+
 void drawCenteredBitmap(ALLEGRO_BITMAP* b, vpair pos, int flags=0)
 	{
 	al_draw_bitmap(b, pos.r - b.w/2, pos.s - b.h/2, flags);
+	}
+
+void drawCenteredTintedBitmap(ALLEGRO_BITMAP* b, COLOR c, vpair pos, int flags=0)
+	{
+	al_draw_tinted_bitmap(b, c, pos.r - b.w/2, pos.s - b.h/2, flags);
 	}
 
 /// Set texture target back to normal (the screen)

@@ -12,6 +12,7 @@ import helper;
 import turretmod;
 import planetsmod;
 import particles;
+import mapsmod;
 
 import std.math : cos, sin;
 import std.stdio;
@@ -70,6 +71,18 @@ class bullet : baseObject
 		g.world.particles ~= particle(pair(this.pos), pair(this.vel), 0, uniform!"[]"(3, 6));
 		if(isDebugging) writefln("[debug] bullet at [%3.2f, %3.2f] died from [%s]", pos.x, pos.y, from);
 		}
+
+	bool attemptMove(pair offset) // similiar to units.attemptmove
+		{
+		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
+		if(isMapValid(ip3) && isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+			{
+			this.pos += offset;
+			return true;
+			}else{
+			return false;
+			}
+		}
 	
 	override void onTick() // should we check for planets collision?
 		{
@@ -82,10 +95,10 @@ class bullet : baseObject
 				{
 
 				}
-						
-			pos.x += vel.x;
-			pos.y += vel.y;
+			if(!attemptMove(vel))isDead=true;
 			}
+		if(pos.x < 0 || pos.y < 0 || pos.x > g.world.map.width*TILE_W || pos.y > g.world.map.height*TILE_H)isDead=true;
+
 		}
 	
 	override bool draw(viewport v)

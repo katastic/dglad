@@ -42,6 +42,9 @@ ipair[] soldier_coords = [ipair(0,0), ipair(72,0), ipair(144,0), ipair(217,0),
 ipair[] archer_coords = [ipair(0,70), ipair(72,70), ipair(144,70), ipair(217,70),
 						ipair(288,70), ipair(72+288,70), ipair(144+288,70), ipair(217+288,70)];
 
+ipair[] mage_coords = [ipair(0,144), ipair(72,144), ipair(144,144), ipair(217,144),
+						ipair(288,144), ipair(72+288,144), ipair(144+288,144), ipair(217+288,144)];
+
 class animation
 	{
 	BITMAP* atlas;
@@ -91,11 +94,20 @@ class animation
 		
 	bool draw(pair pos, DIR dir) /// implied viewport
 		{
-		float cx = pos.x + IMPLIED_VIEWPORT.x - IMPLIED_VIEWPORT.ox;
-		float cy = pos.y + IMPLIED_VIEWPORT.y - IMPLIED_VIEWPORT.oy;
-		if(cx > 0 && cx < SCREEN_W && cy > 0 && cy < SCREEN_H)
+		if(isOnScreen(pos))
 			{
-			drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
+			if(!g.useLighting)
+			{
+				drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
+			}else{
+				pair p = g.world.units[0].pos; // see mapsmod.d duplicate
+				pair p2 = pos;
+				float d = 1 - sqrt((p.x - p2.x)^^2 + (p.y - p2.y)^^2)/700.0;
+				if(d > 1)d = 1;
+				if(d < 0)d = 0;
+				auto c = COLOR(d, d, d, 1);
+				drawCenteredTintedBitmap( bmps[dir][index], c, vpair(pos), 0);				
+			}
 			return true;
 		}else{
 			return false;}
@@ -127,7 +139,6 @@ float toAngle(DIR d)
 
 class archer : unit
 	{
-	animation anim;
 	float spinAngle = 0;
 	float SPIN_SPEED = degToRad(10);
 	int COOLDOWN_TIME = 30;
@@ -183,10 +194,23 @@ class archer : unit
 		return anim.draw(this.pos, direction);
 		}
 	}
+	
+class mage : unit
+	{
+	this(float _x, float _y)
+		{
+		super(0, pair(_x, _y), pair(0, 0), g.dude_bmp);
+		anim = new animation(1, mage_coords);
+		}
+		
+	override bool draw(viewport v)
+		{
+		return anim.draw(this.pos, direction);
+		}	
+	}
 
 class soldier : unit
 	{
-	animation anim;
 	float CHARGE_SPEED = 10.0;
 	int COOLDOWN_TIME = 30;
 	
@@ -355,6 +379,7 @@ class structure : baseObject
 
 class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
+	animation anim;
 	float maxHP=100.0; /// Maximum health points
 	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
@@ -371,8 +396,8 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	bool attemptMove(pair offset)
 		{
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
-		writeln(this.pos);
-		writeln(ip3);
+//		writeln(this.pos);
+//		writeln(ip3);
 		if(isMapValid(ip3) && isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
 			{
 			this.pos += offset;
@@ -381,7 +406,6 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 			return false;
 			}
 		}
-
 
 	void worldClipping()
 		{
