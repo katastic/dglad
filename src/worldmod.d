@@ -157,6 +157,9 @@ class world_t
 		viewports[0].onTick();
 		players[0].onTick();
 
+		if(keyPressed[KEY_OPENBRACE])g.useLighting = true;
+		if(keyPressed[KEY_CLOSEBRACE])g.useLighting = false;
+
 		if(keyPressed[KEY_UP])viewports[0].oy-=SCROLL_SPEED;
 		if(keyPressed[KEY_DOWN])viewports[0].oy+=SCROLL_SPEED;
 		if(keyPressed[KEY_LEFT])viewports[0].ox-=SCROLL_SPEED;

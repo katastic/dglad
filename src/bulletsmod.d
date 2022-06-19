@@ -14,6 +14,7 @@ import planetsmod;
 import particles;
 import mapsmod;
 
+import std.random : uniform;
 import std.math : cos, sin;
 import std.stdio;
 
@@ -62,14 +63,31 @@ class bullet : baseObject
 		return false;
 		}
 		
-	void die(unit from)
+	void dieFrom(unit from)
 		{
 		isDead=true;
 		vel.x = 0;
 		vel.y = 0;
-		import std.random : uniform;
 		g.world.particles ~= particle(pair(this.pos), pair(this.vel), 0, uniform!"[]"(3, 6));
 		if(isDebugging) writefln("[debug] bullet at [%3.2f, %3.2f] died from [%s]", pos.x, pos.y, from);
+		}
+
+	void die()
+		{
+		isDead=true;
+		vel.x = 0;
+		vel.y = 0;
+		g.world.particles ~= particle(pair(this.pos), pair(this.vel), 0, uniform!"[]"(3, 6));
+		if(isDebugging) writefln("[debug] bullet at [%3.2f, %3.2f] died from border or lifetime", pos.x, pos.y);
+		}
+
+	void dieFromWall()
+		{
+		isDead=true;
+		vel.x = 0;
+		vel.y = 0;
+		g.world.particles ~= particle(pair(this.pos), pair(this.vel), 0, uniform!"[]"(3, 6));
+		if(isDebugging) writefln("[debug] bullet at [%3.2f, %3.2f] died from wall", pos.x, pos.y);
 		}
 
 	bool attemptMove(pair offset) // similiar to units.attemptmove
@@ -93,12 +111,12 @@ class bullet : baseObject
 			}else{
 			foreach(u; g.world.units) // NOTE: this is only scanning units not SUBARRAYS containing turrets
 				{
-
+				// collision with units
 				}
-			if(!attemptMove(vel))isDead=true;
+			if(!attemptMove(vel))die();
 			}
-		if(pos.x < 0 || pos.y < 0 || pos.x > g.world.map.width*TILE_W || pos.y > g.world.map.height*TILE_H)isDead=true;
-
+		if(!isMapValid(ipair(this.pos)))dieFromWall();
+//		if(pos.x < 0 || pos.y < 0 || pos.x > g.world.map.width*TILE_W || pos.y > g.world.map.height*TILE_H)die();
 		}
 	
 	override bool draw(viewport v)
