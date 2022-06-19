@@ -158,14 +158,7 @@ class map_t
 				}else{
 					// trick like the secret of mana idea. we could have "walls" sit on a "higher" layer (for blood map)
 					// but also draw them brighter as if light is hitting and reflecting off them more to us
-				
-					pair p = g.world.units[0].pos;
-					pair p2 = pair(i * TILE_W, j * TILE_H);
-					float d = 1 - sqrt((p.x - p2.x)^^2 + (p.y - p2.y)^^2)/700.0;
-					if(d > 1)d = 1;
-					if(d < 0)d = 0;
-					auto c = COLOR(d, d, d, 1);
-					drawTintedBitmap(bmps[bmpIndex[i][j]], c, vpair(i*32, j*32), 0);
+					drawTintedBitmap(bmps[bmpIndex[i][j]], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
 					}
 				}
 		}

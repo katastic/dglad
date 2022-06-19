@@ -100,13 +100,7 @@ class animation
 			{
 				drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
 			}else{
-				pair p = g.world.units[0].pos; // see mapsmod.d duplicate
-				pair p2 = pos;
-				float d = 1 - sqrt((p.x - p2.x)^^2 + (p.y - p2.y)^^2)/700.0;
-				if(d > 1)d = 1;
-				if(d < 0)d = 0;
-				auto c = COLOR(d, d, d, 1);
-				drawCenteredTintedBitmap( bmps[dir][index], c, vpair(pos), 0);				
+				drawCenteredTintedBitmap( bmps[dir][index], getShadeTint(g.world.units[0].pos, pos), vpair(pos), 0);				
 			}
 			return true;
 		}else{
