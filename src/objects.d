@@ -20,6 +20,7 @@ import guns;
 import turretmod;
 import bulletsmod;
 import mapsmod;
+import structures;
 	
 //immutable float FALL_ACCEL = .1;
 immutable float WALK_SPEED = 2.5;
@@ -177,9 +178,9 @@ class archer : unit
 			}
 		}
 
-	this(float _x, float _y)
+	this(pair _pos)
 		{
-		super(0, pair(_x, _y), pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.dude_bmp);
 		anim = new animation(1, archer_coords);
 		}
 		
@@ -191,9 +192,9 @@ class archer : unit
 	
 class mage : unit
 	{
-	this(float _x, float _y)
+	this(pair _pos)
 		{
-		super(0, pair(_x, _y), pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.dude_bmp);
 		anim = new animation(1, mage_coords);
 		}
 		
@@ -208,9 +209,9 @@ class soldier : unit
 	float CHARGE_SPEED = 10.0;
 	int COOLDOWN_TIME = 30;
 	
-	this(float _x, float _y)
+	this(pair _pos)
 		{
-		super(0, pair(_x, _y), pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.dude_bmp);
 		anim = new animation(1, soldier_coords);
 		}
 
@@ -333,43 +334,6 @@ class dude : baseObject
 		}
 
 	}
-	
-class structure : baseObject
-	{
-	immutable float maxHP=500.0;
-	float hp=maxHP;
-	int level=1; //ala upgrade level
-	int team=0;
-	immutable int countdown_rate = 200; // 60 fps, 60 ticks = 1 second
-	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
-	
-	this(pair _pos, ALLEGRO_BITMAP* b)
-		{
-		super(_pos, pair(0,0), b);
-		}
-
-	override bool draw(viewport v)
-		{
-		drawCenteredBitmap(bmp, vpair(this.pos), 0);
-		return true;
-		}
-
-	void onHit(unit u, float damage)
-		{
-		hp -= damage;
-		}
-		
-	void spawnDude()
-		{
-		g.world.units ~= new unit(1, pair(100, 100), pair(.3, 0), g.dude_bmp);
-		} 
-		
-	override void onTick()
-		{
-		countdown--;
-		if(countdown < 0){countdown = countdown_rate; spawnDude();}
-		}
-	}
 
 class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
@@ -409,6 +373,13 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		if(pos.y >= (g.world.map.height)*TILE_W){pos.y = (g.world.map.height)*TILE_H-1; vel.y = -vel.y;}
 		}
 	
+	void velToDirection(pair v) /// so looking direction follows AI velocity 
+		{
+		// we don't have diagonals made yet so lets just do left/right
+		if(v.x < 0) direction = DIR.LEFT;
+		if(v.x > 0) direction = DIR.RIGHT;
+		}
+	
 	void travel()
 		{
 		pos += vel;
@@ -422,6 +393,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 			{
 			if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
 			}
+		velToDirection(vel);
 		}
 	
 	override void onTick()

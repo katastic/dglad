@@ -15,6 +15,7 @@ import particles;
 import mapsmod;
 import bulletsmod;
 import graph;
+import structures;
 
 import std.math : cos, sin, PI;
 import std.stdio;
@@ -46,10 +47,14 @@ class world_t
 		//map.save();
 		map.load();
 	
-			units ~= new mage(200, 200);
+		structures ~= new structure(pair(300, 300), g.fountain_bmp);
+		structures ~= new tower(pair(400, 300));
+	
+	
+			units ~= new mage(pair(200, 200));
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-			units ~= new soldier(225, 200);
+			units ~= new soldier(pair(225, 200));
 			units[1].isPlayerControlled = true;
 			units[1].isDebugging = true;
 	

@@ -1,3 +1,32 @@
+stuff to work on:
+--------------------------------
+ - integrate blood map from dta
+ - atlas stuff
+ 
+  - dwarf class with arc attack
+
+
+	- map game modes
+		- standard gladiator. destroy. find everything, sometimes with infinite spawners (skeletons/slimes), kill everything. leave when stuff is dead.
+		- defend a point. against waves of enemies. If you're not on the point, and enemy is on point, timer ticks down.
+		- Defend against waves. (but no caps)
+		- assault a position, hold a cap, while enemies infinite spawn.
+		
+			-- ISSUE with infinite spawning means they can infinite farm XP.
+				- workouts: "easy but ugly" a countdown timer that says if you don't cap in time, your mission objective is failed because of whatever.
+					- better? Barony timeout minotaur. A boss, or series of heavy-duty monsters that are "almost" immortal, show up and you have to run. Would make for interesting pacing but that might not be the fun people want. Sometimes, an RPG is having the fun to sit around and interact as much as you want till you decide to leave.
+
+
+
+
+
+
+
+
+
+
+
+
 programming notes
 ------------
 	- ERROR HANDLING IS NOT OPT-IN. Do not design anything that requires you to REMEMBER to do it correctly. You WILL forget that bit of important information. It WILL happen. The less implied information you have to remember the more your brain is free to focus its brain on the complexity of the problem at hand--not the complexity of the interface itself. (see lower where Allegro should't ALLOW you to use itself without iniializing itself first. I think the OpenGL interface does this. You request a openglhandle 

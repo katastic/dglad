@@ -170,6 +170,12 @@ COLOR blue   = COLOR(0,0,1,1);
 COLOR yellow = COLOR(1,1,0,1);
 COLOR orange = COLOR(1,0.65,0,1);
 
+immutable LOGIC_FRAMERATE = 60; // consider ticks vs seconds being typesafe the way we do pairs
+float secondsToTicks(float sec){return LOGIC_FRAMERATE / sec;}
+float ticksToSeconds(float ticks){return ticks / LOGIC_FRAMERATE;}
+
+/// Light shading function so we can adjust the lighting formula everywhere. 
+/// https://math.hws.edu/graphicsbook/c7/s2.html  opengl lighting formula
 COLOR getShadeTint(pair objpos, pair pos)
 	{
 	pair p = objpos; // see mapsmod.d duplicate
@@ -368,7 +374,7 @@ void wrapRadRef(T)(ref T angle)
 ///  	Verses :	float angle = atan2(y - g.world.units[0].y, x - g.world.units[0].x);
 float angleTo(T, U)(T _this, U fromThat) 
 	{
-	return atan2(_this.y - fromThat.y, _this.x - fromThat.x).wrapRad;
+	return atan2(_this.pos.y - fromThat.pos.y, _this.pos.x - fromThat.pos.x).wrapRad;
 	}
 
 float angleDiff(T)(T _thisAngle, T toThatAngle)
@@ -384,6 +390,11 @@ float angleDiff2( double angle1, double angle2 )
 	}
 
 float distanceTo(T, U)(T t, U u)
+	{
+	return sqrt((u.pos.x - t.pos.x)^^2 + (u.pos.y - t.pos.y)^^2);
+	}
+
+float distanceTo(pair t, pair u)
 	{
 	return sqrt((u.x - t.x)^^2 + (u.y - t.y)^^2);
 	}

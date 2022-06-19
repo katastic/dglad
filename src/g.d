@@ -27,7 +27,7 @@ import worldmod;
 
 int SCREEN_W = 1360; //not immutable because its a argc config variable
 int SCREEN_H = 720;
-bool useLighting = true;
+bool useLighting = false;
 
 immutable ushort TILE_W=32;
 immutable ushort TILE_H=32;
