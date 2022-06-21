@@ -20,6 +20,7 @@ import guns;
 import turretmod;
 import bulletsmod;
 import mapsmod;
+import blood;
 import structures;
 	
 //immutable float FALL_ACCEL = .1;

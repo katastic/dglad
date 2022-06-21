@@ -16,6 +16,7 @@ import mapsmod;
 import bulletsmod;
 import graph;
 import structures;
+import blood;
 
 import std.math : cos, sin, PI;
 import std.stdio;
@@ -34,11 +35,14 @@ class world_t
 	bullet[] bullets;
 	structure[] structures;
 	map_t map;
+	static_blood_handler_t blood;
 
 	this()
 		{
 		viewTest();
 		testLogger();	
+		
+		
 		
 		players ~= new player();
 		//structures ~= new structure(100, 100, g.fountain_bmp);
@@ -46,6 +50,11 @@ class world_t
 		map = new map_t();
 		//map.save();
 		map.load();
+	
+		blood = new static_blood_handler_t(map);
+	
+	
+	
 	
 		structures ~= new structure(pair(300, 300), g.fountain_bmp);
 		structures ~= new tower(pair(400, 300));
@@ -87,6 +96,7 @@ class world_t
 
 		setViewport2(v); // for all subsequent implied drawing routines
 		map.draw(v);
+		blood.draw(v);
 
 		void draw(T)(ref T obj)
 			{

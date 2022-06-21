@@ -13,6 +13,7 @@ import turretmod;
 import planetsmod;
 import particles;
 import mapsmod;
+import blood;
 
 import std.random : uniform;
 import std.math : cos, sin;
@@ -70,6 +71,7 @@ class bullet : baseObject
 		vel.y = 0;
 		g.world.particles ~= particle(pair(this.pos), pair(this.vel), 0, uniform!"[]"(3, 6));
 		if(isDebugging) writefln("[debug] bullet at [%3.2f, %3.2f] died from [%s]", pos.x, pos.y, from);
+		g.world.blood.add(pos.x, pos.y);
 		}
 
 	void die()
@@ -111,6 +113,14 @@ class bullet : baseObject
 			}else{
 			foreach(u; g.world.units) // NOTE: this is only scanning units not SUBARRAYS containing turrets
 				{
+				if(pos.x - 5 < u.pos.x)
+				if(pos.y - 5 < u.pos.y)
+				if(pos.x + 5 > u.pos.x)
+				if(pos.x + 5 > u.pos.y)
+					{
+					dieFrom(u);
+					break;
+					}
 				// collision with units
 				}
 			if(!attemptMove(vel))die();

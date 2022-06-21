@@ -450,6 +450,7 @@ void mouseSetTile(ushort number)
 		g.world.map.bmpIndex[i][j] = number;
 		}
 	}
+	
 
 // Graphical helper functions
 //=============================================================================
