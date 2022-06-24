@@ -79,13 +79,13 @@ class animation
 	this(int _numFrames, ipair[] coordinates)
 		{
 		parseMap3(coordinates);
-		writeln("----------21353523521");
-		foreach(immutable d; [EnumMembers!DIR])
-			{
-			writeln(d);
+	//	writeln("----------21353523521");
+	//	foreach(immutable d; [EnumMembers!DIR])
+	//		{
+//			writeln(d);
 //			bmps[d][0] = new ALLEGRO_BITMAP;
 	//		bmps[d][1] = new ALLEGRO_BITMAP;
-			}
+		//	}
 		}
 		
 	void nextFrame()
@@ -126,11 +126,23 @@ float toAngle(DIR d)
 		case DIR.UP:
 			return degToRad(270);
 		break;
+		case DIR.DOWNRIGHT:
+			return degToRad(0+45);
+		break;
+		case DIR.DOWNLEFT:
+			return degToRad(90+45);
+		break;
+		case DIR.UPLEFT:
+			return degToRad(180+45);
+		break;
+		case DIR.UPRIGHT:
+			return degToRad(270+45);
+		break;		
 		default:
 		break;
 		}
 	
-	assert(0, "fail");	
+	assert(0, "angle fail");	
 	}
 
 class archer : unit
@@ -203,6 +215,20 @@ class mage : unit
 		{
 		return anim.draw(this.pos, direction);
 		}	
+
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			specialCooldownValue = specialCooldown;
+			pos.x = uniform!"[]"(0, g.world.map.width*TILE_W-1);
+			pos.y = uniform!"[]"(0, g.world.map.height*TILE_H-1);
+			}else{
+			specialCooldownValue--;
+			}
+		}
 	}
 
 class soldier : unit
@@ -313,29 +339,6 @@ class item : baseObject
 		}
 	}+/
 
-class dude : baseObject
-	{
-	// do dudes walk around the surface or bounce around the inside?
-
-	this(pair _pos, pair _vel)
-		{
-		super(_pos, _vel, g.dude_bmp);
-		}
-
-	// originally a copy of structure.draw
-	override bool draw(viewport v)
-		{		
-		return true;
-		}
-
-	override void onTick()
-		{
-		pos.x += vel.x;
-		pos.y += vel.y;
-		}
-
-	}
-
 class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
 	animation anim;
@@ -351,6 +354,12 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	float weapon_damage = 5;
 	bool isFlipped = false; // flip horizontal
 	bool freezeMovement = false; /// for special abilities/etc. NOT the same as being frozen by a spell or something like that.
+
+
+	int meleeCooldown = 30; // when primary fires at point blank, it's melee weapon stats
+	int primaryCooldown = 30;
+	int meleeCooldownValue = 0; 
+	int primaryCooldownValue = 0;
 
 	bool attemptMove(pair offset)
 		{
@@ -462,7 +471,13 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	
 	override void actionFire()
 		{
-		g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
+		if(primaryCooldownValue == 0)
+			{
+			primaryCooldownValue = primaryCooldown;
+			g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
+			}else{
+			primaryCooldownValue--;
+			}
 		}
 
 	override void actionUp()
