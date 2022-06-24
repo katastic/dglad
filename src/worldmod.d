@@ -24,7 +24,6 @@ import std.random;
 import std.datetime;
 import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 
-
 class world_t
 	{	
 	player[] players;
@@ -41,9 +40,7 @@ class world_t
 		{
 		viewTest();
 		testLogger();	
-		
-		
-		
+				
 		players ~= new player();
 		//structures ~= new structure(100, 100, g.fountain_bmp);
 	
@@ -53,12 +50,8 @@ class world_t
 	
 		blood = new static_blood_handler_t(map);
 	
-	
-	
-	
 		structures ~= new structure(pair(300, 300), g.fountain_bmp);
 		structures ~= new tower(pair(400, 300));
-	
 	
 			units ~= new mage(pair(200, 200));
 			units[0].isPlayerControlled = true;

@@ -243,8 +243,6 @@ void prune(T)(ref T obj)
 	//see https://forum.dlang.org/post/sagacsjdtwzankyvclxn@forum.dlang.org
 	}
 
-
-
 // these are semi-duplicates of later functions. fixme.
 bool isOnScreen(T)(T obj)
 	{
@@ -267,7 +265,6 @@ bool isOnScreen(pair pos)
 		}
 	return false;
 	}
-
 
 /// Draws a rectangle but it's missing the inside of lines. Currently just top left and bottom right corners.
 void drawSplitRectangle(pair ul, pair lr, float legSize, float thickness, COLOR c)
@@ -450,7 +447,6 @@ void mouseSetTile(ushort number)
 		g.world.map.bmpIndex[i][j] = number;
 		}
 	}
-	
 
 // Graphical helper functions
 //=============================================================================

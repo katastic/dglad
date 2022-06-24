@@ -38,10 +38,8 @@ ALLEGRO_DISPLAY* 		al_display;
 ALLEGRO_EVENT_QUEUE* 	queue;
 ALLEGRO_TIMER* 			fps_timer;
 ALLEGRO_TIMER* 			screencap_timer;
+
 bool[256] keyPressed = false;
-
-
-
 
 FONT* 	font1;
 
