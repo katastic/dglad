@@ -78,7 +78,7 @@ class planetGun : turretGun // so bullets can leave, no gravity on them.
 		isAffectedByGravity = false; 
 		}
 	}
-
++/
 class gun
 	{
 	bool isDebugging=false;
@@ -97,7 +97,7 @@ class gun
 	bool isAffectedByGravity=true;
 	COLOR bulletColor;
 	
-	this(ship newOwner, COLOR _bulletColor)
+	this(unit newOwner, COLOR _bulletColor)
 		{
 		bulletColor = _bulletColor;
 		myOwner = newOwner;
@@ -107,19 +107,19 @@ class gun
 		{
 		with(myOwner) //CAREFUL not to shadow variables here!
 			{
-			float _vx = vx + cos(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed;
-			float _vy = vy + sin(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed;
-			g.world.bullets ~= new bullet(x, y, _vx, _vy, angle, bulletColor, 0, 100, isAffectedByGravity, myOwner, isDebugging);
-			}
+			pair _vel = pair(vel.x + cos(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed,
+						 vel.y + sin(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed);
+			g.world.bullets ~= new bullet(pos, vel, angle, bulletColor, 0, 100, myOwner, isDebugging);
+			} 
 		}
 	
 	void fireProjectileRelative(baseObject secondOwner)
 		{
 		with(myOwner) //CAREFUL not to shadow variables here!
 			{
-			float _vx = vx + cos(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed;
-			float _vy = vy + sin(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed;
-			g.world.bullets ~= new bullet(secondOwner.x + x, secondOwner.y + y, _vx, _vy, angle, bulletColor, 0, 100, isAffectedByGravity, myOwner, isDebugging);
+			pair _vel = pair(vel.x + cos(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed,
+					vel.y + sin(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed);
+			g.world.bullets ~= new bullet(pair(pos, secondOwner.pos.x, secondOwner.pos.y), _vel, angle, bulletColor, 0, 100, myOwner, isDebugging);
 			}
 		}
 	
@@ -152,4 +152,4 @@ fireProjectile();}
 			}
 		}
 	}
-+/
+

@@ -535,8 +535,25 @@ struct pair
 		}
 	}
 
+
+class team
+	{
+	int money=0;
+	int aikills=0; 	/// my ai teammates kills?
+	int kills=0;	/// my teams kills
+	int deaths=0;	/// total team losses
+	float score;
+	COLOR color;
+	
+	this(player p, COLOR teamColor)
+		{
+		color = teamColor;
+		}
+	}
+
 world_t world;
 viewport[2] viewports;
+team[3] teams;
 
 class player
 	{
@@ -553,20 +570,6 @@ class player
 	void onTick()
 		{
 		}		
-	}
-	
-class team
-	{
-	int money=0;
-	int aikills=0;
-	int kills=0;
-	int deaths=0;
-	COLOR color;
-	
-	this(player p, COLOR teamColor)
-		{
-		color = teamColor;
-		}
 	}
 	
 alias tile=ushort;

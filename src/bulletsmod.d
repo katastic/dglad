@@ -95,7 +95,7 @@ class bullet : baseObject
 	bool attemptMove(pair offset) // similiar to units.attemptmove
 		{
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
-		if(isMapValid(ip3) && isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+		if(isMapValid(ip3) && isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
 			{
 			this.pos += offset;
 			return true;

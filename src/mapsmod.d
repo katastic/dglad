@@ -19,9 +19,27 @@ import std.file;
 import std.conv;
 import std.json;
 
+/+
+	isPassable			- people movement
+	isShotPassable		- projectile movement (can't walk on water, but can shoot over it)
+	[isFlyPassable?]	- ghosts, faeries, etc. Could also use shotpassable for anything bullets can fly over.
+
+	we could allow "swimmable" which is just half speed water. also can apply to mud.
++/
+
+
+/// Tile metadata but using hardcoded functions
+bool isShotPassableTile(ushort tileType)
+	{
+	foreach(i; [0, 1, 2, 3, 4, 5, 6]) // todo
+		if(tileType == i) return true;
+	return false;
+	}
+
+/// Tile metadata but using hardcoded functions
 bool isPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 2, 4, 3, 5, 6])
+	foreach(i; [0, 1, 2, 4, 5])
 		if(tileType == i) return true;
 	return false;
 	}
@@ -44,12 +62,12 @@ class map_t
 	this()
 		{
 		bmps ~= g.grass_bmp; // 0 passable, note zero is empty/not used/blank so ignore this file for now
-		bmps ~= g.grass_bmp; // 1 !passable
+		bmps ~= g.grass_bmp; // 1 passable
 		bmps ~= g.stone_bmp; // 2 passable
-		bmps ~= g.water_bmp; // 3 passable
+		bmps ~= g.water_bmp; // !3 passable
 		bmps ~= g.wood_bmp;  // 4 passable
 		bmps ~= g.reinforced_wall_bmp; // 5 passable (dark bg wall)
-		bmps ~= g.lava_bmp;  // 6 passable
+		bmps ~= g.lava_bmp;  // !6 passable
 		bmps ~= g.wall_bmp;  // 7 !passable
 		bmps ~= g.wall2_bmp; // 8 !passable
 		bmps ~= g.wall3_bmp; // 9 !passable
