@@ -1,20 +1,7 @@
-mechanics
--------------------------------
-	- one interesting openglad mechanic was all classes are affected by stats the same way. 100 DEX makes any class "100 DEX" fast at walking. However, different classes it's EASIER or HARDER to "train" in that stat. Elves can do DEX for "cheap" XP points. Soldiers maybe not so much. Mages (and Clerics) do INT for cheaps, soldiers not.
-
-	- could add RPG NPC stuff from games like MM6. Towns. Talk to people. Get quests. More contextual stuff may add flavor than just combat simulator.
-	- item upgrades? specific skill paths? powerups?
-
-	--> I like the "forgivable" mechanic of all deaths are just "unconscious" so as long as one makes it, your team survives (and you don't have to start over or pay tons to "resurrect" them.) That allows high-risk/high-reward (read: fun) ideas.
-	
-	--> 1-round TEMPORARY squads (mercenaries?) that you can blow your money on for WAY CHEAPER than hiring the same permenant guy?
-		- Mechanic: If you get stuck, hire mercenaries. SEND THEM TO THEIR DEATHS fun/funny.
-		- You hire mercenaries, lose money for THIS LEVEL but you overall don't get stuck unless you rely on them every map. So "save" some "merc points" on a level you're good at, so you can use it later.
-		
-		Merc points, vs money. separate cash pool can decouple the rest of ideas like XP leveling costs.
-
 stuff to work on:
 --------------------------------
+	- we could do a "roof" layer for tree tops AND, if we drop that twice, once "behind" object layer, and then once half transparent after, we might be able to have "objects are transparent under roofs". Otherwise, just detect if we're under a tile and draw last transparently. It'll pop a bit but work.
+	
 	- cooldown, unified system between call classes instead of each rolling their own
 	+ integrate blood map from dta
 	- atlas stuff
@@ -23,7 +10,7 @@ stuff to work on:
 
 
 
-  - dwarf class with arc attack
+  - new dwarf class with arc mortar attack
 
 
 
@@ -43,6 +30,21 @@ stuff to work on:
 
 
 
+
+mechanics
+-------------------------------
+	- one interesting openglad mechanic was all classes are affected by stats the same way. 100 DEX makes any class "100 DEX" fast at walking. However, different classes it's EASIER or HARDER to "train" in that stat. Elves can do DEX for "cheap" XP points. Soldiers maybe not so much. Mages (and Clerics) do INT for cheaps, soldiers not.
+
+	- could add RPG NPC stuff from games like MM6. Towns. Talk to people. Get quests. More contextual stuff may add flavor than just combat simulator.
+	- item upgrades? specific skill paths? powerups?
+
+	--> I like the "forgivable" mechanic of all deaths are just "unconscious" so as long as one makes it, your team survives (and you don't have to start over or pay tons to "resurrect" them.) That allows high-risk/high-reward (read: fun) ideas.
+	
+	--> 1-round TEMPORARY squads (mercenaries?) that you can blow your money on for WAY CHEAPER than hiring the same permenant guy?
+		- Mechanic: If you get stuck, hire mercenaries. SEND THEM TO THEIR DEATHS fun/funny.
+		- You hire mercenaries, lose money for THIS LEVEL but you overall don't get stuck unless you rely on them every map. So "save" some "merc points" on a level you're good at, so you can use it later.
+		
+		Merc points, vs money. separate cash pool can decouple the rest of ideas like XP leveling costs.
 
 
 

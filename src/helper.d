@@ -191,6 +191,41 @@ COLOR getShadeTint(pair objpos, pair pos)
 	//COLOR(w, w, w, 1);
 	//}
 
+float toAngle(DIR d)
+	{
+	switch(d)
+		{
+		case DIR.RIGHT:
+			return degToRad(0);
+		break;
+		case DIR.DOWN:
+			return degToRad(90);
+		break;
+		case DIR.LEFT:
+			return degToRad(180);
+		break;
+		case DIR.UP:
+			return degToRad(270);
+		break;
+		case DIR.DOWNRIGHT:
+			return degToRad(0+45);
+		break;
+		case DIR.DOWNLEFT:
+			return degToRad(90+45);
+		break;
+		case DIR.UPLEFT:
+			return degToRad(180+45);
+		break;
+		case DIR.UPRIGHT:
+			return degToRad(270+45);
+		break;		
+		default:
+		break;
+		}
+	
+	assert(0, "angle fail");	
+	}
+
 /// This function corrects a bug/error/oversight in al_save_bitmap that dumps ALPHA channel from the screen into the picture
 ///
 void al_save_screen(string path)

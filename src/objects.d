@@ -27,6 +27,26 @@ import structures;
 immutable float WALK_SPEED = 2.5;
 immutable float JUMP_SPEED = 5;
 
+class charStats //character stats, 'cstats' in object?
+	{
+	int str;
+	int dex;
+	int con;
+	int intel;
+//	int personality; // might and magic, mana for druids.
+	int speed; // ?
+	int armor; // glad
+ 	
+	int xp;
+	int level;
+	
+	// note we may want to have different values/getters
+	// because we can return the APPLIED (or different word) str/con/dex/int which includes bonuses.
+	// as opposed to their specific character ones.
+	// certain stats will depend on their BASE stats, and others depend on their MODIFIED ones.
+	
+	}
+
 enum DIR
 	{
 		UP = 0,	// some only have 1 direction and stop here.
@@ -115,41 +135,6 @@ class animation
 		}else{
 			return false;}
 		}
-	}
-
-float toAngle(DIR d)
-	{
-	switch(d)
-		{
-		case DIR.RIGHT:
-			return degToRad(0);
-		break;
-		case DIR.DOWN:
-			return degToRad(90);
-		break;
-		case DIR.LEFT:
-			return degToRad(180);
-		break;
-		case DIR.UP:
-			return degToRad(270);
-		break;
-		case DIR.DOWNRIGHT:
-			return degToRad(0+45);
-		break;
-		case DIR.DOWNLEFT:
-			return degToRad(90+45);
-		break;
-		case DIR.UPLEFT:
-			return degToRad(180+45);
-		break;
-		case DIR.UPRIGHT:
-			return degToRad(270+45);
-		break;		
-		default:
-		break;
-		}
-	
-	assert(0, "angle fail");	
 	}
 
 class archer : unit
@@ -383,42 +368,7 @@ class soldier : unit
 		vel = apair(toAngle(DIR.RIGHT), CHARGE_SPEED);
 		super.actionRight();
 		}
-		
 	}
-
-/+
-class item : baseObject
-	{
-	bool isInside = false; //or isHidden? Not always the same though...
-	int team;
-	
-	this(uint _team, float _x, float _y, float _vx, float _vy, ALLEGRO_BITMAP* b)
-		{	
-		writeln("ITEM EXISTS BTW at ", x, " ", y);
-		super(_x, _y, _vx, _vy, b);
-		}
-		
-	override bool draw(viewport v)
-		{
-		if(!isInside)
-			{
-			super.draw(v);
-			return true;
-			}
-		return false;
-		}
-		
-	override void onTick()
-		{
-		if(!isInside)
-			{
-			x += vx;
-			y += vy;
-			vx *= .99; 
-			vy *= .99; 
-			}
-		}
-	}+/
 
 class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
@@ -428,18 +378,38 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	bool isTreeWalker = false; /// Can walk through tree tiles? Normally I wouldn't 'pollute' a base class with specifics but these are rare and barely invasive.
 	/// we could combine these into a single state machine
 	
-	float maxHP=100.0; /// Maximum health points
+	float hpMax=100.0; /// Maximum health points
 	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
 	float armor=0; /// flat reduction (or percentage) on damages, haven't decided.
 	float mp=100;
-	float maxMP=100;
+	float mpMax=100;
 	float manaChargeRate = 2;
 	int myTeamIndex=0;
 	bool isPlayerControlled=false;
 	float weapon_damage = 5;
 	bool isFlipped = false; // flip horizontal
 	bool freezeMovement = false; /// for special abilities/etc. NOT the same as being frozen by a spell or something like that.
+	bool isInvulnerable = false;
+
+	int flyingCooldown = -1; // -1 means infinite, potions will set this to a value to tickdown.
+	int invulnerabilityCooldown = -1; // -1 means infinite, potions will set this to a value to tickdown.
+	
+	void handlePotions()
+		{
+		if(flyingCooldown != -1)
+			{
+			isFlying = true;
+			flyingCooldown--;
+			if(flyingCooldown == 0)isFlying = false;
+			}
+		if(invulnerabilityCooldown != -1)
+			{
+			isInvulnerable = true;
+			invulnerabilityCooldown--;
+			if(invulnerabilityCooldown == 0)isInvulnerable = false;
+			}
+		}
 
 	override bool draw(viewport v)
 		{
@@ -502,7 +472,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		assert(0);
 		}
 
-	void worldClipping()
+	void doWorldClipping()
 		{
 		if(pos.x < 0){pos.x = 0; vel.x = -vel.x; isFlipped=true;}
 		if(pos.x >= (g.world.map.width)*TILE_W){pos.x = (g.world.map.width)*TILE_W-1; vel.x = -vel.x; isFlipped=true;}
@@ -558,14 +528,15 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	
 	override void onTick()
 		{			
-		if(mp < maxMP)mp += manaChargeRate;			
+		if(mp < mpMax)mp += manaChargeRate;
+		handlePotions();
 
 		if(!isPlayerControlled && !freezeMovement)
 			{
 			travel();
 			}
 	
-		worldClipping();
+		doWorldClipping();
 		}
 		
 	void onCollision(baseObject who)

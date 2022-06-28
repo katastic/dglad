@@ -571,6 +571,9 @@ class player
 	int aikills=0;
 	int deaths=0;
 	
+	int totalKills = 0; // across multiple levels / campaign
+	// ... etc
+	
 	this()
 		{
 		}
