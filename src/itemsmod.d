@@ -12,6 +12,40 @@ import objects;
 import g;
 import helper;
 
+class money : consumableItem /// copper, silver, gold bars
+	{
+	int amount = 100;
+	this(pair _pos)
+		{
+		super(_pos);
+		}
+
+	override bool use(ref unit by)
+		{
+		if(!teams[by.myTeamIndex].isAI) /// don't give ENEMY AI teams money!
+			{
+			teams[by.myTeamIndex].money += amount;
+			return true;
+			}else{
+			return false;
+			}
+		}
+	}
+
+class invulnerabilityPotion : consumableItem
+	{
+	this(pair _pos)
+		{
+		super(_pos);
+		}
+
+	override bool use(ref unit by)
+		{
+		by.flyingCooldown = 1_000;
+		return true;
+		}
+	}
+
 class flightPotion : consumableItem
 	{
 	this(pair _pos)
@@ -19,13 +53,14 @@ class flightPotion : consumableItem
 		super(_pos);
 		}
 
-	override void use(ref unit by)
+	override bool use(ref unit by)
 		{
 		by.flyingCooldown = 1_000;
+		return true;
 		}
 	}
 
-class food : consumableItem		// meats also health potion
+class food : consumableItem		/// small medium large meats also health potion
 	{
 	int healAmount=30;
 	
@@ -34,10 +69,11 @@ class food : consumableItem		// meats also health potion
 		super(_pos);
 		}
 
-	override void use(ref unit by)
+	override bool use(ref unit by)
 		{
 		by.hp += healAmount;
 		clampHigh(by.hp, by.hpMax);
+		return true;
 		}
 	}
 
@@ -48,13 +84,16 @@ class consumableItem : item
 		super(_pos);
 		}
 
-	void use(ref unit by)
+	bool use(ref unit by)
 		{
+		return true; //returns false for invalid pickup attempts.
 		}
 
 	override void onPickup(ref unit by)
 		{
-		use(by);
+		if(by.myTeamIndex != 0) // neutral cannot pickup items, also AI teams? (should AI pickup food/potions? But not money!)
+			//  && !teams[by.myTeamIndex].isAI
+			use(by); 
 		}
 
 	}

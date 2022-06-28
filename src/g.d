@@ -546,6 +546,7 @@ struct pair
 
 class team
 	{
+	bool isAI = false; /// ai controlled team (enemy team)
 	int money=0;
 	int aikills=0; 	/// my ai teammates kills?
 	int kills=0;	/// my teams kills
