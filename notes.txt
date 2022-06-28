@@ -1,5 +1,7 @@
 mechanics
 -------------------------------
+	- one interesting openglad mechanic was all classes are affected by stats the same way. 100 DEX makes any class "100 DEX" fast at walking. However, different classes it's EASIER or HARDER to "train" in that stat. Elves can do DEX for "cheap" XP points. Soldiers maybe not so much. Mages (and Clerics) do INT for cheaps, soldiers not.
+
 	- could add RPG NPC stuff from games like MM6. Towns. Talk to people. Get quests. More contextual stuff may add flavor than just combat simulator.
 	- item upgrades? specific skill paths? powerups?
 
@@ -13,6 +15,7 @@ mechanics
 
 stuff to work on:
 --------------------------------
+	- cooldown, unified system between call classes instead of each rolling their own
 	+ integrate blood map from dta
 	- atlas stuff
 	- items from glad:

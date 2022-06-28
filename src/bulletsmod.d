@@ -113,6 +113,7 @@ class bullet : baseObject
 			}else{
 			foreach(u; g.world.units) // NOTE: this is only scanning units not SUBARRAYS containing turrets
 				{
+				if(u !is myOwner)
 				if(pos.x - 5 < u.pos.x)
 				if(pos.y - 5 < u.pos.y)
 				if(pos.x + 5 > u.pos.x)

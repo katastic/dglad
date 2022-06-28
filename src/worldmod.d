@@ -53,10 +53,10 @@ class world_t
 		structures ~= new structure(pair(300, 300), g.fountain_bmp);
 		structures ~= new tower(pair(400, 300));
 	
-			units ~= new mage(pair(200, 200));
+			units ~= new elf(pair(200, 200));
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-			units ~= new soldier(pair(225, 200));
+			units ~= new ghost(pair(225, 200));
 			units[1].isPlayerControlled = true;
 			units[1].isDebugging = true;
 	
@@ -67,8 +67,8 @@ class world_t
 //			float cx = uniform!"[]"(1, map.width*TILE_W-32);
 			float cx = uniform!"[]"(1, 200);
 			float cy = 100;
-			auto u = new unit(0, pair(cx, cy),
-				pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED)), g.dwarf_bmp);
+			auto u = new elf(pair(cx, cy));
+			u.pos = pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED));
 			u.isDebugging = false;
 			
 //			if(i == 0){u.isPlayerControlled = true; u.isDebugging = true;}
@@ -90,8 +90,9 @@ class world_t
 		stats.swDraw.start();
 
 		setViewport2(v); // for all subsequent implied drawing routines
-		map.draw(v);
+		map.drawBackLayer(v);
 		blood.draw(v);
+		map.drawFrontLayer(v);
 
 		void draw(T)(ref T obj)
 			{
@@ -175,13 +176,13 @@ class world_t
 		
 		if(keyPressed[KEY_1])mouseSetTile(0);
 		if(keyPressed[KEY_2])mouseSetTile(1);
-		if(keyPressed[KEY_2])mouseSetTile(2);
-		if(keyPressed[KEY_3])mouseSetTile(3);
-		if(keyPressed[KEY_4])mouseSetTile(4);
-		if(keyPressed[KEY_5])mouseSetTile(5);
-		if(keyPressed[KEY_6])mouseSetTile(6);
-		if(keyPressed[KEY_7])mouseSetTile(7);
-		if(keyPressed[KEY_8])mouseSetTile(8);
+		if(keyPressed[KEY_3])mouseSetTile(2);
+		if(keyPressed[KEY_4])mouseSetTile(3);
+		if(keyPressed[KEY_5])mouseSetTile(4);
+		if(keyPressed[KEY_6])mouseSetTile(5);
+		if(keyPressed[KEY_7])mouseSetTile(6);
+		if(keyPressed[KEY_8])mouseSetTile(7);
+		if(keyPressed[KEY_9])mouseSetTile(8);
 		if(keyPressed[KEY_0])mouseSetTile(9);
 		
 		if(keyPressed[KEY_I])world.units[0].actionUp();

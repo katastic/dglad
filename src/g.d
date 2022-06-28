@@ -244,6 +244,11 @@ class logger
 		{
 		}
 	
+	void forceLog(string name, string str) // log without an object attached using a custom name
+		{
+		// NYI
+		}
+	
 	void log(T)(T obj, string str2)
 		{
 		if(!obj.isDebugging)return; // If the object isn't set to debug, we ignore it. So we can just set debug flag at will to snoop its data.
@@ -258,9 +263,13 @@ class logger
 	void logB(T, V...)(T obj, V variadic) /// variadic version
 		{
 		import std.traits;
-		pragma(msg, typeof(variadic)); // debug
-		foreach(i, v; variadic) // debug
-			writeln(variadic[i]); // debug
+
+//		pragma(msg, typeof(variadic)); // debug
+		if(echoToStandard)
+			{
+			foreach(i, v; variadic) // debug
+				writeln(variadic[i]); // debug
+			}
 			
 		if(usePrettyPrinterDirectly)
 			printer.convert3(format(variadic[0], variadic[1..$]));
@@ -534,7 +543,6 @@ struct pair
 		y = sin(val.a)*val.m;
 		}
 	}
-
 
 class team
 	{

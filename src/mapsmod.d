@@ -27,11 +27,28 @@ import std.json;
 	we could allow "swimmable" which is just half speed water. also can apply to mud.
 +/
 
+/// Tile metadata but using hardcoded functions
+/// Tree tiles for elf tree walking ability:
+bool isForestTile(ushort tileType)
+	{
+	foreach(i; [9]) // temp, since we don't have tree tiles atm 
+		if(tileType == i) return true;
+	return false;
+	}
+
+/// Tile metadata but using hardcoded functions
+/// Is tile drawn before blood layer (true), or after (false).
+bool isBackLayer(ushort tileType)
+	{
+	foreach(i; [0, 1, 2]) 
+		if(tileType == i) return true;
+	return false;
+	}
 
 /// Tile metadata but using hardcoded functions
 bool isShotPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 1, 2, 3, 4, 5, 6]) // todo
+	foreach(i; [0, 1, 2, 3, 4, 5, 6])
 		if(tileType == i) return true;
 	return false;
 	}
@@ -160,23 +177,25 @@ class map_t
 			}
 		}
 	
-	void drawTiles(viewport v)
+	void drawTiles(viewport v, bool drawBackLayer)
 		{
 		for(int j = 0; j < height; j++)
 			for(int i = 0; i < width; i++)
 				{
 			//	writeln(i, " ",j);
 				auto val = bmpIndex[i][j];
+				if(isBackLayer(val) != drawBackLayer) continue;
+				
 //				if(val == 0) continue;
 				if(val+1 > bmps.length) continue; // avoiding val > length-1 because if (unsigned)length=0-1 = overflow not -1 . I might just disable the warning.
 //				al_draw_bitmap(bmps[bmpIndex[i][j]], i*32 + v.x - v.ox, j*32 + v.y - v.oy, 0);
 				if(!g.useLighting)
 					{
-					drawBitmap(bmps[bmpIndex[i][j]], vpair(i*32, j*32), 0);
+					drawBitmap(bmps[val], vpair(i*32, j*32), 0);
 				}else{
 					// trick like the secret of mana idea. we could have "walls" sit on a "higher" layer (for blood map)
 					// but also draw them brighter as if light is hitting and reflecting off them more to us
-					drawTintedBitmap(bmps[bmpIndex[i][j]], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+					drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
 					}
 				}
 		}
@@ -187,10 +206,15 @@ class map_t
 			al_draw_tinted_bitmap(backgrounds[i], COLOR(1,1,1,1), v.x - v.ox*parallaxScale[i], v.y - v.oy*parallaxScale[i], 0);
 		}
 		
-	void draw(viewport v)
+	void drawBackLayer(viewport v)
 		{
-		drawParallax(v);
-		drawTiles(v);
+//		drawParallax(v);
+		drawTiles(v, true);
+		}
+
+	void drawFrontLayer(viewport v)
+		{
+		drawTiles(v, false);
 		}
 		
 	void onTick()

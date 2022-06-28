@@ -39,13 +39,20 @@ enum DIR
 		DOWNLEFT,
 	}
 
-ipair[] soldier_coords = [ipair(0,0), ipair(72,0), ipair(144,0), ipair(217,0), 
+ipair[] ghost_coords = [ipair(0,0), ipair(72,0), ipair(144,0), ipair(217,0), 
 					      ipair(288,0), ipair(72+288,0), ipair(144+288,0), ipair(217+288,0)];
+
 ipair[] archer_coords = [ipair(0,70), ipair(72,70), ipair(144,70), ipair(217,70),
 						ipair(288,70), ipair(72+288,70), ipair(144+288,70), ipair(217+288,70)];
 
-ipair[] mage_coords = [ipair(0,144), ipair(72,144), ipair(144,144), ipair(217,144),
+ipair[] elf_coords = [ipair(0,144), ipair(72,144), ipair(144,144), ipair(217,144),
 						ipair(288,144), ipair(72+288,144), ipair(144+288,144), ipair(217+288,144)];
+
+ipair[] soldier_coords = [ipair(0,360), ipair(72,360), ipair(144,360), ipair(217,360), 
+					      ipair(288,360), ipair(72+288,360), ipair(144+288,360), ipair(217+288,360)];
+
+ipair[] mage_coords = [ipair(0,396), ipair(72,396), ipair(144,396), ipair(217,396),
+						ipair(288,396), ipair(72+288,396), ipair(144+288,396), ipair(217+288,396)];
 
 class animation
 	{
@@ -196,13 +203,64 @@ class archer : unit
 		super(0, _pos, pair(0, 0), g.dude_bmp);
 		anim = new animation(1, archer_coords);
 		}
-		
-	override bool draw(viewport v)
+	}	
+
+class elf : unit
+	{
+	this(pair _pos)
 		{
-		return anim.draw(this.pos, direction);
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, elf_coords);
+		isTreeWalker = true;
+		}
+
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			specialCooldownValue = specialCooldown;
+
+			immutable int NUM_SHOTS = 16;
+			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
+				{
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				}
+			}else{
+			specialCooldownValue--;
+			}
 		}
 	}
-	
+
+class ghost : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, ghost_coords);
+		isFlying = true;
+		}
+		
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			specialCooldownValue = specialCooldown;
+
+			immutable int NUM_SHOTS = 16;
+			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
+				{
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				}
+			}else{
+			specialCooldownValue--;
+			}
+		}
+	}
+
 class mage : unit
 	{
 	this(pair _pos)
@@ -211,11 +269,6 @@ class mage : unit
 		anim = new animation(1, mage_coords);
 		}
 		
-	override bool draw(viewport v)
-		{
-		return anim.draw(this.pos, direction);
-		}	
-
 	int specialCooldownValue = 0;
 	int specialCooldown = 60;
 	override void actionSpecial()
@@ -342,6 +395,11 @@ class item : baseObject
 class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
 	animation anim;
+	bool isGhost = false;  /// Can fly over anything.
+	bool isFlying = false;	/// Can fly through anything bullets can fire through? (wall gratings, etc)
+	bool isTreeWalker = false; /// Can walk through tree tiles? Normally I wouldn't 'pollute' a base class with specifics but these are rare and barely invasive.
+	/// we could combine these into a single state machine
+	
 	float maxHP=100.0; /// Maximum health points
 	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
@@ -355,7 +413,28 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	bool isFlipped = false; // flip horizontal
 	bool freezeMovement = false; /// for special abilities/etc. NOT the same as being frozen by a spell or something like that.
 
-
+	override bool draw(viewport v)
+		{
+		assert(anim !is null);
+		return anim.draw(this.pos, direction);
+		}
+	
+/+	override bool draw(viewport v)
+		{
+8		if(!isWideInsideScreen(vpair(this.pos), bmp))return false;
+		// NOTE we're drawing with "center" being at the bottom of the image.
+		drawCenteredBitmap(bmp, vpair(this.pos), isFlipped);
+//		if(isDebugging) drawTextCenter(vpair(this, 0, -32), black, "J%1dF%1d V%3.1f,%3.1f", isJumping, isFalling, vx, vy);
+		
+		if(isPlayerControlled) 
+			{
+			}
+	
+		draw_hp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2, v, hp, maxHP);		
+		draw_mp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2 + 5, v, mp, maxMP);		
+		return true;
+		}
++/	
 	int meleeCooldown = 30; // when primary fires at point blank, it's melee weapon stats
 	int primaryCooldown = 30;
 	int meleeCooldownValue = 0; 
@@ -366,13 +445,33 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
 //		writeln(this.pos);
 //		writeln(ip3);
-		if(isMapValid(ip3) && isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+		if(isGhost) return true; 
+		if(isFlying)
 			{
-			this.pos += offset;
-			return true;
-			}else{
-			return false;
+			if(isMapValid(ip3) && isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				{
+				this.pos += offset;
+				return true;
+				}else{
+				return false;
+				}
+			} else {
+			if(isMapValid(ip3))
+				{
+				if(	isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]) || 
+					(isTreeWalker && isForestTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+					)
+					{ // if normal passable, or if treewalker, is forestpassable
+					this.pos += offset;
+					return true;
+					}else{
+					return false;
+					}
+				}else{
+				return false;
+				}
 			}
+		assert(0);
 		}
 
 	void worldClipping()
@@ -392,18 +491,40 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	
 	void travel()
 		{
-		pos += vel;
-		ipair ip3 = ipair(this.pos); 
-		if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+		if(!attemptMove(vel))
 			{
-			pos -= vel;	
-			pos -= vel;
-			vel = 0;
-			}else
-			{
-			if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
+			vel = pair(-vel.x, -vel.y); // dont have negative opapply yet so can't do vel = -vel;
 			}
-		velToDirection(vel);
+
+		if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
+
+
+/*		pos += vel;
+		ipair ip3 = ipair(this.pos); 
+		if(!isFlying)
+			{
+			if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				{
+				pos -= vel;	
+				pos -= vel;
+				vel = 0;
+				}else
+				{
+				if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
+				}
+			velToDirection(vel);
+			}else{
+			if(isMapValid(ip3) && !isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				{
+				pos -= vel;	
+				pos -= vel;
+				vel = 0;
+				}else
+				{
+				if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
+				}
+			velToDirection(vel);
+			}*/
 		}
 	
 	override void onTick()
@@ -453,22 +574,6 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		//writefln("xy v:xy %f,%f %f,%f", x, y, vx, vy);
 		}
 
-	override bool draw(viewport v)
-		{
-		if(!isWideInsideScreen(vpair(this.pos), bmp))return false;
-		// NOTE we're drawing with "center" being at the bottom of the image.
-		drawCenteredBitmap(bmp, vpair(this.pos), isFlipped);
-//		if(isDebugging) drawTextCenter(vpair(this, 0, -32), black, "J%1dF%1d V%3.1f,%3.1f", isJumping, isFalling, vx, vy);
-		
-		if(isPlayerControlled) 
-			{
-			}
-	
-		draw_hp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2, v, hp, maxHP);		
-		draw_mp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2 + 5, v, mp, maxMP);		
-		return true;
-		}
-	
 	override void actionFire()
 		{
 		if(primaryCooldownValue == 0)
