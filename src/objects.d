@@ -233,13 +233,41 @@ class elf : unit
 		}
 	}
 
+class faery : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, ghost_coords); //fixme
+		isFlying = true;
+		}
+		
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			specialCooldownValue = specialCooldown;
+
+			immutable int NUM_SHOTS = 16;
+			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
+				{
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				}
+			}else{
+			specialCooldownValue--;
+			}
+		}
+	}
+
 class ghost : unit
 	{
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
 		anim = new animation(1, ghost_coords);
-		isFlying = true;
+		isGhost = true;
 		}
 		
 	int specialCooldownValue = 0;
@@ -445,7 +473,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
 //		writeln(this.pos);
 //		writeln(ip3);
-		if(isGhost) return true; 
+		if(isGhost) { this.pos += offset; return true;} 
 		if(isFlying)
 			{
 			if(isMapValid(ip3) && isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
@@ -482,7 +510,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		if(pos.y >= (g.world.map.height)*TILE_W){pos.y = (g.world.map.height)*TILE_H-1; vel.y = -vel.y;}
 		}
 	
-	void velToDirection(pair v) /// so looking direction follows AI velocity 
+	void setDirectionToVelocity(pair v) /// so looking direction follows AI velocity 
 		{
 		// we don't have diagonals made yet so lets just do left/right
 		if(v.x < 0) direction = DIR.LEFT;
@@ -494,10 +522,11 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 		if(!attemptMove(vel))
 			{
 			vel = pair(-vel.x, -vel.y); // dont have negative opapply yet so can't do vel = -vel;
+			}else{
+			setDirectionToVelocity(vel);
 			}
 
 		if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
-
 
 /*		pos += vel;
 		ipair ip3 = ipair(this.pos); 
