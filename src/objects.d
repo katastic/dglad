@@ -27,7 +27,12 @@ import structures;
 immutable float WALK_SPEED = 2.5;
 immutable float JUMP_SPEED = 5;
 
-class charStats //character stats, 'cstats' in object?
+struct cooldown_t /// todo: find better name
+	{
+	
+	}
+
+struct charStats //character stats, 'cstats' in object?
 	{
 	int str;
 	int dex;
@@ -44,7 +49,6 @@ class charStats //character stats, 'cstats' in object?
 	// because we can return the APPLIED (or different word) str/con/dex/int which includes bonuses.
 	// as opposed to their specific character ones.
 	// certain stats will depend on their BASE stats, and others depend on their MODIFIED ones.
-	
 	}
 
 enum DIR
@@ -370,8 +374,9 @@ class soldier : unit
 		}
 	}
 
-class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
+class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
+	charStats cstats;
 	animation anim;
 	bool isGhost = false;  /// Can fly over anything.
 	bool isFlying = false;	/// Can fly through anything bullets can fire through? (wall gratings, etc)
@@ -391,6 +396,7 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 	bool isFlipped = false; // flip horizontal
 	bool freezeMovement = false; /// for special abilities/etc. NOT the same as being frozen by a spell or something like that.
 	bool isInvulnerable = false;
+	DIR direction;			/// sprite draw direction (up, down, etc)
 
 	int flyingCooldown = -1; // -1 means infinite, potions will set this to a value to tickdown.
 	int invulnerabilityCooldown = -1; // -1 means infinite, potions will set this to a value to tickdown.
@@ -622,18 +628,17 @@ class unit : baseObject // WARNING: This applies PHYSICS. If you inherit from it
 
 	}
 
-class baseObject
+class baseObject /// does nothing but draws an object
 	{
-	ALLEGRO_BITMAP* bmp;
-	@disable this(); 
-	bool isDead = false;	
-	pair pos; 	/// baseObjects are centered at X/Y (not top-left) so we can easily follow other baseObjects.
-	pair vel; /// Velocities.
-	float w=0, h=0;   /// width, height 
-	float angle=0;	/// pointing angle 
-	DIR direction;
-	bool isDebugging=true;
+	ALLEGRO_BITMAP* bmp;	/// for non
+	bool isDead = false;	/// Time to delete me?	
+	pair pos; 				/// baseObjects are centered at X/Y (not top-left) so we can easily follow other baseObjects.
+	pair vel; 				/// Velocities.
+	float w=0, h=0;   		/// width, height 
+	float angle=0;			/// pointing angle 
+	bool isDebugging=false; /// Do we spam debug messages? (normally false and set yes for object you care about.)
 
+	@disable this(); 
 	this(pair _pos, pair _vel, BITMAP* _bmp)
 		{
 		pos = _pos;

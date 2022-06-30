@@ -6,20 +6,28 @@ echo
 
 echo "Searching for FIXMEs"
 echo "--------------------------------------------------------------------------"
-grep -inr "fixme" ./src/*.d
+if ! grep -inr "fixme" ./src/*.d ; then
+echo -e "\e[32mNone found!\e[0m"
+fi
 echo
 
 echo "Searching for TODOs"
 echo "--------------------------------------------------------------------------"
-grep -inr "todo" ./src/*.d
+if ! grep -inr "todo" ./src/*.d ; then
+echo -e "\e[32mNone found!\e[0m"
+fi
 echo
 
 echo "Searching for multiple consecutive newlines in source files."
 echo "--------------------------------------------------------------------------"
-pcregrep -nM '\n[\t]*\n[\t]*\n' ./src/*.d
+if ! pcregrep -nM '\n[\t]*\n[\t]*\n' ./src/*.d ; then
+echo -e "\e[32mNone found!\e[0m"
+fi
 echo
 
 echo "Searching for closing curley brackets with extra space after them"
 echo "--------------------------------------------------------------------------"
-pcregrep -nM '}\n\s\n.*}' ./src/*.d
+if ! pcregrep -nM '}\n\s\n.*}' ./src/*.d ; then
+	echo -e "\e[32mNone found!\e[0m"
+fi
 echo
