@@ -12,6 +12,24 @@ import objects;
 import g;
 import helper;
 
+/// they use ITEMS for the following but these will be structures:
+/// 	teleporter, level exit
+
+class key : consumableItem /// key for specific door (or other)
+	{
+	uint keyNumber; /// each key number can be used for multiple doors, and gets added to your team
+	this(pair _pos)
+		{
+		super(_pos);
+		}
+
+	override bool use(ref unit by)
+		{
+		teams[0].keys ~= keyNumber;
+		return true;
+		}
+	}
+
 class money : consumableItem /// copper, silver, gold bars
 	{
 	int amount = 100;
@@ -34,6 +52,8 @@ class money : consumableItem /// copper, silver, gold bars
 
 class invulnerabilityPotion : consumableItem
 	{
+	int amount = 1000;
+		
 	this(pair _pos)
 		{
 		super(_pos);
@@ -41,13 +61,15 @@ class invulnerabilityPotion : consumableItem
 
 	override bool use(ref unit by)
 		{
-		by.flyingCooldown = 1_000;
+		by.invulnerabilityCooldown = amount;
 		return true;
 		}
 	}
 
 class flightPotion : consumableItem
 	{
+	int amount = 1000;
+
 	this(pair _pos)
 		{
 		super(_pos);
@@ -55,14 +77,15 @@ class flightPotion : consumableItem
 
 	override bool use(ref unit by)
 		{
-		by.flyingCooldown = 1_000;
+		by.flyingCooldown = amount;
 		return true;
 		}
 	}
 
-class food : consumableItem		/// small medium large meats also health potion
-	{
+class healthPotion : consumableItem		/// small medium large meats also health potion
+	{	/// threw in mana potion because it's almots identical
 	int healAmount=30;
+	bool isManaPotion=false;
 	
 	this(pair _pos)
 		{
@@ -71,8 +94,14 @@ class food : consumableItem		/// small medium large meats also health potion
 
 	override bool use(ref unit by)
 		{
-		by.hp += healAmount;
-		clampHigh(by.hp, by.hpMax);
+		if(!isManaPotion)
+			{
+			by.hp += healAmount;
+			clampHigh(by.hp, by.hpMax);
+			}else{
+			by.mp += healAmount;
+			clampHigh(by.mp, by.mpMax);			
+			}
 		return true;
 		}
 	}

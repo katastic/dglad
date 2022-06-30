@@ -548,9 +548,10 @@ class team
 	{
 	bool isAI = false; /// ai controlled team (enemy team)
 	int money=0;
-	int aikills=0; 	/// my ai teammates kills?
-	int kills=0;	/// my teams kills
-	int deaths=0;	/// total team losses
+	uint aikills=0; /// my ai teammates kills?
+	uint kills=0;	/// my teams kills
+	uint deaths=0;	/// total team losses
+	uint[] keys; 	/// list of key#s we own access too (multiple doors can have same key# access)
 	float score;
 	COLOR color;
 	

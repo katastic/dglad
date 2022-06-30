@@ -23,6 +23,21 @@ import mapsmod;
 import blood;
 import structures;
 	
+/+
+charStats thoughts:
+	- they used a separate class for archmage. Instead, we could use multiple cstats array for evolutions. 
+		However, their way might be easier to have "different abilities" as opposed to just new ones like other classes.
+		but it'd be nice if other classes had promotions too. (think mm6, they also scale stats differently in mm6)		
+
+i haven't made classes for
+	- thief
+	- orc, bigOrc
+	- barbarian
+	
+honestly those classes were pretty crap unless i missed something. thief was more of a sapper/bomber.
+
++/
+	
 //immutable float FALL_ACCEL = .1;
 immutable float WALK_SPEED = 2.5;
 immutable float JUMP_SPEED = 5;
@@ -216,9 +231,13 @@ class elf : unit
 				{
 				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
 				}
-			}else{
-			specialCooldownValue--;
 			}
+		}
+
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
 		}
 	}
 
@@ -244,9 +263,70 @@ class faery : unit
 				{
 				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
 				}
-			}else{
-			specialCooldownValue--;
 			}
+		}
+
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
+		}
+	}
+
+class druid : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, ghost_coords); //fixme
+		isFlying = true;
+		}
+		
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			specialCooldownValue = specialCooldown;
+			}
+		}
+
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
+		}
+	}
+
+class fireElemental : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, ghost_coords); //fixme
+		}
+		
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			specialCooldownValue = specialCooldown;
+
+			immutable int NUM_SHOTS = 16;
+			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
+				{
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				}
+			}
+		}
+
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
 		}
 	}
 
@@ -272,9 +352,13 @@ class ghost : unit
 				{
 				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
 				}
-			}else{
-			specialCooldownValue--;
 			}
+		}
+
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
 		}
 	}
 
@@ -295,9 +379,100 @@ class mage : unit
 			specialCooldownValue = specialCooldown;
 			pos.x = uniform!"[]"(0, g.world.map.width*TILE_W-1);
 			pos.y = uniform!"[]"(0, g.world.map.height*TILE_H-1);
-			}else{
-			specialCooldownValue--;
 			}
+		}
+
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
+		}
+	}
+
+class skeleton : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, mage_coords); //fixme
+		}
+
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	override void actionSpecial()
+		{
+		if(specialCooldownValue == 0)
+			{
+			// todo. local teleport, finding valid spot.
+			specialCooldownValue = specialCooldown;
+			pos.x = uniform!"[]"(0, g.world.map.width*TILE_W-1);
+			pos.y = uniform!"[]"(0, g.world.map.height*TILE_H-1);
+			}
+		}
+	override void onTick()
+		{
+		if(specialCooldownValue > 0)specialCooldownValue--;
+		super.onTick();
+		}
+	}
+
+class slimeLarge : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, mage_coords); //fixme
+		}
+	}
+	
+class slimeMedium : unit 
+	{	
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, mage_coords); //fixme
+		}
+	}
+
+class slimeSmall : unit 
+	{	
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, mage_coords); //fixme
+		}
+	}
+
+class cleric : unit
+	{
+	this(pair _pos)
+		{
+		super(0, _pos, pair(0, 0), g.dude_bmp);
+		anim = new animation(1, mage_coords); //fixme
+		}
+		
+	int specialCooldownValue = 0;
+	int specialCooldown = 60;
+	float healAmount = 2;
+	float healManaCost = 1;
+	override void actionSpecial()
+		{
+		foreach(o; g.world.units)
+			{
+			if(o.myTeamIndex == this.myTeamIndex && o !is this && distanceTo(o, this))
+				{
+				if(mp - healManaCost >= 0)
+					{
+					mp -= healManaCost;
+					o.hp += healAmount;
+					clampHigh(o.hp, o.hpMax);
+					}
+				}
+			}
+		
+		// if anyone on my team nearby
+		// apply heal
+		// reduce mana
 		}
 	}
 
