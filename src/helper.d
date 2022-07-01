@@ -1048,3 +1048,10 @@ void al_draw_scaled_indexed_line_segment(T)(pair xycoord, T[] y, float yScale, C
 			}
 		}
 	}
+	
+/// Allegro camelCase renamed functions + ipair
+/// ==================================================================================================
+COLOR getPixel(BITMAP* bi, ipair p)
+	{
+	return al_get_pixel(bi, p.i, p.j);
+	}

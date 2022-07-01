@@ -92,26 +92,112 @@ ipair[] soldier_coords = [ipair(0,360), ipair(72,360), ipair(144,360), ipair(217
 
 ipair[] mage_coords = [ipair(0,396), ipair(72,396), ipair(144,396), ipair(217,396),
 						ipair(288,396), ipair(72+288,396), ipair(144+288,396), ipair(217+288,396)];
+						
+class atlasHandler
+	{
+	BITMAP* data;
+	BITMAP* dataOutlined;
+		
+	this()
+		{
+		data = getBitmap("./data/extra/gauntlet.png");
+		writeln("building outline for atlas");
+		dataOutlined = buildOutline(data);
+		assert(data !is null);
+		assert(dataOutlined !is null);
+		}
+		
+	/// Note: this is run outside of animations because we don't want in run every single time a new object is spawned. 
+	BITMAP* buildOutline(BITMAP* b)	// TODO BUG. what if outline needs to be OUTSIDE the atlas bitmap confines? [we need to make atlas +1 on each side, and then UPDATE the subbitmap coordinates +1 accordingly! That, or make the normal one also +1 for the hell of it.]
+		{
+		assert(b !is null);
+		BITMAP* output = al_create_bitmap(b.w, b.h);
+		COLOR outlineColor = red; 
+	//		COLOR clearColor = COLOR(0,0,0,1);
+
+		bool isTransparent(BITMAP* bi, ipair p)
+			{
+			COLOR c = getPixel(bi, p);
+	//			writefln("%s @ %s", c, p);
+			if(c.a.isClose(0))		/// looks like internally it would be 0,0,0,0 for transparent
+				{
+				return true;
+				}
+			return false;
+			}
+		
+		bool isInside(BITMAP* _b, ipair p)
+			{
+			if(p.i >= 0 && p.j >= 0)
+			if(p.i < _b.w && p.j < _b.h)
+				return true;
+			return false;
+			}
+			
+		void doOutline(BITMAP* _bi, ipair p)
+			{
+			if(isInside(_bi, p) && isTransparent(_bi, p)){al_put_pixel(p.i, p.j, outlineColor);}
+			}
+			
+		void checkDirections(BITMAP* bi, BITMAP* bo, ipair p) /// NOTE: Assumes target bitmap is set and locked
+			{
+			if(isInside(bi, p))
+				if(!isTransparent(bi, p)) /// For every 'real' pixel, check for borders
+					{
+					al_put_pixel(p.i, p.j, getPixel(bi, p));
+					doOutline(bi, ipair(p,-1, 0));
+					doOutline(bi, ipair(p, 1, 0));
+					doOutline(bi, ipair(p, 0,-1));
+					doOutline(bi, ipair(p, 0, 1));
+					}else{
+	//				al_put_pixel(p.i, p.j, getPixel(bi, p));
+					}
+			}
+		
+		al_set_target_bitmap(output); 
+		al_lock_bitmap(b, al_get_bitmap_format(b), ALLEGRO_LOCK_READONLY);			
+		al_lock_bitmap(output, al_get_bitmap_format(output), ALLEGRO_LOCK_WRITEONLY);
+		for(int i = 1; i < b.w; i++) 
+			for(int j = 1; j < b.h; j++)
+			{
+			checkDirections(b, output, ipair(i,j));
+			}
+		al_unlock_bitmap(b);
+		al_unlock_bitmap(output);
+		al_reset_target();
+		
+		return output;
+		}
+	}
 
 class animation
 	{
-	BITMAP* atlas;
-
-	void parseMap3(ipair[] pt)
+	void parseMap3(ipair[] pt, atlasHandler atlas)
 		{
-		atlas = getBitmap("./data/extra/gauntlet.png");
+		assert(atlas !is null);
 		int w = 32;
 		int h = 32;
 		int wo = w + 4; // width plus padding offset
-		bmps[DIR.UP][0] = al_create_sub_bitmap(atlas, pt[0].i, pt[0].j, w, h);
-		bmps[DIR.RIGHT][0] = al_create_sub_bitmap(atlas, pt[1].i, pt[1].j, w, h);
-		bmps[DIR.DOWN][0] = al_create_sub_bitmap(atlas, pt[2].i, pt[2].j, w, h);
-		bmps[DIR.LEFT][0] = al_create_sub_bitmap(atlas, pt[3].i, pt[3].j, w, h);
+				
+		bmps[DIR.UP][0] = al_create_sub_bitmap(atlas.data, pt[0].i, pt[0].j, w, h);
+		bmps[DIR.RIGHT][0] = al_create_sub_bitmap(atlas.data, pt[1].i, pt[1].j, w, h);
+		bmps[DIR.DOWN][0] = al_create_sub_bitmap(atlas.data, pt[2].i, pt[2].j, w, h);
+		bmps[DIR.LEFT][0] = al_create_sub_bitmap(atlas.data, pt[3].i, pt[3].j, w, h);
 
-		bmps[DIR.UP][1] = al_create_sub_bitmap(atlas, pt[4].i, pt[4].j, w, h);
-		bmps[DIR.RIGHT][1] = al_create_sub_bitmap(atlas, pt[5].i, pt[5].j, w, h);
-		bmps[DIR.DOWN][1] = al_create_sub_bitmap(atlas, pt[6].i, pt[6].j, w, h);
-		bmps[DIR.LEFT][1] = al_create_sub_bitmap(atlas, pt[7].i, pt[7].j, w, h);
+		bmps[DIR.UP][1] = al_create_sub_bitmap(atlas.data, pt[4].i, pt[4].j, w, h);
+		bmps[DIR.RIGHT][1] = al_create_sub_bitmap(atlas.data, pt[5].i, pt[5].j, w, h);
+		bmps[DIR.DOWN][1] = al_create_sub_bitmap(atlas.data, pt[6].i, pt[6].j, w, h);
+		bmps[DIR.LEFT][1] = al_create_sub_bitmap(atlas.data, pt[7].i, pt[7].j, w, h);
+	
+		bmpsOutlined[DIR.UP][0] = al_create_sub_bitmap(atlas.dataOutlined, pt[0].i, pt[0].j, w, h);
+		bmpsOutlined[DIR.RIGHT][0] = al_create_sub_bitmap(atlas.dataOutlined, pt[1].i, pt[1].j, w, h);
+		bmpsOutlined[DIR.DOWN][0] = al_create_sub_bitmap(atlas.dataOutlined, pt[2].i, pt[2].j, w, h);
+		bmpsOutlined[DIR.LEFT][0] = al_create_sub_bitmap(atlas.dataOutlined, pt[3].i, pt[3].j, w, h);
+
+		bmpsOutlined[DIR.UP][1] = al_create_sub_bitmap(atlas.dataOutlined, pt[4].i, pt[4].j, w, h);
+		bmpsOutlined[DIR.RIGHT][1] = al_create_sub_bitmap(atlas.dataOutlined, pt[5].i, pt[5].j, w, h);
+		bmpsOutlined[DIR.DOWN][1] = al_create_sub_bitmap(atlas.dataOutlined, pt[6].i, pt[6].j, w, h);
+		bmpsOutlined[DIR.LEFT][1] = al_create_sub_bitmap(atlas.dataOutlined, pt[7].i, pt[7].j, w, h);
 		}
 
 	// do we want/care to reset walk cycle when you change direction? 
@@ -120,11 +206,19 @@ class animation
 	int numFrames=2;
 	int index = 0; /// frame index
 	bool usesFlippedGraphics = false; /// NYI. use half the sideways graphics and flips them based on direction given. Usually meaningless given RAM amounts.
+
+	bool isOutlined = true; // should this be a state, or simply a different draw function (state is in the object itself)
+
 	BITMAP*[2][DIR.max] bmps;
+	BITMAP*[2][DIR.max] bmpsOutlined;
 	
-	this(int _numFrames, ipair[] coordinates)
+	this(int _numFrames, ipair[] coordinates, atlasHandler atlas)
 		{
-		parseMap3(coordinates);
+		assert(atlas !is null);
+		assert(atlas.data !is null);
+		assert(atlas.dataOutlined !is null);
+		
+		parseMap3(coordinates, atlas);
 	//	writeln("----------21353523521");
 	//	foreach(immutable d; [EnumMembers!DIR])
 	//		{
@@ -142,13 +236,21 @@ class animation
 		
 	bool draw(pair pos, DIR dir) /// implied viewport
 		{
+		BITMAP *source;
+		if(!isOutlined)
+			{
+			source = bmps[dir][index];
+			}else{
+			source = bmpsOutlined[dir][index];
+			}
+
 		if(isOnScreen(pos))
 			{
 			if(!g.useLighting)
 			{
-				drawCenteredBitmap( bmps[dir][index], vpair(pos), 0);
+				drawCenteredBitmap( source, vpair(pos), 0);
 			}else{
-				drawCenteredTintedBitmap( bmps[dir][index], getShadeTint(g.world.units[0].pos, pos), vpair(pos), 0);				
+				drawCenteredTintedBitmap( source, getShadeTint(g.world.units[0].pos, pos), vpair(pos), 0);				
 			}
 			return true;
 		}else{
@@ -205,16 +307,20 @@ class archer : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, archer_coords);
+		anim = new animation(1, archer_coords, g.world.atlas);
 		}
 	}	
 
 class elf : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
+		assert(atlas !is null);
+		
+		writefln("atlas [%p] vs g.world.atlas [%s]", atlas, g.world.atlas);
+		
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, elf_coords);
+		anim = new animation(1, elf_coords, atlas);
 		isTreeWalker = true;
 		}
 
@@ -246,7 +352,7 @@ class faery : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords); //fixme
+		anim = new animation(1, ghost_coords, g.world.atlas); //fixme
 		isFlying = true;
 		}
 		
@@ -278,7 +384,7 @@ class druid : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords); //fixme
+		anim = new animation(1, ghost_coords, g.world.atlas); //fixme
 		isFlying = true;
 		}
 		
@@ -304,7 +410,7 @@ class fireElemental : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords); //fixme
+		anim = new animation(1, ghost_coords, g.world.atlas); //fixme
 		}
 		
 	int specialCooldownValue = 0;
@@ -332,10 +438,10 @@ class fireElemental : unit
 
 class ghost : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords);
+		anim = new animation(1, ghost_coords, atlas);
 		isGhost = true;
 		}
 		
@@ -367,7 +473,7 @@ class mage : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords);
+		anim = new animation(1, mage_coords, g.world.atlas);
 		}
 		
 	int specialCooldownValue = 0;
@@ -394,7 +500,7 @@ class skeleton : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords); //fixme
+		anim = new animation(1, mage_coords, g.world.atlas); //fixme
 		}
 
 	int specialCooldownValue = 0;
@@ -421,7 +527,7 @@ class slimeLarge : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords); //fixme
+		anim = new animation(1, mage_coords, g.world.atlas); //fixme
 		}
 	}
 	
@@ -430,7 +536,7 @@ class slimeMedium : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords); //fixme
+		anim = new animation(1, mage_coords, g.world.atlas); //fixme
 		}
 	}
 
@@ -439,7 +545,7 @@ class slimeSmall : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords); //fixme
+		anim = new animation(1, mage_coords, g.world.atlas); //fixme
 		}
 	}
 
@@ -448,7 +554,7 @@ class cleric : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords); //fixme
+		anim = new animation(1, mage_coords, g.world.atlas); //fixme
 		}
 		
 	int specialCooldownValue = 0;
@@ -484,7 +590,7 @@ class soldier : unit
 	this(pair _pos)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, soldier_coords);
+		anim = new animation(1, soldier_coords, g.world.atlas);
 		}
 
 	override bool draw(viewport v)

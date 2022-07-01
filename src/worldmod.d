@@ -26,6 +26,8 @@ import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 
 class world_t
 	{	
+	atlasHandler atlas;
+		
 	player[] players;
 	team[] teams;
 				
@@ -39,9 +41,11 @@ class world_t
 	this()
 		{
 		viewTest();
-		testLogger();	
+		atlas = new atlasHandler();
+		testLogger();			
 				
 		players ~= new player();
+		
 		//structures ~= new structure(100, 100, g.fountain_bmp);
 	
 		map = new map_t();
@@ -53,10 +57,10 @@ class world_t
 		structures ~= new structure(pair(300, 300), g.fountain_bmp);
 		structures ~= new tower(pair(400, 300));
 	
-			units ~= new elf(pair(200, 200));
+			units ~= new elf(pair(200, 200), atlas);
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-			units ~= new ghost(pair(225, 200));
+			units ~= new ghost(pair(225, 200), atlas);
 			units[1].isPlayerControlled = true;
 			units[1].isDebugging = true;
 	
@@ -67,7 +71,7 @@ class world_t
 //			float cx = uniform!"[]"(1, map.width*TILE_W-32);
 			float cx = uniform!"[]"(1, 200);
 			float cy = 100;
-			auto u = new elf(pair(cx, cy));
+			auto u = new ghost(pair(cx, cy), atlas);
 			u.pos = pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED));
 			u.isDebugging = false;
 			
