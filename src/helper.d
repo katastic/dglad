@@ -1053,5 +1053,6 @@ void al_draw_scaled_indexed_line_segment(T)(pair xycoord, T[] y, float yScale, C
 /// ==================================================================================================
 COLOR getPixel(BITMAP* bi, ipair p)
 	{
+	pragma(inline, true);
 	return al_get_pixel(bi, p.i, p.j);
 	}

@@ -22,7 +22,7 @@ import bulletsmod;
 import mapsmod;
 import blood;
 import structures;
-	
+import worldmod;
 /+
 charStats thoughts:
 	- they used a separate class for archmage. Instead, we could use multiple cstats array for evolutions. 
@@ -39,26 +39,27 @@ honestly those classes were pretty crap unless i missed something. thief was mor
 +/
 	
 //immutable float FALL_ACCEL = .1;
-immutable float WALK_SPEED = 2.5;
+immutable float WALK_SPEED = .30;
 immutable float JUMP_SPEED = 5;
 
-struct cooldown_t /// todo: find better name
+struct cooldown /// todo: find better name
 	{
-	
+	int value;
+	int max;
 	}
 
 struct charStats //character stats, 'cstats' in object?
 	{
-	int str;
-	int dex;
-	int con;
-	int intel;
+	int str=10;
+	int dex=10;
+	int con=10;
+	int intel=10; // can't use int, since, you know, 'int'
 //	int personality; // might and magic, mana for druids.
-	int speed; // ?
-	int armor; // glad
+	int speed=10; // ?
+	int armor=10; // glad
  	
-	int xp;
-	int level;
+	int xp=0;
+	int level=0; // derived from xp? or cached
 	
 	// note we may want to have different values/getters
 	// because we can return the APPLIED (or different word) str/con/dex/int which includes bonuses.
@@ -304,23 +305,19 @@ class archer : unit
 			}
 		}
 
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, archer_coords, g.world.atlas);
+		anim = new animation(1, archer_coords, atlas);
 		}
 	}	
 
 class elf : unit
 	{
 	this(pair _pos, atlasHandler atlas)
-		{
-		assert(atlas !is null);
-		
-		writefln("atlas [%p] vs g.world.atlas [%s]", atlas, g.world.atlas);
-		
+		{		
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, elf_coords, atlas);
+		anim = new animation(1, elf_coords, g.world.atlas);
 		isTreeWalker = true;
 		}
 
@@ -349,10 +346,10 @@ class elf : unit
 
 class faery : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords, g.world.atlas); //fixme
+		anim = new animation(1, ghost_coords, atlas); //fixme
 		isFlying = true;
 		}
 		
@@ -381,10 +378,10 @@ class faery : unit
 
 class druid : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords, g.world.atlas); //fixme
+		anim = new animation(1, ghost_coords, atlas); //fixme
 		isFlying = true;
 		}
 		
@@ -407,10 +404,10 @@ class druid : unit
 
 class fireElemental : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, ghost_coords, g.world.atlas); //fixme
+		anim = new animation(1, ghost_coords, atlas); //fixme
 		}
 		
 	int specialCooldownValue = 0;
@@ -470,10 +467,10 @@ class ghost : unit
 
 class mage : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords, g.world.atlas);
+		anim = new animation(1, mage_coords, atlas);
 		}
 		
 	int specialCooldownValue = 0;
@@ -497,10 +494,10 @@ class mage : unit
 
 class skeleton : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords, g.world.atlas); //fixme
+		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 
 	int specialCooldownValue = 0;
@@ -524,37 +521,37 @@ class skeleton : unit
 
 class slimeLarge : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords, g.world.atlas); //fixme
+		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 	}
 	
 class slimeMedium : unit 
 	{	
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords, g.world.atlas); //fixme
+		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 	}
 
 class slimeSmall : unit 
 	{	
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords, g.world.atlas); //fixme
+		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 	}
 
 class cleric : unit
 	{
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, mage_coords, g.world.atlas); //fixme
+		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 		
 	int specialCooldownValue = 0;
@@ -587,10 +584,10 @@ class soldier : unit
 	float CHARGE_SPEED = 10.0;
 	int COOLDOWN_TIME = 30;
 	
-	this(pair _pos)
+	this(pair _pos, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
-		anim = new animation(1, soldier_coords, g.world.atlas);
+		anim = new animation(1, soldier_coords, atlas);
 		}
 
 	override bool draw(viewport v)
@@ -778,39 +775,14 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		{
 		if(!attemptMove(vel))
 			{
-			vel = pair(-vel.x, -vel.y); // dont have negative opapply yet so can't do vel = -vel;
+			// flip direction
+//			vel = pair(-vel.x, -vel.y); // dont have negative opapply yet so can't do vel = -vel;
+			vel -= vel; // CONFIRM
 			}else{
 			setDirectionToVelocity(vel);
 			}
 
-		if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
-
-/*		pos += vel;
-		ipair ip3 = ipair(this.pos); 
-		if(!isFlying)
-			{
-			if(isMapValid(ip3) && !isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
-				{
-				pos -= vel;	
-				pos -= vel;
-				vel = 0;
-				}else
-				{
-				if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
-				}
-			velToDirection(vel);
-			}else{
-			if(isMapValid(ip3) && !isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
-				{
-				pos -= vel;	
-				pos -= vel;
-				vel = 0;
-				}else
-				{
-				if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED); // if we were stuck, then map editor freed us, lets start moving again.
-				}
-			velToDirection(vel);
-			}*/
+		if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED*cstats.dex); // if we were stuck, then map editor freed us, lets start moving again.
 		}
 	
 	override void onTick()
@@ -876,7 +848,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		{
 		if(!freezeMovement)
 			{
-			attemptMove(pair(0, -WALK_SPEED));
+			attemptMove(pair(0, -WALK_SPEED*cstats.dex));
 			direction = DIR.UP;
 			} 
 		}
@@ -885,7 +857,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		{
 		if(!freezeMovement)
 			{
-			attemptMove(pair(0, WALK_SPEED));
+			attemptMove(pair(0, WALK_SPEED*cstats.dex));
 			direction = DIR.DOWN;
 			}
 		}
@@ -894,7 +866,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		{
 		if(!freezeMovement)
 			{
-			attemptMove(pair(-WALK_SPEED, 0));
+			attemptMove(pair(-WALK_SPEED*cstats.dex, 0));
 			direction = DIR.LEFT;
 			}
 		}
@@ -902,7 +874,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		{
 		if(!freezeMovement)
 			{
-			attemptMove(pair(WALK_SPEED, 0));
+			attemptMove(pair(WALK_SPEED*cstats.dex, 0));
 			direction = DIR.RIGHT;
 			}
 		}

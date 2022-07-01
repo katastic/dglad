@@ -70,7 +70,7 @@ class structure : unit
 	void spawnDude()
 		{
 		writeln("structure spawning dude.");
-		g.world.units ~= new soldier(this.pos);
+		g.world.units ~= new soldier(this.pos, g.world.atlas); // FIXME. THIS SHOULD CRASH but it's not
 		} 
 		
 	override void onTick()

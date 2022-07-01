@@ -108,6 +108,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	// SETUP world
 	// --------------------------------------------------------
 	g.world = new g.world_t;
+	g.world.initialize();
 	
 	// FPS Handling
 	// --------------------------------------------------------

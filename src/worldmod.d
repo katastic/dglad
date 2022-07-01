@@ -40,6 +40,13 @@ class world_t
 
 	this()
 		{
+		// see 'bug' https://forum.dlang.org/post/uvjvtzidbqartwkbbaww@forum.dlang.org
+		// cannot use global module references until constructor finishes.
+		// "shouldnt" be doing that anyway technically.
+		}
+		
+	void initialize()
+		{
 		viewTest();
 		atlas = new atlasHandler();
 		testLogger();			
@@ -71,7 +78,7 @@ class world_t
 //			float cx = uniform!"[]"(1, map.width*TILE_W-32);
 			float cx = uniform!"[]"(1, 200);
 			float cy = 100;
-			auto u = new ghost(pair(cx, cy), atlas);
+			auto u = new soldier(pair(cx, cy), atlas);
 			u.pos = pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED));
 			u.isDebugging = false;
 			

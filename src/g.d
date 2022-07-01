@@ -112,8 +112,11 @@ void loadResources()
 	}
 
 alias COLOR = ALLEGRO_COLOR;
+alias color = ALLEGRO_COLOR; // sick of pressing space so much!
 alias BITMAP = ALLEGRO_BITMAP;
+alias bitmap = ALLEGRO_BITMAP;
 alias FONT = ALLEGRO_FONT;
+alias font = ALLEGRO_FONT;
 
 /// DEBUGGER CHANNEL STUFF
 /// - Can any object send to a variety of "channels"?
@@ -490,6 +493,9 @@ struct pair
 			x += p.x;
 			y += p.y;
 			return this;
+		}else static if(op == "-=") 
+		{
+			
 		}else static if(op == "+" || op == "-")
 		{
 			pragma(msg, op);
