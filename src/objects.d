@@ -44,8 +44,44 @@ immutable float JUMP_SPEED = 5;
 
 struct cooldown /// todo: find better name
 	{
+	alias value this;
 	int value;
 	int max;
+
+	this(int setval)
+		{
+		max = setval;
+		value = setval; // should we add +1 for initial ontick subtraction?
+		}
+		
+	void setMax(int val)
+		{
+		value = val;
+		max = val;
+		}
+		
+	bool isReady()
+		{
+		if(value > 0)return false;
+		return true;
+		}
+
+	bool isReadySet() /// if ready, return true and reset to max so caller can act on it
+		{
+		if(value > 0)return false;
+		value = max;
+		return true;
+		}
+	
+	void onTick()
+		{
+		if(value > 0)value--;
+		}
+	
+	void set(int val)
+		{
+		value = val;
+		}
 	}
 
 struct charStats //character stats, 'cstats' in object?
@@ -267,13 +303,11 @@ class archer : unit
 
 	bool isSpinning = false;
 
-//	int spinCooldown=0;
 	void spin()
 		{
 		if(!isSpinning && mp > 80)
 			{
 			mp -= 80; 
-	//		spinCooldown = COOLDOWN_TIME;
 			spinAngle = 0;
 			isSpinning = true;
 			freezeMovement = true;
@@ -325,10 +359,8 @@ class elf : unit
 	int specialCooldown = 60;
 	override void actionSpecial()
 		{
-		if(specialCooldownValue == 0)
+		if(special.isReadySet())
 			{
-			specialCooldownValue = specialCooldown;
-
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
@@ -339,7 +371,6 @@ class elf : unit
 
 	override void onTick()
 		{
-		if(specialCooldownValue > 0)specialCooldownValue--;
 		super.onTick();
 		}
 	}
@@ -353,14 +384,10 @@ class faery : unit
 		isFlying = true;
 		}
 		
-	int specialCooldownValue = 0;
-	int specialCooldown = 60;
 	override void actionSpecial()
 		{
-		if(specialCooldownValue == 0)
+		if(special.isReadySet())
 			{
-			specialCooldownValue = specialCooldown;
-
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
@@ -371,7 +398,6 @@ class faery : unit
 
 	override void onTick()
 		{
-		if(specialCooldownValue > 0)specialCooldownValue--;
 		super.onTick();
 		}
 	}
@@ -385,19 +411,15 @@ class druid : unit
 		isFlying = true;
 		}
 		
-	int specialCooldownValue = 0;
-	int specialCooldown = 60;
 	override void actionSpecial()
 		{
-		if(specialCooldownValue == 0)
+		if(special.isReadySet())
 			{
-			specialCooldownValue = specialCooldown;
 			}
 		}
 
 	override void onTick()
 		{
-		if(specialCooldownValue > 0)specialCooldownValue--;
 		super.onTick();
 		}
 	}
@@ -410,14 +432,10 @@ class fireElemental : unit
 		anim = new animation(1, ghost_coords, atlas); //fixme
 		}
 		
-	int specialCooldownValue = 0;
-	int specialCooldown = 60;
 	override void actionSpecial()
 		{
-		if(specialCooldownValue == 0)
+		if(special.isReadySet())
 			{
-			specialCooldownValue = specialCooldown;
-
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
@@ -428,7 +446,6 @@ class fireElemental : unit
 
 	override void onTick()
 		{
-		if(specialCooldownValue > 0)specialCooldownValue--;
 		super.onTick();
 		}
 	}
@@ -441,15 +458,11 @@ class ghost : unit
 		anim = new animation(1, ghost_coords, atlas);
 		isGhost = true;
 		}
-		
-	int specialCooldownValue = 0;
-	int specialCooldown = 60;
+			
 	override void actionSpecial()
 		{
-		if(specialCooldownValue == 0)
+		if(special.isReadySet)
 			{
-			specialCooldownValue = specialCooldown;
-
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
@@ -460,7 +473,6 @@ class ghost : unit
 
 	override void onTick()
 		{
-		if(specialCooldownValue > 0)specialCooldownValue--;
 		super.onTick();
 		}
 	}
@@ -654,6 +666,9 @@ class soldier : unit
 
 class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from it, make sure to override if you don't want those physics.
 	{
+	cooldown primary;
+	cooldown special;
+		
 	charStats cstats;
 	animation anim;
 	bool isGhost = false;  /// Can fly over anything.
@@ -785,15 +800,19 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED*cstats.dex); // if we were stuck, then map editor freed us, lets start moving again.
 		}
 	
+	void handleCooldowns()
+		{
+		primary.onTick();
+		special.onTick();
+		}
+	
 	override void onTick()
 		{			
 		if(mp < mpMax)mp += manaChargeRate;
 		handlePotions();
+		handleCooldowns();
 
-		if(!isPlayerControlled && !freezeMovement)
-			{
-			travel();
-			}
+		if(!isPlayerControlled && !freezeMovement)travel();
 	
 		doWorldClipping();
 		}
@@ -831,16 +850,15 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		myTeamIndex = _teamIndex; 
 		super(_pos, _vel, b);
 		//writefln("xy v:xy %f,%f %f,%f", x, y, vx, vy);
+		primary.setMax(30);
+		special.setMax(30);
 		}
 
 	override void actionFire()
 		{
-		if(primaryCooldownValue == 0)
+		if(primary.isReadySet())
 			{
-			primaryCooldownValue = primaryCooldown;
 			g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
-			}else{
-			primaryCooldownValue--;
 			}
 		}
 
