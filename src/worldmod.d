@@ -63,6 +63,7 @@ class world_t
 	
 		structures ~= new structure(pair(300, 300), g.fountain_bmp);
 		structures ~= new tower(pair(400, 300));
+		structures ~= new tower(pair(350, 250));
 	
 			units ~= new elf(pair(200, 200), atlas);
 			units[0].isPlayerControlled = true;
