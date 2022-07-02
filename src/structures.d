@@ -28,8 +28,9 @@ class tower : structure
 
 	this(pair _pos)
 		{
+		immutable int FIRE_COOLDOWN = 10;
 		super(_pos, g.potion_bmp);
-		primary.setMax(2);
+		primary.setMax(FIRE_COOLDOWN);
 		}		
 		
 	// acquire range could be slightly closer than tracking range (hysterisis)
@@ -76,9 +77,11 @@ class tower : structure
 				{
 				isTracking = false;
 				}else{
-				pair v = apair(angleTo(myTarget, this), 15);
-				g.world.bullets ~= new bullet(this.pos, v, angleTo(myTarget, this), yellow, 0, 100, this, 0);
-				primary.isReadySet();
+				if(primary.isReadySet())
+					{
+					pair v = apair(angleTo(myTarget, this), 15);
+					g.world.bullets ~= new bullet(this.pos, v, angleTo(myTarget, this), yellow, 0, 100, this, 0);
+					}
 				}
 			}
 		}

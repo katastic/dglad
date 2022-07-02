@@ -47,14 +47,11 @@ class world_t
 		
 	void initialize()
 		{
-		viewTest();
+//		viewTest();
 		atlas = new atlasHandler();
-		testLogger();			
-				
+//		testLogger();				
 		players ~= new player();
 		
-		//structures ~= new structure(100, 100, g.fountain_bmp);
-	
 		map = new map_t();
 		//map.save();
 		map.load();
@@ -65,10 +62,10 @@ class world_t
 		structures ~= new tower(pair(400, 300));
 		structures ~= new tower(pair(350, 250));
 	
-			units ~= new elf(pair(200, 200), atlas);
+			units ~= new elf(pair(150, 200), atlas);
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-			units ~= new ghost(pair(225, 200), atlas);
+			units ~= new ghost(pair(150, 250), atlas);
 			units[1].isPlayerControlled = true;
 			units[1].isDebugging = true;
 	
@@ -76,14 +73,10 @@ class world_t
 		
 		for(int i = 0; i < NUM_UNITS; i++)
 			{
-//			float cx = uniform!"[]"(1, map.width*TILE_W-32);
 			float cx = uniform!"[]"(1, 200);
 			float cy = 100;
 			auto u = new soldier(pair(cx, cy), atlas);
 			u.pos = pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED));
-			u.isDebugging = false;
-			
-//			if(i == 0){u.isPlayerControlled = true; u.isDebugging = true;}
 			units ~= u;
 			}
 			
