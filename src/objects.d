@@ -760,12 +760,42 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 				return false;
 				}
 			} else {
+			// check against objects
+			immutable float r = 16; /// radius 
+			foreach(u; g.world.units)
+				{
+				if(u !is this) 
+					{
+					//if(u.myTeamIndex != myTeamIndex)  later
+					if(pos.x - r < u.pos.x && 
+						pos.x + r > u.pos.x &&
+						pos.y - r < u.pos.y &&
+						pos.y + r > u.pos.y)
+						{
+/+						if(isDebugging)
+							{
+							writefln("[%s].pos[%s] vs [%s].pos[%s]", u.toString, u.pos, this.toString, pos);
+							writeln(" - true");
+							}+/
+						if(!isPlayerControlled)this.pos -= offset; // ??? not sure if best place for this. stutters for a player character
+						return false;
+						}else{
+/+						if(isDebugging)
+							{
+							writefln("[%s].pos[%s] vs [%s].pos[%s]", u.toString, u.pos, this.toString, pos);
+							writeln(" - false");
+							}+/
+						}
+					}
+			}
+			
+			// check against map
 			if(isMapValid(ip3))
 				{
 				if(	isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]) || 
 					(isTreeWalker && isForestTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
 					)
-					{ // if normal passable, or if treewalker, is forestpassable
+					{ // if normal passable, or, if treewalker is forestpassable
 					this.pos += offset;
 					return true;
 					}else{
@@ -793,18 +823,24 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		if(v.x > 0) direction = DIR.RIGHT;
 		}
 	
+	void setRandomDirection()
+		{
+		vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED*cstats.dex); // if we were stuck, then map editor freed us, lets start moving again.
+		}
+	
 	void travel()
 		{
 		if(!attemptMove(vel))
 			{
 			// flip direction
 //			vel = pair(-vel.x, -vel.y); // dont have negative opapply yet so can't do vel = -vel;
-			vel -= vel; // CONFIRM
-			}else{
+//			vel -= vel; // CONFIRM
+			setRandomDirection();
 			setDirectionToVelocity(vel);
+			}else{
 			}
 
-		if(vel == 0)vel = apair(uniform!"[]"(0, 2*PI), WALK_SPEED*cstats.dex); // if we were stuck, then map editor freed us, lets start moving again.
+		if(vel == 0)setRandomDirection();
 		}
 	
 	void handleCooldowns()

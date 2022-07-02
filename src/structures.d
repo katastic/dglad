@@ -56,7 +56,7 @@ class tower : structure
 	override void onTick()
 		{
 		// Firing pattern mechanic possibilities (for when multiple players exist)
-		// - fire only at first person in list (simple, current) [strat: whoever isn't that player, fight] [ALWAYS FAVORS one player which is bad.]
+		// - fire only at first person in list (simple) [strat: whoever isn't that player, fight] [ALWAYS FAVORS one player which is bad.]
 		// - fire at each person in order					[strat: Spread DPS across players]
 		// - fire SAME RATE, but at AS MANY PLAYERS exist.	[DPS increases with players in range]
 		// -> fire at FIRST PERSON to be targetted until we no longer have that target in range. [strat: grab aggro, others fight it.]
@@ -93,7 +93,7 @@ class structure : unit
 	float hp=maxHP;
 	int level=1; //ala upgrade level
 //	int myTeamIndex=0;
-	immutable int countdown_rate = 200; // 60 fps, 60 ticks = 1 second
+	immutable int countdown_rate = 120; // 60 fps, 60 ticks = 1 second
 	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
 	
 	this(pair _pos, int teamIndex, ALLEGRO_BITMAP* b)

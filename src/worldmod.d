@@ -63,10 +63,10 @@ class world_t
 		structures ~= new tower(pair(400, 300), 1);
 		structures ~= new tower(pair(350, 250), 2);
 	
-			units ~= new elf(pair(150, 200), 1, atlas);
+			units ~= new ghost(pair(150, 200), 1, atlas);
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-			units ~= new ghost(pair(150, 250), 2, atlas);
+			units ~= new elf(pair(150, 250), 2, atlas);
 			units[1].isPlayerControlled = true;
 			units[1].isDebugging = true;
 	
