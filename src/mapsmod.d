@@ -31,7 +31,7 @@ import std.json;
 /// Tree tiles for elf tree walking ability:
 bool isForestTile(ushort tileType)
 	{
-	foreach(i; [9]) // temp, since we don't have tree tiles atm 
+	foreach(i; [10]) // temp, since we don't have tree tiles atm 
 		if(tileType == i) return true;
 	return false;
 	}
@@ -88,6 +88,7 @@ class map_t
 		bmps ~= g.wall_bmp;  // 7 !passable
 		bmps ~= g.wall2_bmp; // 8 !passable
 		bmps ~= g.wall3_bmp; // 9 !passable
+		bmps ~= g.forest_bmp; // 10 -isPassable -isShotPassable +isForest
 				
 		backgrounds ~= getBitmap("./data/parallax1.png");
 		parallaxScale ~= .75;

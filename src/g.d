@@ -61,6 +61,7 @@ BITMAP* wall_bmp;
 BITMAP* wall2_bmp;
 BITMAP* wall3_bmp;
 BITMAP* grass_bmp;
+BITMAP* forest_bmp;
 BITMAP* lava_bmp;
 BITMAP* water_bmp;
 BITMAP* wood_bmp;
@@ -101,6 +102,7 @@ void loadResources()
 	wall2_bmp  		= getBitmap("./data/wall2.png");
 	wall3_bmp  		= getBitmap("./data/wall3.png");
 	grass_bmp  		= getBitmap("./data/grass.png");
+	forest_bmp  		= getBitmap("./data/forest.png");
 	lava_bmp  		= getBitmap("./data/lava.png");
 	water_bmp  		= getBitmap("./data/water.png");
 	fountain_bmp  	= getBitmap("./data/fountain.png");

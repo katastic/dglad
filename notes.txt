@@ -4,6 +4,8 @@ BUG
 
 stuff to work on:
 --------------------------------
+	- remember ELF SHOTS can go through forest too! not just elves! Also walking in forest sapps mana.
+	
 	- we could do a "roof" layer for tree tops AND, if we drop that twice, once "behind" object layer, and then once half transparent after, we might be able to have "objects are transparent under roofs". Otherwise, just detect if we're under a tile and draw last transparently. It'll pop a bit but work.
 	
 	- not sure if we should let enemies pickup items. its kind of annoying.

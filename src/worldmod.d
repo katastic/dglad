@@ -188,6 +188,7 @@ class world_t
 		if(keyPressed[KEY_8])mouseSetTile(7);
 		if(keyPressed[KEY_9])mouseSetTile(8);
 		if(keyPressed[KEY_0])mouseSetTile(9);
+		if(keyPressed[KEY_Z])mouseSetTile(10);
 		
 		if(keyPressed[KEY_I])world.units[0].actionUp();
 		if(keyPressed[KEY_K])world.units[0].actionDown();
