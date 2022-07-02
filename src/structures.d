@@ -66,8 +66,6 @@ class tower : structure
 			{
 			foreach(u; g.world.units)
 				{
-				writeln("------------");
-				writefln("u.myTeamIndex[%s] ≟ this.myTeamIndex[%s]", u.myTeamIndex, this.myTeamIndex);
 				if(u !is this && u.myTeamIndex != this.myTeamIndex && distanceTo(u, this) < 200 && primary.isReadySet()) // is ready set must come after, as it MUTATES too!
 					{
 					setTarget(u);
