@@ -58,14 +58,15 @@ class world_t
 	
 		blood = new static_blood_handler_t(map);
 	
-		structures ~= new structure(pair(300, 300), g.fountain_bmp);
-		structures ~= new tower(pair(400, 300));
-		structures ~= new tower(pair(350, 250));
+		structures ~= new structure(pair(300, 200), 1, g.fountain_bmp);
+		structures ~= new structure(pair(300, 300), 2, g.fountain_bmp);
+		structures ~= new tower(pair(400, 300), 1);
+		structures ~= new tower(pair(350, 250), 2);
 	
-			units ~= new elf(pair(150, 200), atlas);
+			units ~= new elf(pair(150, 200), 1, atlas);
 			units[0].isPlayerControlled = true;
 			units[0].isDebugging = true;
-			units ~= new ghost(pair(150, 250), atlas);
+			units ~= new ghost(pair(150, 250), 2, atlas);
 			units[1].isPlayerControlled = true;
 			units[1].isDebugging = true;
 	
@@ -73,10 +74,8 @@ class world_t
 		
 		for(int i = 0; i < NUM_UNITS; i++)
 			{
-			float cx = uniform!"[]"(1, 200);
-			float cy = 100;
-			auto u = new soldier(pair(cx, cy), atlas);
-			u.pos = pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED));
+			auto u = new soldier(pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED)), atlas);
+			u.myTeamIndex = 0;
 			units ~= u;
 			}
 			

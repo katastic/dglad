@@ -348,9 +348,10 @@ class archer : unit
 
 class elf : unit
 	{
-	this(pair _pos, atlasHandler atlas)
-		{		
+	this(pair _pos, int teamIndex, atlasHandler atlas)
+		{	
 		super(0, _pos, pair(0, 0), g.dude_bmp);
+		myTeamIndex = teamIndex; // TODO put into unit constructor
 		anim = new animation(1, elf_coords, g.world.atlas);
 		isTreeWalker = true;
 		}
@@ -452,9 +453,10 @@ class fireElemental : unit
 
 class ghost : unit
 	{
-	this(pair _pos, atlasHandler atlas)
+	this(pair _pos, int teamIndex, atlasHandler atlas)
 		{
 		super(0, _pos, pair(0, 0), g.dude_bmp);
+		myTeamIndex = teamIndex; // TODO put into unit constructor
 		anim = new animation(1, ghost_coords, atlas);
 		isGhost = true;
 		}

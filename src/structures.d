@@ -26,10 +26,10 @@ class tower : structure
 	{
 	cooldown primary;
 
-	this(pair _pos)
+	this(pair _pos, int teamIndex)
 		{
 		immutable int FIRE_COOLDOWN = 10;
-		super(_pos, g.potion_bmp);
+		super(_pos, teamIndex, g.potion_bmp);
 		primary.setMax(FIRE_COOLDOWN);
 		}		
 		
@@ -66,7 +66,9 @@ class tower : structure
 			{
 			foreach(u; g.world.units)
 				{
-				if(u !is this && distanceTo(u, this) < 200 && primary.isReadySet()) // is ready set must come after, as it MUTATES too!
+				writeln("------------");
+				writefln("u.myTeamIndex[%s] ≟ this.myTeamIndex[%s]", u.myTeamIndex, this.myTeamIndex);
+				if(u !is this && u.myTeamIndex != this.myTeamIndex && distanceTo(u, this) < 200 && primary.isReadySet()) // is ready set must come after, as it MUTATES too!
 					{
 					setTarget(u);
 					break;
@@ -92,13 +94,14 @@ class structure : unit
 	immutable float maxHP=500.0;
 	float hp=maxHP;
 	int level=1; //ala upgrade level
-	int team=0;
+//	int myTeamIndex=0;
 	immutable int countdown_rate = 200; // 60 fps, 60 ticks = 1 second
 	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
 	
-	this(pair _pos, ALLEGRO_BITMAP* b)
+	this(pair _pos, int teamIndex, ALLEGRO_BITMAP* b)
 		{
 		super(0, _pos, pair(0,0), b);
+		myTeamIndex = teamIndex; //must come after constructor
 		}
 
 	override bool draw(viewport v)
