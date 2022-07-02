@@ -24,19 +24,29 @@ import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 
 class tower : structure
 	{
+	cooldown primary;
+
 	this(pair _pos)
 		{
 		super(_pos, g.potion_bmp);
-		}
+		primary.setMax(10);
+		}		
 		
 	override void onTick()
 		{
+		// Firing pattern mechanic possibilities (for when multiple players exist)
+		// - fire only at first person in list (simple, current) [strat: whoever isn't that player, fight] [ALWAYS FAVORS one player which is bad.]
+		// - fire at each person in order					[strat: Spread DPS across players]
+		// - fire SAME RATE, but at AS MANY PLAYERS exist.	[DPS increases with players in range]
+		// -> fire at FIRST PERSON to be targetted until we no longer have that target in range. [strat: grab aggro, others fight it.]
+		primary.onTick();
 		foreach(u; g.world.units)
 			{
-			if(distanceTo(u, this) < 100)
+			if(u !is this && distanceTo(u, this) < 200 && primary.isReadySet()) // is ready set must come after, as it MUTATES too!
 				{
 				pair v = apair(angleTo(u, this), 15);
 				g.world.bullets ~= new bullet(this.pos, v, angleTo(u, this), yellow, 0, 100, this, 0);
+				break;
 				}
 			}
 		}

@@ -694,6 +694,15 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 	int flyingCooldown = -1; // -1 means infinite, potions will set this to a value to tickdown.
 	int invulnerabilityCooldown = -1; // -1 means infinite, potions will set this to a value to tickdown.
 	
+	this(uint _teamIndex, pair _pos, pair _vel, ALLEGRO_BITMAP* b)
+		{
+		myTeamIndex = _teamIndex; 
+		super(_pos, _vel, b);
+		//writefln("xy v:xy %f,%f %f,%f", x, y, vx, vy);
+		primary.setMax(30);
+		special.setMax(30);
+		}
+
 	void handlePotions()
 		{
 		if(flyingCooldown != -1)
@@ -732,10 +741,6 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		return true;
 		}
 +/	
-	int meleeCooldown = 30; // when primary fires at point blank, it's melee weapon stats
-	int primaryCooldown = 30;
-	int meleeCooldownValue = 0; 
-	int primaryCooldownValue = 0;
 
 	bool attemptMove(pair offset)
 		{
@@ -845,15 +850,6 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		hp -= amount;
 		}
 	
-	this(uint _teamIndex, pair _pos, pair _vel, ALLEGRO_BITMAP* b)
-		{
-		myTeamIndex = _teamIndex; 
-		super(_pos, _vel, b);
-		//writefln("xy v:xy %f,%f %f,%f", x, y, vx, vy);
-		primary.setMax(30);
-		special.setMax(30);
-		}
-
 	override void actionFire()
 		{
 		if(primary.isReadySet())
