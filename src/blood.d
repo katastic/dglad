@@ -52,6 +52,18 @@ class static_blood_handler_t
 		{
 		data = al_create_bitmap(m.width*TILE_W, m.height*TILE_H); //ideally power of 2? TEST THAT.
 		assert(data != null);
+		
+		immutable int STARTING_BLOOD = 9000;
+		for(int i = 0; i < STARTING_BLOOD; i++)
+			{
+			float w = 50; //g.world.map.w
+			float h = 50;
+			
+			float x1 = uniform!"[]"(0, TILE_W*(w-1));
+			float y1 = uniform!"[]"(0, TILE_H*(h-1));
+			add(x1, y1);
+			}
+
 		}
 	
 	void add(float x, float y)
@@ -66,7 +78,7 @@ class static_blood_handler_t
 		al_draw_bitmap(data, 0 - v.ox + v.x, 0 - v.oy + v.y, 0);
 		}
 	}
-
+/+
 class blood_handler_t
 	{
 	blood_t[] data;
@@ -88,7 +100,7 @@ class blood_handler_t
 		// dropping HALF will be a sudden drop. Dropping every 4th and rising 
 		// from there might work.
 		
-		immutable int STARTING_BLOOD = 5000;
+		immutable int STARTING_BLOOD = 9000;
 		for(int i = 0; i < STARTING_BLOOD; i++)
 			{
 			float w = 50; //g.world.map.w
@@ -136,3 +148,4 @@ class blood_handler_t
 			}
 		}
 	}
++/

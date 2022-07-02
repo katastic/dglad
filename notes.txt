@@ -1,3 +1,7 @@
+BUG
+--------------------------------
+	- bullets are NOT HITTING ghosts (or any objects?) currently, but they hit walls.
+
 stuff to work on:
 --------------------------------
 	- we could do a "roof" layer for tree tops AND, if we drop that twice, once "behind" object layer, and then once half transparent after, we might be able to have "objects are transparent under roofs". Otherwise, just detect if we're under a tile and draw last transparently. It'll pop a bit but work.
@@ -5,7 +9,7 @@ stuff to work on:
 	- not sure if we should let enemies pickup items. its kind of annoying.
 	
 	- how do we handle bosses/'named' enemies?
-		- how do we draw the outline? (we could tint the whole thing white and stretch it slightly and draw under it, or pre-process the tint outlines)
+		+ how do we draw the outline? (we could tint the whole thing white and stretch it slightly and draw under it, or pre-process the tint outlines)
 		- do we specify every boss in code, or use/allow SCENARIOS to specify enemies
 	
 	- cooldown, unified system between call classes instead of each rolling their own

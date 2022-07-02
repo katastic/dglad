@@ -117,7 +117,7 @@ class bullet : baseObject
 				if(pos.x - 5 < u.pos.x)
 				if(pos.y - 5 < u.pos.y)
 				if(pos.x + 5 > u.pos.x)
-				if(pos.x + 5 > u.pos.y)
+				if(pos.y + 5 > u.pos.y)
 					{
 					dieFrom(u);
 					break;
