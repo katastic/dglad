@@ -244,7 +244,7 @@ class animation
 	int index = 0; /// frame index
 	bool usesFlippedGraphics = false; /// NYI. use half the sideways graphics and flips them based on direction given. Usually meaningless given RAM amounts.
 
-	bool isOutlined = true; // should this be a state, or simply a different draw function (state is in the object itself)
+	bool isOutlined = false; // should this be a state, or simply a different draw function (state is in the object itself)
 
 	BITMAP*[2][DIR.max] bmps;
 	BITMAP*[2][DIR.max] bmpsOutlined;
@@ -372,6 +372,9 @@ class elf : unit
 
 	override void onTick()
 		{
+		auto ip = ipair(this.pos);
+		if(isMapValid(ip) && isForestTile( g.world.map.bmpIndex[ip.i][ip.j]))
+			{anim.isOutlined = true;}else{anim.isOutlined = false;}
 		super.onTick();
 		}
 	}
