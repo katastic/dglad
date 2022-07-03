@@ -26,12 +26,18 @@ import std.json;
 
 	we could allow "swimmable" which is just half speed water. also can apply to mud.
 +/
+bool isHalfHeightTile(ushort tileType)
+	{
+	foreach(i; [5]) 
+		if(tileType == i) return true;
+	return false;
+	}
 
 /// Tile metadata but using hardcoded functions
 /// Tree tiles for elf tree walking ability:
 bool isForestTile(ushort tileType)
 	{
-	foreach(i; [10]) // temp, since we don't have tree tiles atm 
+	foreach(i; [10]) 
 		if(tileType == i) return true;
 	return false;
 	}
@@ -48,7 +54,7 @@ bool isBackLayer(ushort tileType)
 /// Tile metadata but using hardcoded functions
 bool isShotPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 1, 2, 3, 4, 5, 6])
+	foreach(i; [0, 1, 2, 3, 4, 6])
 		if(tileType == i) return true;
 	return false;
 	}

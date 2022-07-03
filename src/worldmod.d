@@ -57,8 +57,8 @@ class world_t
 	
 		blood = new static_blood_handler_t(map);
 	
-		structures ~= new structure(pair(300, 200), 1, g.bmp.fountain);
-		structures ~= new structure(pair(300, 300), 2, g.bmp.fountain);
+	//	structures ~= new structure(pair(300, 200), 1, g.bmp.fountain);
+	//	structures ~= new structure(pair(300, 300), 2, g.bmp.fountain);
 		structures ~= new tower(pair(400, 300), 1);
 		structures ~= new tower(pair(350, 250), 2);
 	

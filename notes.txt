@@ -1,18 +1,46 @@
 BUG
 --------------------------------
 	+ bullets are NOT HITTING ghosts (or any objects?) currently, but they hit walls.
-	- lighting is NOT APPLIED to the DECAL LAYER and it's pretty hilarious seeing glowing blood off in the distance
+	+ by separating outline from graphics, we can now tint them for lighting OR for special effects like indicating 
+		active spells/potions (like flight/invulnerability) and it can change every frame without needing palette swapping
+		 like the original used.
+		 
+	- let players move "half high" on certain tiles
+		 
+	- lighting is NOT APPLIED to the blood DECAL LAYER and it's pretty hilarious seeing glowing blood off in the distance
 		- actually, i'm not sure the easiest way to add shading since it's one gigantic bitmap. We can't phong shade it. 
 		We could split it into texels and light that. But it'll be a bunch slower. If we switch to multiplative lighting, we can
 		simply draw it, and then "shade" around with lightmaps.
 			-> we could also start a shadowLayer bitmap layer where all light casting objects cast their brightness onto that, then after we draw everything, 
 			we dump the shadow map to it. That basically becomes deferred lighting and technically if we made it floating point, we could do HDR lighting.
+	
+	- "paint the walls with their blood" 
+		- there may be a way to draw like, the decal half high into tiles with a clipping plane so it looks like its up on the wall
+		but not on top of it. it would have to only work "above" the current character. not high up, from the side of a unit. Maybe
+		test for if its the bottom piece of a unpassable tile.
 		
+	- we could use other decal layers for FUN or combine them with blood. 
+		- When SEPARATE from blood layer, we can technically "clean" the layer. 
+			- a "fluids" (blood, slime goo) / "dirt" layer. Stuff that washes away with water magic. 
+				- (And could be used to "spread" around)
+				- dirt/mud/snow footsteps
+							
+			- nonwashable permanent decal stuff. "Pieces of broken equipment", permenant bodies that cannot be resurrected or
+			 interact with.
+				- combine with each map can have its own "SCENARIO DRAWN layer". So modders can make their own unique bottom
+				 layer stuff or MSPAINT worlds.
+
+			- if we have some sort of flammable material, that could have its own layer instead of drawing individual particles every frame. As long as they cannot be moved around.
+		
+			-> remember STATIC layers dont want to be massively modified or read from. Adding seems to be fairly fast though. 
+				- Dynamic decals for FEWER units (<1000's) that are drawn every frame and don't get worse if they move or
+					mutate every frame.
 		
 stuff to work on:
 --------------------------------
 	- different bullet graphics
-	- animated tiles. tile metadata.
+	- animated tiles. 
+	- tile metadata.
 	+ remember ELF SHOTS can go through forest too! not just elves! 
 		- Also walking in forest sapps mana.
 	

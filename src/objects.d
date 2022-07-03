@@ -830,6 +830,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		if(isGhost) { this.pos += offset; return true;} 
 		if(isFlying)
 			{
+			// todo: this doesn't allow you to fly through a tile thats not shootable but is walkable (if that exists)
 			if(isMapValid(ip3) && isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
 				{
 				this.pos += offset;
@@ -870,14 +871,30 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 			// check against map
 			if(isMapValid(ip3))
 				{
-				if(isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				ushort tileType = g.world.map.bmpIndex[ip3.i][ip3.j];
+				if(isHalfHeightTile(tileType))
+					{
+					// NOTE: We need non-tile coordinates here
+					if(pos.y % TILE_H > TILE_H/2)
+					
+						{
+						writeln(pos, " ",pos.y % TILE_H, " + ");
+						pos += offset;
+						return true;
+						}else{
+						writeln(pos, " ",pos.y % TILE_H, " - ");
+						return false;
+						}
+					}
+					
+				if(isPassableTile(tileType))
 					{ // if normal passable
 					pos += offset;
 					return true;
 					}else{
 					}
 					
-				if(isTreeWalker && isForestTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				if(isTreeWalker && isForestTile(tileType))
 					{ // if treewalker is forestpassable, and in forest, go half speed (or whatever modifier)
 					pos.x += offset.x/2; //fixme. DEX based.
 					pos.y += offset.y/2; //fixme. DEX based.
