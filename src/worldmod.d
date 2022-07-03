@@ -10,7 +10,6 @@ import viewportsmod;
 import objects;
 import helper;
 import turretmod;
-import planetsmod;
 import particles;
 import mapsmod;
 import bulletsmod;

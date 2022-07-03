@@ -13,7 +13,6 @@ import std.conv;
 import viewportsmod;
 import g;
 import objects;
-import planetsmod;
 
 import std.datetime;
 import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
@@ -168,6 +167,7 @@ COLOR red    = COLOR(1,0,0,1);
 COLOR green  = COLOR(0,1,0,1);
 COLOR blue   = COLOR(0,0,1,1);
 COLOR yellow = COLOR(1,1,0,1);
+COLOR brown  = COLOR(.588, .294, 0, 1);
 COLOR orange = COLOR(1,0.65,0,1);
 
 immutable LOGIC_FRAMERATE = 60; // consider ticks vs seconds being typesafe the way we do pairs

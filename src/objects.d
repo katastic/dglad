@@ -96,6 +96,22 @@ struct charStats //character stats, 'cstats' in object?
 //  int speed=10; // derived from DEX?
 // other stats? what would charisma be for?   luck?
 
+	int hp; 		// put health here
+	int hpMax; 		// 
+	int mana; 		// 
+	int manaMax; 	// 
+	
+	// strMod	- we could have temporary modifiers here too, and at worst, they get reset when you leave a map.
+	// or we could do some sort of exotic tag based method where each tag has a time cooldown and cure spells 
+	// can search tags to remove them.
+
+	int xp=0;
+	int level=0; // derived from xp? or cached
+	
+	// note we may want to have different values/getters
+	// because we can return the APPLIED (or different word) str/con/dex/int which includes bonuses.
+	// as opposed to their specific character ones.
+	// certain stats will depend on their BASE stats, and others depend on their MODIFIED ones.
 /+
 	supposedly, in mm6, stats are "weighted". the more you gain as you go up, the less you get for each gain in stats to keep you from becoming a god.
 
@@ -159,14 +175,6 @@ struct charStats //character stats, 'cstats' in object?
 	http://www.pottsland.com/mm6/attributes2.shtml
 	https://www.gog.com/forum/might_and_magic_series/limit_to_benefit_of_stats_in_mm6
 +/
- 	
-	int xp=0;
-	int level=0; // derived from xp? or cached
-	
-	// note we may want to have different values/getters
-	// because we can return the APPLIED (or different word) str/con/dex/int which includes bonuses.
-	// as opposed to their specific character ones.
-	// certain stats will depend on their BASE stats, and others depend on their MODIFIED ones.
 	}
 
 enum DIR
@@ -418,7 +426,7 @@ class elf : unit
 		{
 		if(primary.isReadySet())
 			{
-			g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
+			g.world.bullets ~= new elfBullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
 			g.world.bullets[$-1].isForestBullet = true;
 			}
 		}
@@ -430,7 +438,7 @@ class elf : unit
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
-				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				g.world.bullets ~= new elfBullet( this.pos, pair(apair( ang, 10)), ang, brown, 100, 0, this, 0);
 				g.world.bullets[$-1].isForestBullet = true;
 				}
 			}

@@ -10,7 +10,6 @@ import viewportsmod;
 import objects;
 import helper;
 import turretmod;
-import planetsmod;
 import particles;
 import mapsmod;
 import bulletsmod;
@@ -89,12 +88,10 @@ class tower : structure
 
 class structure : unit
 	{
-	immutable float maxHP=500.0;
-	float hp=maxHP;
-	int level=1; //ala upgrade level
-//	int myTeamIndex=0;
+//	immutable float maxHP=500.0;
+//	float hp=maxHP; use cstats
 	immutable int countdown_rate = 120; // 60 fps, 60 ticks = 1 second
-	int countdown = countdown_rate; // I don't like putting variables in the middle of classes but I ALSO don't like throwing 1-function-only variables at the top like the entire class uses them.
+	int countdown = countdown_rate;
 	
 	this(pair _pos, int teamIndex, ALLEGRO_BITMAP* b)
 		{
@@ -110,12 +107,12 @@ class structure : unit
 
 	void onHit(unit u, float damage)
 		{
-		hp -= damage;
+		cstats.hp -= damage;
 		}
 		
 	void spawnDude()
 		{
-		writeln("structure spawning dude.");
+		//writeln("structure spawning dude.");
 		g.world.units ~= new soldier(this.pos, g.world.atlas); // FIXME. THIS SHOULD CRASH but it's not
 		} 
 		

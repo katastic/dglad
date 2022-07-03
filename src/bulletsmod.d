@@ -10,7 +10,6 @@ import viewportsmod;
 import objects;
 import helper;
 import turretmod;
-import planetsmod;
 import particles;
 import mapsmod;
 import blood;
@@ -21,11 +20,29 @@ import std.stdio;
 
 class elfBullet : bullet
 	{
+	bitmap* bmpOutlined;
 	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, unit _myOwner, bool _isDebugging)
 		{
 		super(_pos, _vel, _angle, _c, _type, _lifetime, _myOwner, _isDebugging);
 		isForestBullet = true;
 		bmp = g.bmp.bulletRound;
+		bmpOutlined = g.bmp.bulletRoundOutline;
+		}
+
+	override bool draw(viewport v)
+		{
+		float cx = pos.x + v.x - v.ox;
+		float cy = pos.y + v.y - v.oy;
+		if(cx > 0 && cx < SCREEN_W && cy > 0 && cy < SCREEN_H)
+			{
+			if(isOutlined)
+				{
+				al_draw_center_rotated_tinted_bitmap(bmpOutlined, c, cx, cy, angle + degToRad(90), 0);
+				}
+			al_draw_center_rotated_tinted_bitmap(bmp, c, cx, cy, angle + degToRad(90), 0);
+			return true;
+			}
+		return false;
 		}
 	}
 
@@ -39,6 +56,7 @@ class bullet : baseObject
 	bool isForestBullet=false;
 	unit myOwner;
 	COLOR c;
+	bool isOutlined = true;
 	
 	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, unit _myOwner, bool _isDebugging)
 		{
@@ -109,16 +127,22 @@ class bullet : baseObject
 		if(isMapValid(ip3))
 			{
 			ushort index = g.world.map.bmpIndex[ip3.i][ip3.j];
-			if(
-				isShotPassableTile(index) || 
-				(isForestBullet && isForestTile(index))
-				)
+			if(isForestBullet && isForestTile(index))
+				{
+				isOutlined = true;
+				// we'll need to draw these objects twice. one for the outline, one for the object, otherwise we cannot tint the bullet separate from the outline.
+				}else{
+				isOutlined = false;
+				}
+
+			if(isShotPassableTile(index) || (isForestBullet && isForestTile(index)))
 				{
 				this.pos += offset;
 				return true;
 				}else{
 				return false;
 				}
+
 			}else{
 			return false;
 			}

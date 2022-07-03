@@ -78,7 +78,7 @@ class map_t
 	
 	this()
 		{
-		bmps ~= g.bmp.grass; // 0 passable, note zero is empty/not used/blank so ignore this file for now
+		bmps ~= g.bmp.empty; // 0 passable, note zero is empty/not used/blank so ignore this file for now
 		bmps ~= g.bmp.grass; // 1 passable
 		bmps ~= g.bmp.stone; // 2 passable
 		bmps ~= g.bmp.water; // !3 passable
@@ -99,7 +99,7 @@ class map_t
 		for(int j = 0; j < height; j++)
 			for(int i = 0; i < width; i++)
 				{
-				bmpIndex[i][j] = 0;
+				bmpIndex[i][j] = 1;
 //				bmp[i][j] = g.grass_bmp;
 				isPassable[i][j] = true;
 				}
@@ -166,7 +166,10 @@ class map_t
 			{
 			foreach(size_t i, ref val; r.array)
 				{
-				bmpIndex[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
+				if(to!ushort(val.integer) != 0)
+					bmpIndex[j][i] = to!ushort(val.integer); //"integer" outs long. lulbbq.
+				else
+					bmpIndex[j][i] = 1; // 0 (error) becomes 1 grass.
 				}
 			}
 		foreach(size_t j, ref r; t.object["isPassable"].array)

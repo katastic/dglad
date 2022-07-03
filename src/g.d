@@ -20,7 +20,6 @@ import objects;
 import viewportsmod;
 import graph;
 import particles;
-import planetsmod;
 import bulletsmod;
 import mapsmod;
 import worldmod;
@@ -48,6 +47,8 @@ struct bmpsType
 	BITMAP* smoke;
 	BITMAP* bullet;
 	BITMAP* bulletRound;
+	BITMAP* bulletOutline;
+	BITMAP* bulletRoundOutline;
 	BITMAP* dude;
 	BITMAP* trailer;
 	BITMAP* turret;
@@ -63,6 +64,7 @@ struct bmpsType
 	BITMAP* wall;
 	BITMAP* wall2;
 	BITMAP* wall3;
+	BITMAP* empty;
 	BITMAP* grass;
 	BITMAP* forest;
 	BITMAP* lava;
@@ -82,16 +84,81 @@ intrinsicGraph!float testGraph;
 intrinsicGraph!float testGraph2;
 intrinsicGraph!float testGraph3;
 
+/// modified from 'animation'
+BITMAP* buildBulletOutline(BITMAP* b)	// TODO BUG. what if outline needs to be OUTSIDE the atlas bitmap confines? [we need to make atlas +1 on each side, and then UPDATE the subbitmap coordinates +1 accordingly! That, or make the normal one also +1 for the hell of it.]
+	{
+	assert(b !is null);
+	BITMAP* output = al_create_bitmap(b.w, b.h);
+	COLOR outlineColor = red; 
+//		COLOR clearColor = COLOR(0,0,0,1);
+
+	bool isTransparent(BITMAP* bi, ipair p)
+		{
+		COLOR c = getPixel(bi, p);
+//			writefln("%s @ %s", c, p);
+		if(c.a.isClose(0))		/// looks like internally it would be 0,0,0,0 for transparent
+			{
+			return true;
+			}
+		return false;
+		}
+	
+	bool isInside(BITMAP* _b, ipair p)
+		{
+		if(p.i >= 0 && p.j >= 0)
+		if(p.i < _b.w && p.j < _b.h)
+			return true;
+		return false;
+		}
+		
+	void doOutline(BITMAP* _bi, ipair p)
+		{
+		if(isInside(_bi, p) && isTransparent(_bi, p)){al_put_pixel(p.i, p.j, outlineColor);}
+		}
+		
+	void checkDirections(BITMAP* bi, BITMAP* bo, ipair p) /// NOTE: Assumes target bitmap is set and locked
+		{
+		if(isInside(bi, p))
+			if(!isTransparent(bi, p)) /// For every 'real' pixel, check for borders
+				{
+//				al_put_pixel(p.i, p.j, getPixel(bi, p)); we do NOT draw the underlying bullet this time.
+				doOutline(bi, ipair(p,-1, 0));
+				doOutline(bi, ipair(p, 1, 0));
+				doOutline(bi, ipair(p, 0,-1));
+				doOutline(bi, ipair(p, 0, 1));
+				}else{
+//				al_put_pixel(p.i, p.j, getPixel(bi, p));
+				}
+		}
+	
+	al_set_target_bitmap(output); 
+	al_lock_bitmap(b, al_get_bitmap_format(b), ALLEGRO_LOCK_READONLY);			
+	al_lock_bitmap(output, al_get_bitmap_format(output), ALLEGRO_LOCK_WRITEONLY);
+	for(int i = 1; i < b.w; i++) 
+		for(int j = 1; j < b.h; j++)
+		{
+		checkDirections(b, output, ipair(i,j));
+		}
+	al_unlock_bitmap(b);
+	al_unlock_bitmap(output);
+	al_reset_target();
+	
+	return output;
+	}
+		
 void loadResources()	
 	{
 	font1 = getFont("./data/DejaVuSans.ttf", 18);
 
 	with(bmp)
 		{
+
 		bullet  			= getBitmap("./data/bullet.png");
+		bulletRound  		= getBitmap("./data/bulletround.png");
+		bulletOutline  		= buildBulletOutline(bullet);
+		bulletRoundOutline 	= buildBulletOutline(bulletRound);
 		smoke  				= getBitmap("./data/smoke.png");
-		bullet  			= getBitmap("./data/bullet.png");
-		bulletRound  			= getBitmap("./data/bulletround.png");
+		
 		dude	  			= getBitmap("./data/dude.png");
 		trailer	  			= getBitmap("./data/trailer.png");
 		turret	  			= getBitmap("./data/turret.png");
@@ -102,11 +169,11 @@ void loadResources()
 		potion  		= getBitmap("./data/potion.png");
 		chest  			= getBitmap("./data/chest.png");
 		chest_open  	= getBitmap("./data/chest_open.png");
-
 		dwarf  		= getBitmap("./data/dwarf.png");
 		goblin  	= getBitmap("./data/goblin.png");
 		boss 	 	= getBitmap("./data/boss.png");
 
+		empty				= al_create_bitmap(TILE_W, TILE_H);
 		wall  		= getBitmap("./data/wall.png");
 		wall2  		= getBitmap("./data/wall2.png");
 		wall3  		= getBitmap("./data/wall3.png");
