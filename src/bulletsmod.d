@@ -26,6 +26,7 @@ class bullet : baseObject
 	int type; // 0 = normal bullet whatever
 	int lifetime; // frames passed since firing
 	bool isDead=false; // to trim
+	bool isForestBullet=false;
 	unit myOwner;
 	COLOR c;
 	
@@ -95,23 +96,32 @@ class bullet : baseObject
 	bool attemptMove(pair offset) // similiar to units.attemptmove
 		{
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
-		if(isMapValid(ip3) && isShotPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+		if(isMapValid(ip3))
 			{
-			this.pos += offset;
-			return true;
+			ushort index = g.world.map.bmpIndex[ip3.i][ip3.j];
+			if(
+				isShotPassableTile(index) || 
+				(isForestBullet && isForestTile(index))
+				)
+				{
+				this.pos += offset;
+				return true;
+				}else{
+				return false;
+				}
 			}else{
 			return false;
 			}
 		}
 	
-	override void onTick() // should we check for planets collision?
+	override void onTick()
 		{
 		lifetime--;
 		if(lifetime == 0)
 			{
 			isDead=true;
 			}else{
-			foreach(u; g.world.units) // NOTE: this is only scanning units not SUBARRAYS containing turrets
+			foreach(u; g.world.units) // UNIT SCAN
 				{
 				immutable float r = 16; // radius
 				if(u !is myOwner)
@@ -125,7 +135,7 @@ class bullet : baseObject
 					}
 				// collision with units
 				}
-			if(!attemptMove(vel))die();
+			if(!attemptMove(vel))die(); // Map test and movement
 			}
 		if(!isMapValid(ipair(this.pos)))dieFromWall();
 //		if(pos.x < 0 || pos.y < 0 || pos.x > g.world.map.width*TILE_W || pos.y > g.world.map.height*TILE_H)die();

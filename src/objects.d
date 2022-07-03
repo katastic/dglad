@@ -356,8 +356,15 @@ class elf : unit
 		isTreeWalker = true;
 		}
 
-	int specialCooldownValue = 0;
-	int specialCooldown = 60;
+	override void actionFire()
+		{
+		if(primary.isReadySet())
+			{
+			g.world.bullets ~= new bullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
+			g.world.bullets[$-1].isForestBullet = true;
+			}
+		}
+
 	override void actionSpecial()
 		{
 		if(special.isReadySet())
@@ -366,6 +373,7 @@ class elf : unit
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
 				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				g.world.bullets[$-1].isForestBullet = true;
 				}
 			}
 		}
@@ -795,15 +803,24 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 			// check against map
 			if(isMapValid(ip3))
 				{
-				if(	isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]) || 
-					(isTreeWalker && isForestTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
-					)
-					{ // if normal passable, or, if treewalker is forestpassable
-					this.pos += offset;
+				if(	isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+					{ // if normal passable
+					pos += offset;
+					return true;
+					}else{
+					}
+					
+				if(isTreeWalker && isForestTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+					{ // if treewalker is forestpassable, and in forest, go half speed (or whatever modifier)
+					pos.x += offset.x/2; //fixme. DEX based.
+					pos.y += offset.y/2; //fixme. DEX based.
 					return true;
 					}else{
 					return false;
 					}
+	
+				return false; // note, this fall-through ordering is important.
+					
 				}else{
 				return false;
 				}
