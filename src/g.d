@@ -88,8 +88,8 @@ intrinsicGraph!float testGraph3;
 BITMAP* buildBulletOutline(BITMAP* b)	// TODO BUG. what if outline needs to be OUTSIDE the atlas bitmap confines? [we need to make atlas +1 on each side, and then UPDATE the subbitmap coordinates +1 accordingly! That, or make the normal one also +1 for the hell of it.]
 	{
 	assert(b !is null);
-	BITMAP* output = al_create_bitmap(b.w, b.h);
-	COLOR outlineColor = red; 
+	BITMAP* output = al_create_bitmap(b.w+2, b.h+2);
+	COLOR outlineColor = white; 
 //		COLOR clearColor = COLOR(0,0,0,1);
 
 	bool isTransparent(BITMAP* bi, ipair p)
@@ -105,15 +105,15 @@ BITMAP* buildBulletOutline(BITMAP* b)	// TODO BUG. what if outline needs to be O
 	
 	bool isInside(BITMAP* _b, ipair p)
 		{
-		if(p.i >= 0 && p.j >= 0)
-		if(p.i < _b.w && p.j < _b.h)
+		if(p.i >= -1 && p.j >= -1) //we're going -1 to +1 beyond boundary
+		if(p.i < _b.w+1 && p.j < _b.h+1)
 			return true;
 		return false;
 		}
 		
 	void doOutline(BITMAP* _bi, ipair p)
 		{
-		if(isInside(_bi, p) && isTransparent(_bi, p)){al_put_pixel(p.i, p.j, outlineColor);}
+		if(isInside(_bi, p) && isTransparent(_bi, p)){al_put_pixel(p.i+1, p.j+1, outlineColor);}
 		}
 		
 	void checkDirections(BITMAP* bi, BITMAP* bo, ipair p) /// NOTE: Assumes target bitmap is set and locked
@@ -121,7 +121,7 @@ BITMAP* buildBulletOutline(BITMAP* b)	// TODO BUG. what if outline needs to be O
 		if(isInside(bi, p))
 			if(!isTransparent(bi, p)) /// For every 'real' pixel, check for borders
 				{
-//				al_put_pixel(p.i, p.j, getPixel(bi, p)); we do NOT draw the underlying bullet this time.
+		//		al_put_pixel(p.i+1, p.j+1, getPixel(bi, p)); 
 				doOutline(bi, ipair(p,-1, 0));
 				doOutline(bi, ipair(p, 1, 0));
 				doOutline(bi, ipair(p, 0,-1));
@@ -134,14 +134,16 @@ BITMAP* buildBulletOutline(BITMAP* b)	// TODO BUG. what if outline needs to be O
 	al_set_target_bitmap(output); 
 	al_lock_bitmap(b, al_get_bitmap_format(b), ALLEGRO_LOCK_READONLY);			
 	al_lock_bitmap(output, al_get_bitmap_format(output), ALLEGRO_LOCK_WRITEONLY);
-	for(int i = 1; i < b.w; i++) 
-		for(int j = 1; j < b.h; j++)
+	for(int i = 0; i <= b.w; i++) 
+		for(int j = 0; j <= b.h; j++)
 		{
 		checkDirections(b, output, ipair(i,j));
 		}
 	al_unlock_bitmap(b);
 	al_unlock_bitmap(output);
 	al_reset_target();
+	
+	al_save_bitmap("testoutput.png", output);
 	
 	return output;
 	}

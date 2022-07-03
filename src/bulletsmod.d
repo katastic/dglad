@@ -37,9 +37,11 @@ class elfBullet : bullet
 			{
 			if(isOutlined)
 				{
-				al_draw_center_rotated_tinted_bitmap(bmpOutlined, c, cx, cy, angle + degToRad(90), 0);
+				al_draw_center_rotated_bitmap(bmpOutlined, cx, cy, angle + degToRad(90), 0); // not tinted, maybe later
 				}
+				
 			al_draw_center_rotated_tinted_bitmap(bmp, c, cx, cy, angle + degToRad(90), 0);
+
 			return true;
 			}
 		return false;
