@@ -1,7 +1,14 @@
 BUG
 --------------------------------
-	- bullets are NOT HITTING ghosts (or any objects?) currently, but they hit walls.
-
+	+ bullets are NOT HITTING ghosts (or any objects?) currently, but they hit walls.
+	- lighting is NOT APPLIED to the DECAL LAYER and it's pretty hilarious seeing glowing blood off in the distance
+		- actually, i'm not sure the easiest way to add shading since it's one gigantic bitmap. We can't phong shade it. 
+		We could split it into texels and light that. But it'll be a bunch slower. If we switch to multiplative lighting, we can
+		simply draw it, and then "shade" around with lightmaps.
+			-> we could also start a shadowLayer bitmap layer where all light casting objects cast their brightness onto that, then after we draw everything, 
+			we dump the shadow map to it. That basically becomes deferred lighting and technically if we made it floating point, we could do HDR lighting.
+		
+		
 stuff to work on:
 --------------------------------
 	- different bullet graphics

@@ -26,7 +26,8 @@ import worldmod;
 
 int SCREEN_W = 1360; //not immutable because its a argc config variable
 int SCREEN_H = 720;
-bool useLighting = false;
+bool useLighting = true;
+bool useGlowingBlood = true; // TODO FIX. fun bug: don't apply "light" shading to blood and it glows in the dark. 2SPOOKY4ME
 
 immutable ushort TILE_W=32;
 immutable ushort TILE_H=32;

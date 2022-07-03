@@ -223,7 +223,7 @@ class atlasHandler
 		{
 		assert(b !is null);
 		BITMAP* output = al_create_bitmap(b.w, b.h);
-		COLOR outlineColor = red; 
+		COLOR outlineColor = white; 
 	//		COLOR clearColor = COLOR(0,0,0,1);
 
 		bool isTransparent(BITMAP* bi, ipair p)
@@ -255,7 +255,7 @@ class atlasHandler
 			if(isInside(bi, p))
 				if(!isTransparent(bi, p)) /// For every 'real' pixel, check for borders
 					{
-					al_put_pixel(p.i, p.j, getPixel(bi, p));
+//					al_put_pixel(p.i, p.j, getPixel(bi, p)); // draw original pixels
 					doOutline(bi, ipair(p,-1, 0));
 					doOutline(bi, ipair(p, 1, 0));
 					doOutline(bi, ipair(p, 0,-1));
@@ -339,20 +339,17 @@ class animation
 		
 	bool draw(pair pos, DIR dir) /// implied viewport
 		{
-		BITMAP *source;
-		if(!isOutlined)
-			{
-			source = bmps[dir][index];
-			}else{
-			source = bmpsOutlined[dir][index];
-			}
-
+		BITMAP *source = bmps[dir][index];
+		BITMAP *sourceOutlined = bmpsOutlined[dir][index];
+		color outlineColor = white; // how do we handle this verses lighting?
 		if(isOnScreen(pos))
 			{
 			if(!g.useLighting)
 			{
+				if(isOutlined)drawCenteredTintedBitmap( sourceOutlined, outlineColor, vpair(pos), 0);
 				drawCenteredBitmap( source, vpair(pos), 0);
 			}else{
+				if(isOutlined)drawCenteredTintedBitmap( sourceOutlined, outlineColor, vpair(pos), 0);
 				drawCenteredTintedBitmap( source, getShadeTint(g.world.units[0].pos, pos), vpair(pos), 0);				
 			}
 			return true;
@@ -448,7 +445,11 @@ class elf : unit
 		{
 		auto ip = ipair(this.pos);
 		if(isMapValid(ip) && isForestTile( g.world.map.bmpIndex[ip.i][ip.j]))
-			{anim.isOutlined = true;}else{anim.isOutlined = false;}
+			{
+			anim.isOutlined = true;
+			}else{
+			anim.isOutlined = false;
+			}
 		super.onTick();
 		}
 	}
