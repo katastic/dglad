@@ -874,32 +874,34 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 				ushort tileType = g.world.map.bmpIndex[ip3.i][ip3.j];
 				if(isHalfHeightTile(tileType))
 					{
-					// NOTE: We need non-tile coordinates here
-					if(pos.y % TILE_H > TILE_H/2)
+					// NOTE: We need non-tile coordinates here based on where we WANT TO MOVE
+					if((pos.y + offset.y) % TILE_H > TILE_H/2)
 					
 						{
-						writeln(pos, " ",pos.y % TILE_H, " + ");
+						if(isDebugging)writeln("isHalfHeightTile ", pos, " ",pos.y % TILE_H, " + ");
 						pos += offset;
 						return true;
 						}else{
-						writeln(pos, " ",pos.y % TILE_H, " - ");
-						return false;
+						if(isDebugging)writeln("isHalfHeightTile ", pos, " ",pos.y % TILE_H, " - ");
+						return true;
 						}
 					}
 					
 				if(isPassableTile(tileType))
 					{ // if normal passable
+					if(isDebugging)writeln("isPassableTile ", pos, " ", pos.y % TILE_H);
 					pos += offset;
 					return true;
-					}else{
 					}
 					
 				if(isTreeWalker && isForestTile(tileType))
 					{ // if treewalker is forestpassable, and in forest, go half speed (or whatever modifier)
+					if(isDebugging)writeln("isForestTile ", pos, " ", pos.y % TILE_H);
 					pos.x += offset.x/2; //fixme. DEX based.
 					pos.y += offset.y/2; //fixme. DEX based.
 					return true;
 					}else{
+					if(isDebugging)writeln("!isForestTile ", pos, " ", pos.y % TILE_H);
 					return false;
 					}
 	

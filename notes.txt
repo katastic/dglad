@@ -1,5 +1,10 @@
 BUG
 --------------------------------
+
+	---> do we even need half-height tiles if were drawing / colliding from a centroid instead of bounding box?
+
+	- remember unit atlas outlines aren't +1 yet. also, we could easily work around this by just forcing people to use textures with a +1 border since we're specifiying the coordinates ourselves anyway. but meh.
+
 	+ bullets are NOT HITTING ghosts (or any objects?) currently, but they hit walls.
 	+ by separating outline from graphics, we can now tint them for lighting OR for special effects like indicating 
 		active spells/potions (like flight/invulnerability) and it can change every frame without needing palette swapping
