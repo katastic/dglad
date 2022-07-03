@@ -135,7 +135,7 @@ class item : baseObject
 	this(pair _pos)
 		{	
 		writeln("ITEM EXISTS BTW at ", _pos.x, " ", _pos.y);
-		super(pair(_pos), pair(0,0),g.potion_bmp);
+		super(pair(_pos), pair(0,0),g.bmp.potion);
 		}
 		
 	void onPickup(ref unit by)

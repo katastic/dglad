@@ -11,6 +11,7 @@ import std.stdio;
 import std.math;
 import std.string;
 import std.algorithm : remove;
+import std.traits;
 
 import g;
 import helper;
@@ -90,9 +91,74 @@ struct charStats //character stats, 'cstats' in object?
 	int dex=10;
 	int con=10;
 	int intel=10; // can't use int, since, you know, 'int'
-//	int personality; // might and magic, mana for druids.
-	int speed=10; // ?
 	int armor=10; // glad
+//	int personality; // might and magic: mana for druids.
+//  int speed=10; // derived from DEX?
+// other stats? what would charisma be for?   luck?
+
+/+
+	supposedly, in mm6, stats are "weighted". the more you gain as you go up, the less you get for each gain in stats to keep you from becoming a god.
+
+	stat	diff	n
+	1				0
+	3		2		1
+	5		2		2
+	7		2		3
+	9		2		4
+	11		2		5
+	13		2		6
+	15		2		7...
+	17		2
+	19		2
+	21		2
+	25		3
+	30		5
+	35		5
+	40		5
+	50		10
+	75		25
+	100		25
+	125		25		18
+	150		25
+	175		25
+	200		25				
+
+	why the hell aren't these tables identical? Is the pottsland starting at 0 instead of -6 or whatver?
+
+	1		-6
+	3		-5
+	5		-4
+	7		-3
+	9		-2
+	11		-1
+	13		0
+	15		1
+	17		2
+	19		3
+	21		4
+	25		5
+	30		6
+	35		7
+	40		8
+	50		9
+	75		10
+	100		11
+	125		12
+	150		13
+	175		14
+	200		15
+	225		16
+	250		17
+	275		18
+	300		19
+	350		20	
+	400		25	(note skipping 5 here on)
+	500		30
+
+	https://www.angelfire.com/nt/bones/
+	http://www.pottsland.com/mm6/attributes2.shtml
+	https://www.gog.com/forum/might_and_magic_series/limit_to_benefit_of_stats_in_mm6
++/
  	
 	int xp=0;
 	int level=0; // derived from xp? or cached
@@ -238,7 +304,6 @@ class animation
 		}
 
 	// do we want/care to reset walk cycle when you change direction? 
-    import std.traits;
 	int numDirections; 
 	int numFrames=2;
 	int index = 0; /// frame index
@@ -256,13 +321,6 @@ class animation
 		assert(atlas.dataOutlined !is null);
 		
 		parseMap3(coordinates, atlas);
-	//	writeln("----------21353523521");
-	//	foreach(immutable d; [EnumMembers!DIR])
-	//		{
-//			writeln(d);
-//			bmps[d][0] = new ALLEGRO_BITMAP;
-	//		bmps[d][1] = new ALLEGRO_BITMAP;
-		//	}
 		}
 		
 	void nextFrame()
@@ -341,7 +399,7 @@ class archer : unit
 
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, archer_coords, atlas);
 		}
 	}	
@@ -350,7 +408,7 @@ class elf : unit
 	{
 	this(pair _pos, int teamIndex, atlasHandler atlas)
 		{	
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		myTeamIndex = teamIndex; // TODO put into unit constructor
 		anim = new animation(1, elf_coords, g.world.atlas);
 		isTreeWalker = true;
@@ -391,7 +449,7 @@ class faery : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, ghost_coords, atlas); //fixme
 		isFlying = true;
 		}
@@ -418,7 +476,7 @@ class druid : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, ghost_coords, atlas); //fixme
 		isFlying = true;
 		}
@@ -440,7 +498,7 @@ class fireElemental : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, ghost_coords, atlas); //fixme
 		}
 		
@@ -466,7 +524,7 @@ class ghost : unit
 	{
 	this(pair _pos, int teamIndex, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		myTeamIndex = teamIndex; // TODO put into unit constructor
 		anim = new animation(1, ghost_coords, atlas);
 		isGhost = true;
@@ -494,7 +552,7 @@ class mage : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, mage_coords, atlas);
 		}
 		
@@ -521,7 +579,7 @@ class skeleton : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 
@@ -548,7 +606,7 @@ class slimeLarge : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 	}
@@ -557,7 +615,7 @@ class slimeMedium : unit
 	{	
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 	}
@@ -566,7 +624,7 @@ class slimeSmall : unit
 	{	
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 	}
@@ -575,7 +633,7 @@ class cleric : unit
 	{
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, mage_coords, atlas); //fixme
 		}
 		
@@ -611,7 +669,7 @@ class soldier : unit
 	
 	this(pair _pos, atlasHandler atlas)
 		{
-		super(0, _pos, pair(0, 0), g.dude_bmp);
+		super(0, _pos, pair(0, 0), g.bmp.dude);
 		anim = new animation(1, soldier_coords, atlas);
 		}
 
@@ -803,7 +861,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 			// check against map
 			if(isMapValid(ip3))
 				{
-				if(	isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
+				if(isPassableTile(g.world.map.bmpIndex[ip3.i][ip3.j]))
 					{ // if normal passable
 					pos += offset;
 					return true;
@@ -942,6 +1000,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 			direction = DIR.LEFT;
 			}
 		}
+		
 	override void actionRight()
 		{
 		if(!freezeMovement)
@@ -950,7 +1009,6 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 			direction = DIR.RIGHT;
 			}
 		}
-
 	}
 
 class baseObject /// does nothing but draws an object

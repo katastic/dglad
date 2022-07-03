@@ -66,7 +66,7 @@ class static_blood_handler_t
 	void add(float x, float y)
 		{
 		al_set_target_bitmap(data);
-		al_draw_centered_bitmap(g.blood_bmp, x, y, uniform!"[]"(0,3));
+		al_draw_centered_bitmap(g.bmp.blood, x, y, uniform!"[]"(0,3));
 		al_reset_target();
 		}
 		

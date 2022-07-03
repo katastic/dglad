@@ -126,7 +126,7 @@ class animation_t //npc animation
 		// nyi
 	}
 
-enum STATE{ NONE, DELAY, WAITING}; 
+enum STATE{ NONE=0, DELAY, WAITING};
 /// waiting - waiitng on user input (for decision or end of dialog)
 
 class scriptHandler

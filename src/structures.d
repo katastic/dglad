@@ -29,7 +29,7 @@ class tower : structure
 	this(pair _pos, int teamIndex)
 		{
 		immutable int FIRE_COOLDOWN = 10;
-		super(_pos, teamIndex, g.potion_bmp);
+		super(_pos, teamIndex, g.bmp.potion);
 		primary.setMax(FIRE_COOLDOWN);
 		}		
 		

@@ -109,7 +109,7 @@ class gun
 			{
 			pair _vel = pair(vel.x + cos(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed,
 						 vel.y + sin(angle + uniform!"[]"(-spreadArc, spreadArc).degToRad)*speed);
-			g.world.bullets ~= new bullet(pos, vel, angle, bulletColor, 0, 100, myOwner, isDebugging);
+			g.world.bullets ~= new bullet(pos, _vel, angle, bulletColor, 0, 100, myOwner, isDebugging);
 			} 
 		}
 	

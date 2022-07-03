@@ -43,34 +43,40 @@ bool[256] keyPressed = false;
 
 FONT* 	font1;
 
-BITMAP* smoke_bmp;
-BITMAP* bullet_bmp;
-BITMAP* dude_bmp;
-BITMAP* trailer_bmp;
-BITMAP* turret_bmp;
-BITMAP* turret_base_bmp;
+struct bmpsType
+	{
+	BITMAP* smoke;
+	BITMAP* bullet;
+	BITMAP* bulletRound;
+	BITMAP* dude;
+	BITMAP* trailer;
+	BITMAP* turret;
+	BITMAP* turret_base;
 
-BITMAP* chest_bmp;
-BITMAP* chest_open_bmp;
-BITMAP* dwarf_bmp;
-BITMAP* goblin_bmp;
-BITMAP* boss_bmp;
-BITMAP* fountain_bmp;
-BITMAP* tree_bmp;
-BITMAP* wall_bmp;
-BITMAP* wall2_bmp;
-BITMAP* wall3_bmp;
-BITMAP* grass_bmp;
-BITMAP* forest_bmp;
-BITMAP* lava_bmp;
-BITMAP* water_bmp;
-BITMAP* wood_bmp;
-BITMAP* stone_bmp;
-BITMAP* reinforced_wall_bmp;
-BITMAP* sword_bmp;
-BITMAP* carrot_bmp;
-BITMAP* potion_bmp;
-BITMAP* blood_bmp;
+	BITMAP* chest;
+	BITMAP* chest_open;
+	BITMAP* dwarf;
+	BITMAP* goblin;
+	BITMAP* boss;
+	BITMAP* fountain;
+	BITMAP* tree;
+	BITMAP* wall;
+	BITMAP* wall2;
+	BITMAP* wall3;
+	BITMAP* grass;
+	BITMAP* forest;
+	BITMAP* lava;
+	BITMAP* water;
+	BITMAP* wood;
+	BITMAP* stone;
+	BITMAP* reinforced_wall;
+	BITMAP* sword;
+	BITMAP* carrot;
+	BITMAP* potion;
+	BITMAP* blood;
+	}
+	
+bmpsType bmp;
 
 intrinsicGraph!float testGraph;
 intrinsicGraph!float testGraph2;
@@ -80,37 +86,41 @@ void loadResources()
 	{
 	font1 = getFont("./data/DejaVuSans.ttf", 18);
 
-	bullet_bmp  			= getBitmap("./data/bullet.png");
-	smoke_bmp  				= getBitmap("./data/smoke.png");
-	bullet_bmp  			= getBitmap("./data/bullet.png");
-	dude_bmp	  			= getBitmap("./data/dude.png");
-	trailer_bmp	  			= getBitmap("./data/trailer.png");
-	turret_bmp	  			= getBitmap("./data/turret.png");
-	turret_base_bmp			= getBitmap("./data/turret_base.png");
-	
-	sword_bmp  			= getBitmap("./data/sword.png");
-	carrot_bmp  		= getBitmap("./data/carrot.png");
-	potion_bmp  		= getBitmap("./data/potion.png");
-	chest_bmp  			= getBitmap("./data/chest.png");
-	chest_open_bmp  	= getBitmap("./data/chest_open.png");
+	with(bmp)
+		{
+		bullet  			= getBitmap("./data/bullet.png");
+		smoke  				= getBitmap("./data/smoke.png");
+		bullet  			= getBitmap("./data/bullet.png");
+		bulletRound  			= getBitmap("./data/bulletround.png");
+		dude	  			= getBitmap("./data/dude.png");
+		trailer	  			= getBitmap("./data/trailer.png");
+		turret	  			= getBitmap("./data/turret.png");
+		turret_base			= getBitmap("./data/turret_base.png");
+		
+		sword  			= getBitmap("./data/sword.png");
+		carrot  		= getBitmap("./data/carrot.png");
+		potion  		= getBitmap("./data/potion.png");
+		chest  			= getBitmap("./data/chest.png");
+		chest_open  	= getBitmap("./data/chest_open.png");
 
-	dwarf_bmp  		= getBitmap("./data/dwarf.png");
-	goblin_bmp  	= getBitmap("./data/goblin.png");
-	boss_bmp 	 	= getBitmap("./data/boss.png");
+		dwarf  		= getBitmap("./data/dwarf.png");
+		goblin  	= getBitmap("./data/goblin.png");
+		boss 	 	= getBitmap("./data/boss.png");
 
-	wall_bmp  		= getBitmap("./data/wall.png");
-	wall2_bmp  		= getBitmap("./data/wall2.png");
-	wall3_bmp  		= getBitmap("./data/wall3.png");
-	grass_bmp  		= getBitmap("./data/grass.png");
-	forest_bmp  		= getBitmap("./data/forest.png");
-	lava_bmp  		= getBitmap("./data/lava.png");
-	water_bmp  		= getBitmap("./data/water.png");
-	fountain_bmp  	= getBitmap("./data/fountain.png");
-	wood_bmp  		= getBitmap("./data/wood.png");
-	stone_bmp  		= getBitmap("./data/brick.png");
-	tree_bmp  		= getBitmap("./data/tree.png");
-	blood_bmp  		= getBitmap("./data/blood.png");
-	reinforced_wall_bmp  	= getBitmap("./data/reinforced_wall.png");	
+		wall  		= getBitmap("./data/wall.png");
+		wall2  		= getBitmap("./data/wall2.png");
+		wall3  		= getBitmap("./data/wall3.png");
+		grass  		= getBitmap("./data/grass.png");
+		forest  		= getBitmap("./data/forest.png");
+		lava  		= getBitmap("./data/lava.png");
+		water  		= getBitmap("./data/water.png");
+		fountain  	= getBitmap("./data/fountain.png");
+		wood  		= getBitmap("./data/wood.png");
+		stone  		= getBitmap("./data/brick.png");
+		tree  		= getBitmap("./data/tree.png");
+		blood  		= getBitmap("./data/blood.png");
+		reinforced_wall  	= getBitmap("./data/reinforced_wall.png");	
+		}
 	}
 
 alias COLOR = ALLEGRO_COLOR;
@@ -267,7 +277,7 @@ class logger
 
 	void logB(T, V...)(T obj, V variadic) /// variadic version
 		{
-		import std.traits;
+//		import std.traits;
 
 //		pragma(msg, typeof(variadic)); // debug
 		if(echoToStandard)

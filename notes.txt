@@ -4,7 +4,10 @@ BUG
 
 stuff to work on:
 --------------------------------
-	- remember ELF SHOTS can go through forest too! not just elves! Also walking in forest sapps mana.
+	- different bullet graphics
+	- animated tiles. tile metadata.
+	+ remember ELF SHOTS can go through forest too! not just elves! 
+		- Also walking in forest sapps mana.
 	
 	- we could do a "roof" layer for tree tops AND, if we drop that twice, once "behind" object layer, and then once half transparent after, we might be able to have "objects are transparent under roofs". Otherwise, just detect if we're under a tile and draw last transparently. It'll pop a bit but work.
 	
@@ -14,17 +17,14 @@ stuff to work on:
 		+ how do we draw the outline? (we could tint the whole thing white and stretch it slightly and draw under it, or pre-process the tint outlines)
 		- do we specify every boss in code, or use/allow SCENARIOS to specify enemies
 	
-	- cooldown, unified system between call classes instead of each rolling their own
+	+ cooldown, unified system between call classes instead of each rolling their own
+		- convert all old codes
 	+ integrate blood map from dta
 	- atlas stuff
 	- items from glad:
 		- food, mana, flight, invisibility, invulnerability
 
-
-
   - new dwarf class with arc mortar attack
-
-
 
 	- map game modes
 		- standard gladiator. destroy. find everything, sometimes with infinite spawners (skeletons/slimes), kill everything. leave when stuff is dead.
@@ -35,10 +35,6 @@ stuff to work on:
 			-- ISSUE with infinite spawning means they can infinite farm XP.
 				- workouts: "easy but ugly" a countdown timer that says if you don't cap in time, your mission objective is failed because of whatever.
 					- better? Barony timeout minotaur. A boss, or series of heavy-duty monsters that are "almost" immortal, show up and you have to run. Would make for interesting pacing but that might not be the fun people want. Sometimes, an RPG is having the fun to sit around and interact as much as you want till you decide to leave.
-
-
-
-
 
 
 

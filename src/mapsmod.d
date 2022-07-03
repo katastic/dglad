@@ -78,17 +78,17 @@ class map_t
 	
 	this()
 		{
-		bmps ~= g.grass_bmp; // 0 passable, note zero is empty/not used/blank so ignore this file for now
-		bmps ~= g.grass_bmp; // 1 passable
-		bmps ~= g.stone_bmp; // 2 passable
-		bmps ~= g.water_bmp; // !3 passable
-		bmps ~= g.wood_bmp;  // 4 passable
-		bmps ~= g.reinforced_wall_bmp; // 5 passable (dark bg wall)
-		bmps ~= g.lava_bmp;  // !6 passable
-		bmps ~= g.wall_bmp;  // 7 !passable
-		bmps ~= g.wall2_bmp; // 8 !passable
-		bmps ~= g.wall3_bmp; // 9 !passable
-		bmps ~= g.forest_bmp; // 10 -isPassable -isShotPassable +isForest
+		bmps ~= g.bmp.grass; // 0 passable, note zero is empty/not used/blank so ignore this file for now
+		bmps ~= g.bmp.grass; // 1 passable
+		bmps ~= g.bmp.stone; // 2 passable
+		bmps ~= g.bmp.water; // !3 passable
+		bmps ~= g.bmp.wood;  // 4 passable
+		bmps ~= g.bmp.reinforced_wall; // 5 passable (dark bg wall)
+		bmps ~= g.bmp.lava;  // !6 passable
+		bmps ~= g.bmp.wall;  // 7 !passable
+		bmps ~= g.bmp.wall2; // 8 !passable
+		bmps ~= g.bmp.wall3; // 9 !passable
+		bmps ~= g.bmp.forest; // 10 -isPassable -isShotPassable +isForest
 				
 		backgrounds ~= getBitmap("./data/parallax1.png");
 		parallaxScale ~= .75;

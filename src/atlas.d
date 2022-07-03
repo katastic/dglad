@@ -3,6 +3,8 @@ import g;
 
 import std.stdio;
 import std.conv;
+import std.json;
+import std.file;
 
 import allegro5.allegro;
 import allegro5.allegro_primitives;
@@ -49,21 +51,18 @@ struct atlas_t
 		file.rawWrite((&value)[0..1]);
 		}
 
-import std.json;
 	JSONValue map_in_json_format;
 
-	void saveMeta(string path="meta.map")
+	void saveMeta(string path="./data/maps/meta.map")
 		{
 		writeln("save META map");
-		import std.json;
-		import std.file;
-		File f = File("./data/maps/meta.map", "w");
+		File f = File(path, "w");
 
 			//map_in_json_format = parseJSON("{ \"taco\":\"boo\"}");
 
-			map_in_json_format.object["width"] = 50;
-			map_in_json_format.object["height"] = 50;
-			map_in_json_format.object["isPassable"] = JSONValue( isPassable ); 
+		map_in_json_format.object["width"] = 50;
+		map_in_json_format.object["height"] = 50;
+		map_in_json_format.object["isPassable"] = JSONValue( isPassable ); 
 	//		writeln(map_in_json_format);
 
 		f.write(map_in_json_format.toJSON(false));
@@ -74,12 +73,11 @@ import std.json;
 		//https://forum.dlang.org/post/mailman.113.1330209587.24984.digitalmars-d-learn@puremagic.com
 		}
 
-	import std.file;
-	void loadMeta(string path="meta.map")
+	void loadMeta(string path="./data/maps/meta.map")
 		{
 		writeln("LOADING META MAP");
 		
-		string str = std.file.readText("./data/maps/meta.map");
+		string str = std.file.readText(path);
 	//	writeln(str);
 		map_in_json_format = parseJSON(str);
 		writeln(map_in_json_format);

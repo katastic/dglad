@@ -19,6 +19,16 @@ import std.random : uniform;
 import std.math : cos, sin;
 import std.stdio;
 
+class elfBullet : bullet
+	{
+	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, unit _myOwner, bool _isDebugging)
+		{
+		super(_pos, _vel, _angle, _c, _type, _lifetime, _myOwner, _isDebugging);
+		isForestBullet = true;
+		bmp = g.bmp.bulletRound;
+		}
+	}
+
 class bullet : baseObject
 	{
 	bool isDebugging=false;
@@ -42,7 +52,7 @@ class bullet : baseObject
 		type = _type;
 		lifetime = _lifetime;
 		angle = _angle;
-		super(pair(this.pos), pair(this.vel), g.bullet_bmp);
+		super(pair(this.pos), pair(this.vel), g.bmp.bullet);
 		}
 	
 	void applyV(float applyAngle, float _vel)

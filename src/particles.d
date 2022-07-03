@@ -60,7 +60,7 @@ struct particle
 		
 	bool draw(viewport v)
 		{
-		BITMAP *b = g.smoke_bmp;
+		BITMAP *b = g.bmp.smoke;
 		ALLEGRO_COLOR c = ALLEGRO_COLOR(1,1,1,cast(float)lifetime/cast(float)maxLifetime);
 		float cx = pos.x + v.x - v.ox;
 		float cy = pos.y + v.y - v.oy;

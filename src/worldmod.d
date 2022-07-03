@@ -58,8 +58,8 @@ class world_t
 	
 		blood = new static_blood_handler_t(map);
 	
-		structures ~= new structure(pair(300, 200), 1, g.fountain_bmp);
-		structures ~= new structure(pair(300, 300), 2, g.fountain_bmp);
+		structures ~= new structure(pair(300, 200), 1, g.bmp.fountain);
+		structures ~= new structure(pair(300, 300), 2, g.bmp.fountain);
 		structures ~= new tower(pair(400, 300), 1);
 		structures ~= new tower(pair(350, 250), 2);
 	
@@ -78,7 +78,7 @@ class world_t
 			u.myTeamIndex = 0;
 			units ~= u;
 			}
-			
+
 		viewports[0].attach(units[1]);
 			
 		testGraph = new intrinsicGraph!float("Draw (ms)", g.stats.nsDraw, g.SCREEN_W-400, 5, COLOR(1,0,0,1), 1_000_000);
@@ -98,37 +98,7 @@ class world_t
 		blood.draw(v);
 		map.drawFrontLayer(v);
 
-		void draw(T)(ref T obj)
-			{
-			foreach(ref o; obj)
-				{
-				o.draw(v);
-				}
-			}
-		
-		void drawStat(T, U)(ref T obj, ref U stat)
-			{
-			foreach(ref o; obj)
-				{
-				stat++;
-				o.draw(v);
-				}
-			}
-
-		void drawStat2(T, U)(ref T obj, ref U stat, ref U clippedStat)
-			{
-			foreach(ref o; obj)
-				{
-				if(o.draw(v))
-					{
-					stat++;
-					}else{
-					clippedStat++;
-					}
-				}
-			}
-
-		void drawStat3(T)(ref T obj, ref ulong[2] stat)
+		void drawStat(T)(ref T obj, ref ulong[2] stat)
 			{
 			foreach(ref o; obj)
 				{
@@ -141,10 +111,10 @@ class world_t
 				}
 			}
 		
-		drawStat3(bullets, 	stats.number_of_drawn_bullets);
-		drawStat3(particles, stats.number_of_drawn_particles);
-		drawStat3(units, stats.number_of_drawn_units);
-		drawStat3(structures, stats.number_of_drawn_structures);		
+		drawStat(bullets, 	stats.number_of_drawn_bullets);
+		drawStat(particles, stats.number_of_drawn_particles);
+		drawStat(units, stats.number_of_drawn_units);
+		drawStat(structures, stats.number_of_drawn_structures);		
 
 		testGraph.draw(v);
 		testGraph2.draw(v);
