@@ -385,6 +385,13 @@ void testLogger()
 
 void viewTest()
 	{
+	for(int i=-33; i < 33; i++)
+		{
+		auto p = ipair(pair(i,0), 0, 0);
+		writeln(i, " = ", isMapValid(p), "[", p, "]");
+		}
+
+
 /+	viewport v = new viewport(0, 0, 640, 480, 100, -100);
 	pair p = pair(300, 300);
 	
@@ -510,19 +517,38 @@ struct ipair
 	// WARNING: take note that we're using implied viewport conversions
 	this(pair p)
 		{
-		alias v=IMPLIED_VIEWPORT;
-		this = ipair(cast(int)p.x/TILE_W, cast(int)p.y/TILE_H);
+		// this is ROUNDING THE INTEGER DOWN. (or the other one)
+//		alias v=IMPLIED_VIEWPORT; // wait this isn't used???
+//		this = ipair(cast(int)p.x/TILE_W, cast(int)p.y/TILE_H);
+//		this = ipair(cast(int)lround(p.x/cast(float)TILE_W), cast(int)lround(p.y/cast(float)TILE_H));
+		float x, y;
+//		writeln("going from ", p);
+		if(p.x < 0 )x = ceil(p.x) - 31;// FIXME. TODO. THIS WORKS But do we UNDERSTAND IT ENOUGH?
+		if(p.y < 0 )y = ceil(p.y) - 31;
+		if(p.x >= 0)x = floor(p.x);
+		if(p.y >= 0)y = floor(p.y);
+
+		this = ipair(cast(int)(x/cast(float)TILE_W), cast(int)(y/cast(float)TILE_H));
+//		writeln("going to ", this);
 		}
 
 	this(pair p, float xOffset, float yOffset)
 		{
-		alias v=IMPLIED_VIEWPORT;
-		this = ipair(cast(int)(p.x+xOffset)/TILE_W, cast(int)(p.y+yOffset)/TILE_H);
+//		alias v=IMPLIED_VIEWPORT; // wait this isn't used???
+//		writeln("  going from ", p, " ", xOffset, " ", yOffset);
+		float x, y;
+		if(p.x + xOffset < 0 )x = ceil(p.x + xOffset) - 31; // FIXME. TODO. THIS WORKS But do we UNDERSTAND IT ENOUGH?
+		if(p.y + yOffset < 0 )y = ceil(p.y + yOffset) - 31;
+		if(p.x + xOffset >= 0)x = floor(p.x + xOffset);
+		if(p.y + yOffset >= 0)y = floor(p.y + yOffset);
+
+		this = ipair(cast(int)(x/cast(float)TILE_W), cast(int)(y/cast(float)TILE_H));
+//		writeln("  going to ", this);
 		}
 
 	this(T)(T obj, float xOffset, float yOffset)
 		{
-		alias v=IMPLIED_VIEWPORT;
+	//	alias v=IMPLIED_VIEWPORT; // wait this isn't used???
 		this = ipair(cast(int)(obj.pos.x+xOffset)/TILE_W, cast(int)(obj.pos.y+yOffset)/TILE_H);
 		}
 	}

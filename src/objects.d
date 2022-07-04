@@ -42,6 +42,7 @@ honestly those classes were pretty crap unless i missed something. thief was mor
 //immutable float FALL_ACCEL = .1;
 immutable float WALK_SPEED = .30;
 immutable float JUMP_SPEED = 5;
+immutable float BULLET_SPEED = 5;
 
 struct cooldown /// todo: find better name
 	{
@@ -391,7 +392,7 @@ class archer : unit
 			if(fmod(spinAngle,2f*PI/NUM_SHOTS) < .1) // fixme: this needs to be different. divide distance into number of shots, and a total time for action so you can adjust that for balance.
 				{
 				// fireShot();
-				g.world.bullets ~= new bullet( this.pos, pair(apair( spinAngle, 10)), spinAngle, red, 100, 0, this, 0);
+				g.world.bullets ~= new bullet( this.pos, pair(apair( spinAngle, BULLET_SPEED)), spinAngle, red, 100, 0, this, 0);
 //	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, bool _isAffectedByGravity, unit _myOwner, bool _isDebugging)
 				writefln("firing shot at %3.2f", spinAngle);
 				}
@@ -425,6 +426,7 @@ class elf : unit
 			{
 			g.world.bullets ~= new elfBullet( this.pos, pair(apair( toAngle(direction), 10)), toAngle(direction), red, 100, 0, this, 0);
 			g.world.bullets[$-1].isForestBullet = true;
+			if(isDebugging)g.world.bullets[$-1].isDebugging = true;
 			}
 		}
 
@@ -435,7 +437,7 @@ class elf : unit
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
-				g.world.bullets ~= new elfBullet( this.pos, pair(apair( ang, 10)), ang, brown, 100, 0, this, 0);
+				g.world.bullets ~= new elfBullet( this.pos, pair(apair( ang, BULLET_SPEED)), ang, brown, 100, 0, this, 0);
 				g.world.bullets[$-1].isForestBullet = true;
 				}
 			}
@@ -470,7 +472,7 @@ class faery : unit
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
-				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, BULLET_SPEED)), ang, red, 100, 0, this, 0);
 				}
 			}
 		}
@@ -518,7 +520,7 @@ class fireElemental : unit
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
-				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, BULLET_SPEED)), ang, red, 100, 0, this, 0);
 				}
 			}
 		}
@@ -546,7 +548,7 @@ class ghost : unit
 			immutable int NUM_SHOTS = 16;
 			for(float ang = 0; ang < 2*PI; ang += 2*PI/NUM_SHOTS) 
 				{
-				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, 10)), ang, red, 100, 0, this, 0);
+				g.world.bullets ~= new bullet( this.pos, pair(apair( ang, BULLET_SPEED)), ang, red, 100, 0, this, 0);
 				}
 			}
 		}
@@ -821,12 +823,10 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		return true;
 		}
 +/	
-
 	bool attemptMove(pair offset)
 		{
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
-//		writeln(this.pos);
-//		writeln(ip3);
+		writeln("obj ", this.pos, " ", ip3);
 		if(isGhost) { this.pos += offset; return true;} 
 		if(isFlying)
 			{
@@ -840,16 +840,16 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 				}
 			} else {
 			// check against objects
-			immutable float r = 16; /// radius 
+			immutable float r = 10; /// unit detection radius 
 			foreach(u; g.world.units)
 				{
 				if(u !is this) 
 					{
 					//if(u.myTeamIndex != myTeamIndex)  later
-					if(pos.x - r < u.pos.x && 
-						pos.x + r > u.pos.x &&
-						pos.y - r < u.pos.y &&
-						pos.y + r > u.pos.y)
+					if(pos.x + offset.x - r < u.pos.x && 
+						pos.x + offset.x + r > u.pos.x &&
+						pos.y + offset.y - r < u.pos.y &&
+						pos.y + offset.y + r > u.pos.y)
 						{
 /+						if(isDebugging)
 							{
@@ -876,7 +876,6 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 					{
 					// NOTE: We need non-tile coordinates here based on where we WANT TO MOVE
 					if((pos.y + offset.y) % TILE_H > TILE_H/2)
-					
 						{
 						if(isDebugging)writeln("isHalfHeightTile ", pos, " ",pos.y % TILE_H, " + ");
 						pos += offset;

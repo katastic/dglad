@@ -46,7 +46,6 @@ class world_t
 		
 	void initialize()
 		{
-//		viewTest();
 		atlas = new atlasHandler();
 //		testLogger();				
 		players ~= new player();
@@ -73,9 +72,9 @@ class world_t
 		
 		for(int i = 0; i < NUM_UNITS; i++)
 			{
-			auto u = new soldier(pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED)), atlas);
-			u.myTeamIndex = 0;
-			units ~= u;
+//			auto u = new soldier(pair(apair(uniform!"[]"(0, 2*PI), objects.WALK_SPEED)), atlas);
+//			u.myTeamIndex = 0;
+//			units ~= u;
 			}
 
 		viewports[0].attach(units[1]);
@@ -84,6 +83,8 @@ class world_t
 		testGraph2 = new intrinsicGraph!float("Logic (ms)", g.stats.msLogic, g.SCREEN_W-400, 115, COLOR(1,0,0,1), 1_000_000);
 		//testGraph3 = new intrinsicGraph!float("Logging (ms)", g.stats.msLogic, 100, 440, COLOR(1,0,0,1), 1_000_000);
 	
+			viewTest();
+			
 		stats.swLogic = StopWatch(AutoStart.no);
 		stats.swDraw = StopWatch(AutoStart.no);
 		}
@@ -138,12 +139,12 @@ class world_t
 
 		if(keyPressed[KEY_OPENBRACE])g.useLighting = true;
 		if(keyPressed[KEY_CLOSEBRACE])g.useLighting = false;
-
+/+
 		if(keyPressed[KEY_UP])viewports[0].oy-=SCROLL_SPEED;
 		if(keyPressed[KEY_DOWN])viewports[0].oy+=SCROLL_SPEED;
 		if(keyPressed[KEY_LEFT])viewports[0].ox-=SCROLL_SPEED;
 		if(keyPressed[KEY_RIGHT])viewports[0].ox+=SCROLL_SPEED;
-	
++/
 		if(keyPressed[KEY_N])map.save();
 		if(keyPressed[KEY_M])map.load();
 		

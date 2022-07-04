@@ -54,7 +54,7 @@ bool isBackLayer(ushort tileType)
 /// Tile metadata but using hardcoded functions
 bool isShotPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 1, 2, 3, 4, 6])
+	foreach(i; [0, 1, 2, 3, 4, 6, 8])
 		if(tileType == i) return true;
 	return false;
 	}
@@ -62,7 +62,7 @@ bool isShotPassableTile(ushort tileType)
 /// Tile metadata but using hardcoded functions
 bool isPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 1, 2, 4, 5])
+	foreach(i; [0, 1, 2, 4, 5, 8])
 		if(tileType == i) return true;
 	return false;
 	}

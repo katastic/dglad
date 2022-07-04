@@ -136,7 +136,6 @@ class bullet : baseObject
 				}else{
 				isOutlined = false;
 				}
-
 			if(isShotPassableTile(index) || (isForestBullet && isForestTile(index)))
 				{
 				this.pos += offset;
@@ -144,8 +143,9 @@ class bullet : baseObject
 				}else{
 				return false;
 				}
-
 			}else{
+			writeln(this.pos, " ", offset);
+			dieFromWall();
 			return false;
 			}
 		}
@@ -173,7 +173,8 @@ class bullet : baseObject
 				}
 			if(!attemptMove(vel))die(); // Map test and movement
 			}
-		if(!isMapValid(ipair(this.pos)))dieFromWall();
+		
+//		if(!isMapValid(ip3))dieFromWall();
 //		if(pos.x < 0 || pos.y < 0 || pos.x > g.world.map.width*TILE_W || pos.y > g.world.map.height*TILE_H)die();
 		}
 	
