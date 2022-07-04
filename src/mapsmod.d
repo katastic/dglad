@@ -44,7 +44,7 @@ bool isForestTile(ushort tileType)
 
 /// Tile metadata but using hardcoded functions
 /// Is tile drawn before blood layer (true), or after (false).
-bool isBackLayer(ushort tileType)
+bool isTileBackLayer(ushort tileType)
 	{
 	foreach(i; [0, 1, 2]) 
 		if(tileType == i) return true;
@@ -54,7 +54,7 @@ bool isBackLayer(ushort tileType)
 /// Tile metadata but using hardcoded functions
 bool isShotPassableTile(ushort tileType)
 	{
-	foreach(i; [0, 1, 2, 3, 4, 6, 8])
+	foreach(i; [0, 1, 2, 3, 4, 5, 6, 8])
 		if(tileType == i) return true;
 	return false;
 	}
@@ -187,6 +187,13 @@ class map_t
 			}
 		}
 	
+/+	
+	al_draw_tinted_scaled_bitmap(ALLEGRO_BITMAP *bitmap,
+   ALLEGRO_COLOR tint,
+   float sx, float sy, float sw, float sh,
+   float dx, float dy, float dw, float dh, int flags)
+	+/
+	
 	void drawTiles(viewport v, bool drawBackLayer)
 		{
 		for(int j = 0; j < height; j++)
@@ -194,7 +201,6 @@ class map_t
 				{
 			//	writeln(i, " ",j);
 				auto val = bmpIndex[i][j];
-				if(isBackLayer(val) != drawBackLayer) continue;
 				
 //				if(val == 0) continue;
 				if(val+1 > bmps.length) continue; // avoiding val > length-1 because if (unsigned)length=0-1 = overflow not -1 . I might just disable the warning.
@@ -205,7 +211,39 @@ class map_t
 				}else{
 					// trick like the secret of mana idea. we could have "walls" sit on a "higher" layer (for blood map)
 					// but also draw them brighter as if light is hitting and reflecting off them more to us
-					drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+					if(!isHalfHeightTile(val))
+						{
+						if(isTileBackLayer(val) != drawBackLayer) continue;
+						// normal tile drawing
+						drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+						}else{ 
+						// draw top/bottom half using clipping rectangles
+						if(!drawBackLayer)
+							{
+//							drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+							auto vp = vpair(i*32, j*32);
+							// bottom half
+							al_draw_tinted_scaled_bitmap(bmps[val],
+								getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)),
+								0, 0, 				//xy
+								TILE_W, TILE_H*(3/4f),	//wh
+								vp.r, vp.s, //xy
+								TILE_W, TILE_H*(3/4f), 		//wh
+								0);
+							}else{
+//							drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+							auto vp = vpair(i*32, j*32);
+							
+							//top half
+							al_draw_tinted_scaled_bitmap(bmps[val],
+								getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)),
+								0, TILE_H*(3/4f),	//xy 
+								TILE_W, TILE_H*(1/4f),	//wh
+								vp.r, vp.s + TILE_H*(3/4f), 		//xy
+								TILE_W, TILE_H*(1/4f), 	//wh
+								0);
+							}
+						}
 					}
 				}
 		}

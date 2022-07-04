@@ -867,7 +867,6 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 						}
 					}
 			}
-			
 			// check against map
 			if(isMapValid(ip3))
 				{
@@ -885,14 +884,12 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 						return true;
 						}
 					}
-					
 				if(isPassableTile(tileType))
 					{ // if normal passable
 					if(isDebugging)writeln("isPassableTile ", pos, " ", pos.y % TILE_H);
 					pos += offset;
 					return true;
 					}
-					
 				if(isTreeWalker && isForestTile(tileType))
 					{ // if treewalker is forestpassable, and in forest, go half speed (or whatever modifier)
 					if(isDebugging)writeln("isForestTile ", pos, " ", pos.y % TILE_H);
@@ -903,9 +900,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 					if(isDebugging)writeln("!isForestTile ", pos, " ", pos.y % TILE_H);
 					return false;
 					}
-	
 				return false; // note, this fall-through ordering is important.
-					
 				}else{
 				return false;
 				}
@@ -959,9 +954,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		if(mp < mpMax)mp += manaChargeRate;
 		handlePotions();
 		handleCooldowns();
-
 		if(!isPlayerControlled && !freezeMovement)travel();
-	
 		doWorldClipping();
 		}
 		

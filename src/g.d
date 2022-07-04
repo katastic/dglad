@@ -390,18 +390,6 @@ void viewTest()
 		auto p = ipair(pair(i,0), 0, 0);
 		writeln(i, " = ", isMapValid(p), "[", p, "]");
 		}
-
-
-/+	viewport v = new viewport(0, 0, 640, 480, 100, -100);
-	pair p = pair(300, 300);
-	
-	setViewport2(v);
-	
-	vpair vp = p.toViewport(v);
-	vpair vp2 = p.toViewport2;
-	
-	writeln(vp);
-	writeln(vp2);+/
 	}
 
 vpair toViewport(T)(T point, viewport v)
