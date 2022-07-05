@@ -199,7 +199,7 @@ struct display_t
 		float last_position_plus_one = textHelper(false); // we use the auto-intent of one initial frame to find the total text length for the box
 		textHelper(true);  //reset
 
-		al_draw_filled_rounded_rectangle(16, 32, 64+800, last_position_plus_one+32, 8, 8, ALLEGRO_COLOR(.7, .7, .7, .7));
+		al_draw_filled_rounded_rectangle(16, 32, 64+650, last_position_plus_one+32, 8, 8, ALLEGRO_COLOR(.7, .7, .7, .7));
 
 		unit u = g.world.units[0];
 		drawText2(20, "obj[%.2f,%.2f][%.2f %.2f]", u.pos.x, u.pos.y, u.vel.x, u.vel.y);
@@ -208,22 +208,19 @@ struct display_t
 					g.stats.number_of_drawn_units[0] + 
 					g.stats.number_of_drawn_particles[0] + 
 					g.stats.number_of_drawn_bullets[0] + 
-					g.stats.number_of_drawn_dudes[0] +  
 					g.stats.number_of_drawn_structures[0]) * g.stats.fps ); 
 		
 //		drawText2(20, "money [%d] deaths [%d]", g.world.players[0].myTeamIndex.money, g.world.players[0].deaths);
-		drawText2(20, "drawn  : structs [%d] particles [%d] bullets [%d] dudes [%d] units [%d]", 
+		drawText2(20, "drawn  : structs [%d] particles [%d] bullets [%d] units [%d]", 
 			g.stats.number_of_drawn_structures[0], 
 			g.stats.number_of_drawn_particles[0],
 			g.stats.number_of_drawn_bullets[0],
-			g.stats.number_of_drawn_dudes[0],
 			g.stats.number_of_drawn_units[0]);
 
-		drawText2(20, "clipped: structs [%d] particles [%d] bullets [%d] dudes [%d] units [%d]", 
+		drawText2(20, "clipped: structs [%d] particles [%d] bullets [%d] units [%d]", 
 			g.stats.number_of_drawn_structures[1], 
 			g.stats.number_of_drawn_particles[1],
 			g.stats.number_of_drawn_bullets[1],
-			g.stats.number_of_drawn_dudes[1],
 			g.stats.number_of_drawn_units[1]);
 
 		float ifNotZeroPercent(T)(T stat)
@@ -236,11 +233,10 @@ struct display_t
 
 		with(g.stats)
 			{
-		drawText2(20, "percent: structs [%3.1f%%] particles [%3.1f%%] bullets [%3.1f%%] dudes [%3.1f%%] units [%3.1f%%]", 
+		drawText2(20, "percent: structs [%3.1f%%] particles [%3.1f%%] bullets [%3.1f%%] units [%3.1f%%]", 
 			ifNotZeroPercent(number_of_drawn_structures), 
 			ifNotZeroPercent(number_of_drawn_particles), 
 			ifNotZeroPercent(number_of_drawn_bullets),
-			ifNotZeroPercent(number_of_drawn_dudes),
 			ifNotZeroPercent(number_of_drawn_units));
 			}
 		

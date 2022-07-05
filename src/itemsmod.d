@@ -96,11 +96,11 @@ class healthPotion : consumableItem		/// small medium large meats also health po
 		{
 		if(!isManaPotion)
 			{
-			by.hp += healAmount;
-			clampHigh(by.hp, by.hpMax);
+			by.cstats.hp += healAmount;
+			clampHigh(by.cstats.hp, by.cstats.hpMax);
 			}else{
-			by.mp += healAmount;
-			clampHigh(by.mp, by.mpMax);			
+			by.cstats.mp += healAmount; // healamount=mana here
+			clampHigh(by.cstats.mp, by.cstats.mpMax);			
 			}
 		return true;
 		}

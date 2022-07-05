@@ -23,8 +23,6 @@ import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 
 class tower : structure
 	{
-	cooldown primary;
-
 	this(pair _pos, int teamIndex)
 		{
 		immutable int FIRE_COOLDOWN = 10;
@@ -45,7 +43,7 @@ class tower : structure
 	
 	bool isTargetInRange(unit u)
 		{
-		if(distanceTo(this, u) < TRACKING_RANGE)
+		if(u !is null && u.isDead != true && distanceTo(this, u) < TRACKING_RANGE)
 			{
 			return true;
 			}
@@ -54,12 +52,13 @@ class tower : structure
 		
 	override void onTick()
 		{
+		super.onTick();
 		// Firing pattern mechanic possibilities (for when multiple players exist)
 		// - fire only at first person in list (simple) [strat: whoever isn't that player, fight] [ALWAYS FAVORS one player which is bad.]
 		// - fire at each person in order					[strat: Spread DPS across players]
 		// - fire SAME RATE, but at AS MANY PLAYERS exist.	[DPS increases with players in range]
 		// -> fire at FIRST PERSON to be targetted until we no longer have that target in range. [strat: grab aggro, others fight it.]
-		primary.onTick();
+	//	primary.onTick(); // shouldn't this be on unit?
 		
 		if(!isTracking)
 			{
@@ -86,39 +85,48 @@ class tower : structure
 		}
 	}
 
-class structure : unit
+class spawner : structure
 	{
-//	immutable float maxHP=500.0;
-//	float hp=maxHP; use cstats
-	immutable int countdown_rate = 120; // 60 fps, 60 ticks = 1 second
-	int countdown = countdown_rate;
-	
+	this(pair _pos, int teamIndex)
+		{
+		super(_pos, teamIndex, g.bmp.fountain);
+		immutable int FIRE_COOLDOWN = 120;
+		primary.setMax(FIRE_COOLDOWN);
+		}
+
+	void spawnDude()
+		{
+		writeln("SPAWNING DUDE");
+		g.world.units ~= new soldier(this.pos, g.world.atlas); // FIXME. THIS SHOULD CRASH but it's not
+		} 
+
+	override void onTick()
+		{
+		super.onTick();
+		if(primary.isReadySet())
+			{
+			spawnDude();
+			}
+		}
+	}
+
+class structure : unit
+	{	
 	this(pair _pos, int teamIndex, ALLEGRO_BITMAP* b)
 		{
 		super(0, _pos, pair(0,0), b);
-		myTeamIndex = teamIndex; //must come after constructor
+		myTeamIndex = teamIndex; //must come after constructor. FIXME. PUT IN CONSTRUCTOR
 		}
 
-	override bool draw(viewport v)
+	override bool draw(viewport v) // how is this different than normal?
 		{
 		drawCenteredBitmap(bmp, vpair(this.pos), 0);
 		return true;
 		}
-
-	void onHit(unit u, float damage)
-		{
-		cstats.hp -= damage;
-		}
 		
-	void spawnDude()
+	override void onTick() // how is this different than normal unit?
 		{
-		//writeln("structure spawning dude.");
-		g.world.units ~= new soldier(this.pos, g.world.atlas); // FIXME. THIS SHOULD CRASH but it's not
-		} 
-		
-	override void onTick()
-		{
-		countdown--;
-		if(countdown < 0){countdown = countdown_rate; spawnDude();}
+		primary.onTick(); 
+		if(cstats.hp <= 0){isDead = true; }
 		}
 	}

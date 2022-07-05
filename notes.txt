@@ -1,6 +1,15 @@
 BUG
 --------------------------------
 
+	- not sure if it matters but i tried making "top layer" sprites lit brighter. However, the same affect could have been prebaked by just using the same lighting function but making all non-top-layer sprites manually darker (in GIMP or preprocessing). 
+	Doesn't need to though. As for artistic taste, not sure it helps. It might a little.
+	- for "going through forest" we could also have objects just simply... dim. Which makes it easier for them to "hide" visually as well.
+	- also, didn't the game have some sort of "draw the outline ONLY" mode for inside forest? 
+	- we could also make moving more in the forest increases brightness allowing for hidden/sneaky enemies
+	
+	- we could also allow sneaky/hidden ambush enemies in general
+
+
 	- bullets going 1 tile past world in negative direction has been wierd. It appears to be a pair (float) -> ipair (int) issue however
 	why doesn't it affect units? I 'fixed' it by biasing negative values -31. Because -1 should be... the start of a negative tile -1. 
 	Not the start of negative 0th tile. 

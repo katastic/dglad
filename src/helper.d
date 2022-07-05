@@ -186,6 +186,17 @@ COLOR getShadeTint(pair objpos, pair pos)
 	return COLOR(d, d, d, 1);
 	}
 
+COLOR getTopShadeTint(pair objpos, pair pos)
+	{
+	pair p = objpos; // see mapsmod.d duplicate
+	pair p2 = pos;
+	float d = 1 - sqrt((p.x - p2.x)^^2 + (p.y - p2.y)^^2)/800.0;
+	if(d > 1)d = 1;
+	if(d < 0)d = 0;
+	return COLOR(d, d, d, 1);
+	}
+
+
 //mixin template grey(T)(T w)
 	//{
 	//COLOR(w, w, w, 1);

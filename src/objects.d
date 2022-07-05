@@ -97,10 +97,10 @@ struct charStats //character stats, 'cstats' in object?
 //  int speed=10; // derived from DEX?
 // other stats? what would charisma be for?   luck?
 
-	int hp; 		// put health here
-	int hpMax; 		// 
-	int mana; 		// 
-	int manaMax; 	// 
+	int hp=100; 		// put health here
+	int hpMax=100; 		// 
+	int mp=100; 		// 
+	int mpMax=100; 	// 
 	
 	// strMod	- we could have temporary modifiers here too, and at worst, they get reset when you leave a map.
 	// or we could do some sort of exotic tag based method where each tag has a time cooldown and cure spells 
@@ -284,6 +284,27 @@ class atlasHandler
 
 class animation
 	{
+	// do we want/care to reset walk cycle when you change direction? 
+	int numDirections; 
+	int numFrames=2;
+	int index = 0; /// frame index
+	bool usesFlippedGraphics = false; /// NYI. use half the sideways graphics and flips them based on direction given. Usually meaningless given RAM amounts.
+
+	bool isOutlined = false; // should this be a state, or simply a different draw function (state is in the object itself)
+	bool isOutlineOnly = false; 
+
+	BITMAP*[2][DIR.max] bmps;
+	BITMAP*[2][DIR.max] bmpsOutlined;
+
+	this(int _numFrames, ipair[] coordinates, atlasHandler atlas)
+		{
+		assert(atlas !is null);
+		assert(atlas.data !is null);
+		assert(atlas.dataOutlined !is null);
+		
+		parseMap3(coordinates, atlas);
+		}
+
 	void parseMap3(ipair[] pt, atlasHandler atlas)
 		{
 		assert(atlas !is null);
@@ -312,26 +333,6 @@ class animation
 		bmpsOutlined[DIR.LEFT][1] = al_create_sub_bitmap(atlas.dataOutlined, pt[7].i, pt[7].j, w, h);
 		}
 
-	// do we want/care to reset walk cycle when you change direction? 
-	int numDirections; 
-	int numFrames=2;
-	int index = 0; /// frame index
-	bool usesFlippedGraphics = false; /// NYI. use half the sideways graphics and flips them based on direction given. Usually meaningless given RAM amounts.
-
-	bool isOutlined = false; // should this be a state, or simply a different draw function (state is in the object itself)
-
-	BITMAP*[2][DIR.max] bmps;
-	BITMAP*[2][DIR.max] bmpsOutlined;
-	
-	this(int _numFrames, ipair[] coordinates, atlasHandler atlas)
-		{
-		assert(atlas !is null);
-		assert(atlas.data !is null);
-		assert(atlas.dataOutlined !is null);
-		
-		parseMap3(coordinates, atlas);
-		}
-		
 	void nextFrame()
 		{
 		index++;
@@ -345,13 +346,26 @@ class animation
 		color outlineColor = white; // how do we handle this verses lighting?
 		if(isOnScreen(pos))
 			{
+				
 			if(!g.useLighting)
 			{
+				if(isOutlineOnly)
+					{
+					drawCenteredTintedBitmap( sourceOutlined, outlineColor, vpair(pos), 0);
+					return true;
+					}
+
 				if(isOutlined)drawCenteredTintedBitmap( sourceOutlined, outlineColor, vpair(pos), 0);
 				drawCenteredBitmap( source, vpair(pos), 0);
 			}else{
+				if(isOutlineOnly)
+					{
+					drawCenteredTintedBitmap( sourceOutlined, outlineColor, vpair(pos), 0);
+					return true;
+					}
+
 				if(isOutlined)drawCenteredTintedBitmap( sourceOutlined, outlineColor, vpair(pos), 0);
-				drawCenteredTintedBitmap( source, getShadeTint(g.world.units[0].pos, pos), vpair(pos), 0);				
+				drawCenteredTintedBitmap( source, getTopShadeTint(g.world.units[0].pos, pos), vpair(pos), 0);				
 			}
 			return true;
 		}else{
@@ -448,9 +462,9 @@ class elf : unit
 		auto ip = ipair(this.pos);
 		if(isMapValid(ip) && isForestTile( g.world.map.bmpIndex[ip.i][ip.j]))
 			{
-			anim.isOutlined = true;
+			anim.isOutlineOnly = true;
 			}else{
-			anim.isOutlined = false;
+			anim.isOutlineOnly = false;
 			}
 		super.onTick();
 		}
@@ -661,8 +675,8 @@ class cleric : unit
 				if(mp - healManaCost >= 0)
 					{
 					mp -= healManaCost;
-					o.hp += healAmount;
-					clampHigh(o.hp, o.hpMax);
+					o.cstats.hp += healAmount;
+					clampHigh(o.cstats.hp, o.cstats.hpMax);
 					}
 				}
 			}
@@ -758,8 +772,8 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 	bool isTreeWalker = false; /// Can walk through tree tiles? Normally I wouldn't 'pollute' a base class with specifics but these are rare and barely invasive.
 	/// we could combine these into a single state machine
 	
-	float hpMax=100.0; /// Maximum health points
-	float hp=100.0; /// Current health points
+//	float hpMax=100.0; /// Maximum health points
+//	float hp=100.0; /// Current health points
 	float ap=0; /// armor points (reduced on hits then armor breaks)
 	float armor=0; /// flat reduction (or percentage) on damages, haven't decided.
 	float mp=100;
@@ -804,6 +818,8 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 	override bool draw(viewport v)
 		{
 		assert(anim !is null);
+		draw_hp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2, v, cstats.hp, cstats.hpMax);
+		draw_mp_bar(pos.x - bmp.w/2, pos.y - bmp.h/2 + 5, v, cstats.mp, cstats.mpMax);
 		return anim.draw(this.pos, direction);
 		}
 	
@@ -961,12 +977,12 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 	void onCollision(baseObject who)
 		{
 		}
-		
+	/+	
 	void onHit(bullet b) //projectile based damage
 		{
 		// b.myOwner
 		}
-
++/
 	void onCrash(unit byWho) //for crashing into each other/objects
 		{
 		}
@@ -983,7 +999,25 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 		
 	void onAttack(unit from, float amount) /// I've been attacked!
 		{
-		hp -= amount;
+		cstats.hp -= amount;
+		}
+		
+	void onHit(unit u, float damage)
+		{
+		cstats.hp -= damage;
+		if(cstats.hp <= 0)
+			{
+			if(!isDebugging) //need to deal with "on death, notify viewport to find a new unit on team"
+				{
+				g.world.blood.add(pos.x, pos.y);
+				g.world.blood.add(pos.x+5, pos.y);
+				g.world.blood.add(pos.x-5, pos.y);
+				g.world.blood.add(pos.x, pos.y+5);
+				g.world.blood.add(pos.x, pos.y-5);
+
+				isDead = true;
+				}
+			}
 		}
 	
 	override void actionFire()

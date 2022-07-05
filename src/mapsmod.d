@@ -216,7 +216,12 @@ class map_t
 						{
 						if(isTileBackLayer(val) != drawBackLayer) continue;
 						// normal tile drawing
-						drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+						if(drawBackLayer == false)
+							{
+							drawTintedBitmap(bmps[val], getTopShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+							}else{
+							drawTintedBitmap(bmps[val], getShadeTint(g.world.units[0].pos, pair(i * TILE_W, j * TILE_H)), vpair(i*32, j*32), 0);
+							}
 						}else{ 
 						// draw top/bottom half using clipping rectangles
 						if(!drawBackLayer)

@@ -38,6 +38,7 @@ class elfBullet : bullet
 			if(isOutlined)
 				{
 				al_draw_center_rotated_bitmap(bmpOutlined, cx, cy, angle + degToRad(90), 0); // not tinted, maybe later
+				return true;
 				}
 				
 			al_draw_center_rotated_tinted_bitmap(bmp, c, cx, cy, angle + degToRad(90), 0);
@@ -58,7 +59,7 @@ class bullet : baseObject
 	bool isForestBullet=false;
 	unit myOwner;
 	COLOR c;
-	bool isOutlined = true;
+	bool isOutlined = false;
 	
 	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, unit _myOwner, bool _isDebugging)
 		{
@@ -157,7 +158,8 @@ class bullet : baseObject
 			{
 			isDead=true;
 			}else{
-			foreach(u; g.world.units) // UNIT SCAN
+			 // UNIT SCAN
+			foreach(u; g.world.units)
 				{
 				immutable float r = 16; // radius
 				if(u !is myOwner)
@@ -166,11 +168,32 @@ class bullet : baseObject
 				if(pos.x + r > u.pos.x)
 				if(pos.y + r > u.pos.y)
 					{
+					float BULLET_DAMAGE = 5;
+					u.onHit(myOwner, BULLET_DAMAGE);
 					dieFrom(u);
 					break;
 					}
 				// collision with units
 				}
+			// STRUCTURE SCAN
+			foreach(u; g.world.structures)
+				{
+				immutable float r = 16; // radius
+				if(u !is myOwner)
+				if(pos.x - r < u.pos.x)
+				if(pos.y - r < u.pos.y)
+				if(pos.x + r > u.pos.x)
+				if(pos.y + r > u.pos.y)
+					{
+					float BULLET_DAMAGE = 5;
+					u.onHit(myOwner, BULLET_DAMAGE);
+					dieFrom(u);
+					break;
+					}
+				// collision with units
+				}
+			
+				
 			if(!attemptMove(vel))die(); // Map test and movement
 			}
 		
