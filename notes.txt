@@ -4,16 +4,17 @@ BUG
 	- bullets going 1 tile past world in negative direction has been wierd. It appears to be a pair (float) -> ipair (int) issue however
 	why doesn't it affect units? I 'fixed' it by biasing negative values -31. Because -1 should be... the start of a negative tile -1. 
 	Not the start of negative 0th tile. 
-		We don't use negative tiles, only for collision detection. But if we did, would this break something? If it was relative, 
+		- We don't use negative tiles, only for collision detection. But if we did, would this break something? If it was relative, 
 		negative tiles FROM MY LOCATION then it could be -0. Just keep that in mind. Or never use relative ipairs because who said
 		that was a thing?
+		- also, this might bias incorrectly for negatives but it wont affect us. just test to figure it out at leisure.
 
 	---> GETTING STUCK in unit.attemptMove is annoying as heck and needs fixed <---
 			-> only occurs with units
 				-> it was forgetting to add OFFSET into the test!
 
 	---> do we even need half-height tiles if were drawing / colliding from a centroid instead of bounding box?
-		--> Do BULLETS need to respect half-height? For now, just passable.
+		--> Do BULLETS need to respect half-height? For now, just shotpassable.
 	
 	- remember unit atlas outlines aren't +1 yet. also, we could easily work around this by just forcing people to use textures with a +1 border since we're specifiying the coordinates ourselves anyway. but meh.
 

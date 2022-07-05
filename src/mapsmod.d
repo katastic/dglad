@@ -207,6 +207,7 @@ class map_t
 //				al_draw_bitmap(bmps[bmpIndex[i][j]], i*32 + v.x - v.ox, j*32 + v.y - v.oy, 0);
 				if(!g.useLighting)
 					{
+					if(isTileBackLayer(val) != drawBackLayer) continue;
 					drawBitmap(bmps[val], vpair(i*32, j*32), 0);
 				}else{
 					// trick like the secret of mana idea. we could have "walls" sit on a "higher" layer (for blood map)
