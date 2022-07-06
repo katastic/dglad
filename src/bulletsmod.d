@@ -31,17 +31,15 @@ class elfBullet : bullet
 
 	override bool draw(viewport v)
 		{
-		float cx = pos.x + v.x - v.ox;
-		float cy = pos.y + v.y - v.oy;
-		if(cx > 0 && cx < SCREEN_W && cy > 0 && cy < SCREEN_H)
+		if(isOnScreen(pos))
 			{
 			if(isOutlined)
 				{
-				al_draw_center_rotated_bitmap(bmpOutlined, cx, cy, angle + degToRad(90), 0); // not tinted, maybe later
+				drawCenterRotatedBitmap(bmpOutlined, vpair(pos), angle + degToRad(90), 0); // not tinted, maybe later
 				return true;
 				}
 				
-			al_draw_center_rotated_tinted_bitmap(bmp, c, cx, cy, angle + degToRad(90), 0);
+			drawCenterRotatedBitmap(bmp, vpair(pos), angle + degToRad(90), 0);
 
 			return true;
 			}

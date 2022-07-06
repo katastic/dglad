@@ -811,6 +811,11 @@ void al_draw_center_rotated_bitmap(BITMAP* bmp, float x, float y, float angle, i
 	al_draw_rotated_bitmap(bmp, bmp.w/2, bmp.h/2, x, y, angle, flags);
 	}
 
+void drawCenterRotatedBitmap(bitmap* bmp, vpair pos, float angle, int flags)
+	{
+	al_draw_rotated_bitmap(bmp, bmp.w/2, bmp.h/2, pos.r, pos.s, angle, flags);
+	}
+
 void al_draw_center_rotated_tinted_bitmap(BITMAP* bmp, COLOR tint, float x, float y, float angle, int flags)
 	{
 	al_draw_tinted_rotated_bitmap(bmp, tint, bmp.w/2, bmp.h/2, x, y, angle, flags);

@@ -1086,11 +1086,7 @@ class baseObject /// does nothing but draws an object
 		
 	bool draw(viewport v)
 		{
-		al_draw_center_rotated_bitmap(bmp, 
-			pos.x - v.ox + v.x, 
-			pos.y - v.oy + v.y, 
-			angle, 0);
-
+		drawCenterRotatedBitmap(bmp, vpair(pos), angle, 0);
 		return true;
 		}
 	

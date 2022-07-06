@@ -177,13 +177,6 @@ class map_t
 			}
 		}
 	
-/+	
-	al_draw_tinted_scaled_bitmap(ALLEGRO_BITMAP *bitmap,
-   ALLEGRO_COLOR tint,
-   float sx, float sy, float sw, float sh,
-   float dx, float dy, float dw, float dh, int flags)
-	+/
-	
 	void drawTiles(viewport v, bool drawBackLayer)
 		{
 		for(int j = 0; j < height; j++)
