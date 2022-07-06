@@ -43,6 +43,13 @@ struct blood_t
 	Quick test: 15 constant additions of blood have no discernable impact on framerate!
 		"PEOPLE ARE ICE SKATING ON A RIVER OF BLOOD OUT HERE."
 */
+
+struct bloodRequest
+	{
+	pair pos;
+	int orientation;
+	}
+
 class static_blood_handler_t
 	{
 	BITMAP* data;
@@ -63,16 +70,35 @@ class static_blood_handler_t
 
 		}
 	
-	void add(float x, float y)
+	bloodRequest[] requests;
+	
+	void add(float x, float y) /// Deferred rendering. Add one onto the stack.
 		{
-		al_set_target_bitmap(data);
-		al_draw_centered_bitmap(g.bmp.blood, x, y, uniform!"[]"(0,3));
-		al_reset_target();
+		requests ~= bloodRequest(pair(x,y), uniform!"[]"(0,3));
 		}
 		
+	void onTick()
+		{
+		if(requests.length == 0)return;
+		
+		al_set_target_bitmap(data);
+		foreach(r; requests)
+			{
+			al_draw_centered_bitmap(g.bmp.blood, r.pos.x, r.pos.y, r.orientation); // remember, no viewport translation, so no drawCenteredBitmap()
+			}
+		al_reset_target();
+	
+		requests = [];
+		}
+		
+	/+
+		1000 - 49-50 fps
+		100 - 55-60 FPS
+	+/
+
 	void draw(viewport v)
 		{
-		al_draw_bitmap(data, 0 - v.ox + v.x, 0 - v.oy + v.y, 0);
+		drawBitmap(data, vpair(pair(0,0)), 0);
 		}
 	}
 /+

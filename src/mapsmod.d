@@ -76,11 +76,7 @@ class map_t
 	
 	tile[MAX_HEIGHT][MAX_WIDTH] isPassable;
 	tile[MAX_HEIGHT][MAX_WIDTH] bmpIndex;
-	BITMAP* [] bmps;
-//	ALLEGRO_BITMAP* [height][width] bmp;
-	
-	BITMAP*[] backgrounds;
-	float[] parallaxScale; // reduce scrolling distance for each layer
+	bitmap* [] bmps;
 	
 	this()
 		{
@@ -95,12 +91,6 @@ class map_t
 		bmps ~= g.bmp.wall2; // 8 !passable
 		bmps ~= g.bmp.wall3; // 9 !passable
 		bmps ~= g.bmp.forest; // 10 -isPassable -isShotPassable +isForest
-				
-		backgrounds ~= getBitmap("./data/parallax1.png");
-		parallaxScale ~= .75;
-		
-		backgrounds ~= getBitmap("./data/parallax2.png");
-		parallaxScale ~= .5;
 		
 		for(int j = 0; j < height; j++)
 			for(int i = 0; i < width; i++)
@@ -252,12 +242,6 @@ class map_t
 						}
 					}
 				}
-		}
-		
-	void drawParallax(viewport v)
-		{
-		foreach(size_t i, b; backgrounds)
-			al_draw_tinted_bitmap(backgrounds[i], COLOR(1,1,1,1), v.x - v.ox*parallaxScale[i], v.y - v.oy*parallaxScale[i], 0);
 		}
 		
 	void drawBackLayer(viewport v)

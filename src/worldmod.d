@@ -181,6 +181,8 @@ class world_t
 		tick(units);
 		tick(bullets);
 		tick(structures);
+	
+		blood.onTick(); // must come after unit updates
 			
 		prune(units);
 		prune(particles);
