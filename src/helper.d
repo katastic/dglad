@@ -803,22 +803,32 @@ void al_reset_target()
 /// draw scaled bitmap but with a scale factor (simpler than the allegro API version)
 void al_draw_scaled_bitmap2(ALLEGRO_BITMAP *bitmap, float x, float y, float scaleX, float scaleY, int flags=0)
 	{
+	pragma(inline, true);
 	al_draw_scaled_bitmap(bitmap, 0, 0, bitmap.w, bitmap.h, x, y, bitmap.w * scaleX, bitmap.h * scaleY, flags);
 	}
 
 void al_draw_center_rotated_bitmap(BITMAP* bmp, float x, float y, float angle, int flags)
 	{
+	pragma(inline, true);
 	al_draw_rotated_bitmap(bmp, bmp.w/2, bmp.h/2, x, y, angle, flags);
 	}
 
 void drawCenterRotatedBitmap(bitmap* bmp, vpair pos, float angle, int flags)
 	{
+	pragma(inline, true);
 	al_draw_rotated_bitmap(bmp, bmp.w/2, bmp.h/2, pos.r, pos.s, angle, flags);
 	}
 
 void al_draw_center_rotated_tinted_bitmap(BITMAP* bmp, COLOR tint, float x, float y, float angle, int flags)
 	{
+	pragma(inline, true);
 	al_draw_tinted_rotated_bitmap(bmp, tint, bmp.w/2, bmp.h/2, x, y, angle, flags);
+	}
+
+void drawCenterRotatedTintedBitmap(bitmap* bmp, color tint, vpair pos, float angle, int flags)
+	{
+	pragma(inline, true);
+	al_draw_tinted_rotated_bitmap(bmp, tint, bmp.w/2, bmp.h/2, pos.r, pos.s, angle, flags);
 	}
 
 // you know, we could do some sort of scoped lambda like thing that auto resets the target

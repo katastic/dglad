@@ -35,11 +35,12 @@ class elfBullet : bullet
 			{
 			if(isOutlined)
 				{
-				drawCenterRotatedBitmap(bmpOutlined, vpair(pos), angle + degToRad(90), 0); // not tinted, maybe later
+				color outlineColor = color(1,1,1,1);
+				drawCenterRotatedTintedBitmap(bmpOutlined, outlineColor, vpair(pos), angle + degToRad(90), 0); // not tinted, maybe later
 				return true;
 				}
 				
-			drawCenterRotatedBitmap(bmp, vpair(pos), angle + degToRad(90), 0);
+			drawCenterRotatedTintedBitmap(bmp, c, vpair(pos), angle + degToRad(90), 0);
 
 			return true;
 			}
