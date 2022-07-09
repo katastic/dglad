@@ -841,7 +841,7 @@ class unit : baseObject /// WARNING: This applies PHYSICS. If you inherit from i
 	bool attemptMove(pair offset)
 		{
 		ipair ip3 = ipair(this.pos, offset.x, offset.y); 
-		writeln("obj ", this.pos, " ", ip3);
+		//writeln("obj ", this.pos, " ", ip3);
 		if(isGhost) { this.pos += offset; return true;} 
 		if(isFlying)
 			{

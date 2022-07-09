@@ -90,13 +90,13 @@ class spawner : structure
 	this(pair _pos, int teamIndex)
 		{
 		super(_pos, teamIndex, g.bmp.fountain);
-		immutable int FIRE_COOLDOWN = 30;//120;
+		immutable int FIRE_COOLDOWN = 3;//120;
 		primary.setMax(FIRE_COOLDOWN);
 		}
 
 	void spawnDude()
 		{
-		writeln("SPAWNING DUDE");
+//		writeln("SPAWNING DUDE");
 		g.world.units ~= new soldier(this.pos, g.world.atlas); // FIXME. THIS SHOULD CRASH but it's not
 		} 
 

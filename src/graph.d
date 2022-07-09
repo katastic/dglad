@@ -34,7 +34,38 @@ class circularBuffer(T, size_t size)
 	but then we have to "manage" an expanding array even though its not
 	going to expand so the appender has to deal with the case of growing
 	until it hits max size. which is also bullshit.
+	
+	
+	should only do this once. call:
 	*/
+	T cachedMin;
+	T cachedMax;
+	T cachedAverage;
+	
+	void updateCachedValues()
+		{
+		import std.traits : mostNegative;
+		import std.math.traits : isNaN;
+		int averageCount = size;
+		T maxSoFar = to!T(mostNegative!T);
+		T minSoFar = to!T(T.max);
+		T sumSoFar = 0;
+		for(int i = 0; i < size; i++) //fixme : is this running through all nan values??
+			{
+			if(data[i] > maxSoFar)maxSoFar = data[i]; 
+			if(data[i] < minSoFar)minSoFar = data[i];
+			if(!data[i].isNaN)
+				{
+				sumSoFar += data[i];
+				}else{
+				averageCount--;
+				}
+			}
+		cachedMin = minSoFar;
+		cachedMax = maxSoFar;
+		cachedAverage = sumSoFar / averageCount;
+		}
+/*
     T maxElement()
 		{
 		import std.traits : mostNegative;
@@ -55,7 +86,7 @@ class circularBuffer(T, size_t size)
 			}
 		return minSoFar;
 		}
-
+*/
     T opApply(scope T delegate(ref T) dg)
 		{ //https://dlang.org/spec/statement.html#foreach-statement
 			//http://ddili.org/ders/d.en/foreach_opapply.html
@@ -125,8 +156,8 @@ class intrinsicGraph(T)
 	float scaling = 1.0; /// scale VALUES by this for peeking numbers with higher granulaity (nsecs to view milliseconds = 1_000_000)
 
 	// private data
- 	private T max=-9999; //READONLY cache of max value.
- 	private T min=-9999; //READONLY cache of max value.
+// 	private T max=-9999; //READONLY cache of max value.
+// 	private T min=-9999; //READONLY cache of max value.
  	private float scaleFactor=1.00; //READONLY set by draw() every frame.
  	private int maxTimeRemembered=600; // how many frames do we remember a previous maximum. 0 for always update.
  	private T previousMaximum=0;
@@ -154,8 +185,8 @@ class intrinsicGraph(T)
 		// We need a 'max', that is cached between onTicks. But we also have a tempMax
 		// where we choose which 'max' we use
 		
-		T tempMax = max;
-		T tempMin = min;
+		T tempMax = dataBuffer.cachedMax;
+		T tempMin = dataBuffer.cachedMin;
 		howLongAgoWasMaxSet++;
 //		if(howLongAgoWasMaxSet <= maxTimeRemembered) DISABLED
 		if(tempMax < previousMaximum)
@@ -177,16 +208,17 @@ class intrinsicGraph(T)
 //		al_draw_scaled_line_segment(pair(this), dataBuffer.data, scaleFactor, color, 1.0f);
 		al_draw_scaled_indexed_line_segment(pair(this), dataBuffer.data, scaleFactor, color, 1.0f, dataBuffer.index, blue);
 
-		al_draw_text(g.font1, white, x, y, 0, name.toStringz);
-		al_draw_text(g.font1, white, x + w - 64, y, 0, format("%.1f",min/scaling).toStringz);
-		al_draw_text(g.font1, white, x + w - 64, y+h-g.font1.h, 0, format("%.1f",max/scaling).toStringz);
-		al_draw_text(g.font1, white, x     + 64, y+h-g.font1.h, 0, format("%.1f",dataBuffer.data[dataBuffer.index]/scaling).toStringz);
+		al_draw_text(g.font1, white, x, y, 0, format("%s ~= %.1f",name, dataBuffer.cachedAverage/scaling).toStringz);
+		al_draw_text(g.font1, white, x + w - 64, y, 0, format("%.1f",dataBuffer.cachedMin/scaling).toStringz);
+		al_draw_text(g.font1, white, x + w - 64, y+h-g.font1.h, 0, format("%.1f",dataBuffer.cachedMax/scaling).toStringz);
+		al_draw_text(g.font1, white, x     + 64, y+h-g.font1.h, 0, format("%.1f",dataBuffer.data[dataBuffer.index]/scaling).toStringz); /// current index / value
 		}
 		
 	void onTick()
 		{
-		max = dataBuffer.maxElement; // note: we only really need to scan if [howLongAgoWasMaxSet] indicates a time we'd scan
-		min = dataBuffer.minElement; // note: we only really need to scan if [howLongAgoWasMaxSet] indicates a time we'd scan
+	//	max = dataBuffer.maxElement; // note: we only really need to scan if [howLongAgoWasMaxSet] indicates a time we'd scan
+	//	min = dataBuffer.minElement; // note: we only really need to scan if [howLongAgoWasMaxSet] indicates a time we'd scan
+		dataBuffer.updateCachedValues();
 		dataBuffer.addNext(*dataSource);
 		}
 	}
