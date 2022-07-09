@@ -240,7 +240,7 @@ class pygmentize// : prettyPrinter
 			writeln("Compilation failed.");
 
 		stats.swLogging.stop();
-		stats.msLogging = stats.swLogic.peek.total!"msecs"; // NOTE only need to update this when we actually access it in the stats class
+		stats.nsLogging = stats.swLogic.peek.total!"nsecs"; // NOTE only need to update this when we actually access it in the stats class
 	
 		return input;
 		}
@@ -258,7 +258,7 @@ class pygmentize// : prettyPrinter
 			writeln("Compilation failed.");
 			
 		stats.swLogging.stop();
-		stats.msLogging = stats.swLogic.peek.total!"msecs"; // NOTE only need to update this when we actually access it in the stats class
+		stats.nsLogging = stats.swLogic.peek.total!"nsecs"; // NOTE only need to update this when we actually access it in the stats class
 	
 		return input;
 		}
@@ -283,7 +283,7 @@ class pygmentize// : prettyPrinter
 		g.stats.number_of_log_entries++;
 			
 		stats.swLogging.stop();
-		stats.msLogging = stats.swLogic.peek.total!"msecs"; // NOTE only need to update this when we actually access it in the stats class
+		stats.nsLogging = stats.swLogic.peek.total!"nsecs"; // NOTE only need to update this when we actually access it in the stats class
 	
 		return input;
 		}
@@ -294,7 +294,7 @@ class pygmentize// : prettyPrinter
 		
 	~this()
 		{
-		writefln("total stats.msLogging time", stats.msLogging);
+		writefln("total stats.nsLogging time", stats.nsLogging);
 		writefln("total log entries", stats.number_of_log_entries);
 		if(hasStreamStarted)pipes.stdin.close();
 		}
@@ -730,9 +730,9 @@ struct statistics_t
 	StopWatch swLogic;
 	StopWatch swDraw;
 	StopWatch swLogging; //note this is a CULMULATIVE timer
-	float msLogic;  // FIXME why is only one named milliseconds
+	float nsLogic;  // FIXME why is only one named milliseconds
 	float nsDraw;
-	float msLogging;
+	float nsLogging;
 	
 	void reset()
 		{ 

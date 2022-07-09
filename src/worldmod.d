@@ -80,7 +80,7 @@ class world_t
 		viewports[0].attach(units[1]);
 			
 		testGraph = new intrinsicGraph!float("Draw (ms)", g.stats.nsDraw, g.SCREEN_W-400, 5, COLOR(1,0,0,1), 1_000_000);
-		testGraph2 = new intrinsicGraph!float("Logic (ms)", g.stats.msLogic, g.SCREEN_W-400, 115, COLOR(1,0,0,1), 1_000_000);
+		testGraph2 = new intrinsicGraph!float("Logic (ms)", g.stats.nsLogic, g.SCREEN_W-400, 115, COLOR(1,0,0,1), 1_000_000);
 		//testGraph3 = new intrinsicGraph!float("Logging (ms)", g.stats.msLogic, 100, 440, COLOR(1,0,0,1), 1_000_000);
 	
 			viewTest();
@@ -190,7 +190,7 @@ class world_t
 		prune(structures);
 		
 		stats.swLogic.stop();
-		stats.msLogic = stats.swLogic.peek.total!"msecs";
+		stats.nsLogic = stats.swLogic.peek.total!"nsecs";
 		stats.swLogic.reset();
 		}
 	}

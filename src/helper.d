@@ -196,7 +196,6 @@ COLOR getTopShadeTint(pair objpos, pair pos)
 	return COLOR(d, d, d, 1);
 	}
 
-
 //mixin template grey(T)(T w)
 	//{
 	//COLOR(w, w, w, 1);

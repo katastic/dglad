@@ -701,8 +701,7 @@ class soldier : unit
 	override bool draw(viewport v)
 		{
 		anim.nextFrame();
-		anim.draw(this.pos, direction);
-		return true;
+		return anim.draw(this.pos, direction);
 		}
 	
 	int chargeCooldown=0;

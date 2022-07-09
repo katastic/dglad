@@ -21,6 +21,7 @@ import std.stdio;
 class elfBullet : bullet
 	{
 	bitmap* bmpOutlined;
+	color outlineColor = color(1,1,1,1);
 	this(pair _pos, pair _vel, float _angle, COLOR _c, int _type, int _lifetime, unit _myOwner, bool _isDebugging)
 		{
 		super(_pos, _vel, _angle, _c, _type, _lifetime, _myOwner, _isDebugging);
@@ -35,11 +36,10 @@ class elfBullet : bullet
 			{
 			if(isOutlined)
 				{
-				color outlineColor = color(1,1,1,1);
 				drawCenterRotatedTintedBitmap(bmpOutlined, outlineColor, vpair(pos), angle + degToRad(90), 0); // not tinted, maybe later
 				return true;
 				}
-				
+
 			drawCenterRotatedTintedBitmap(bmp, c, vpair(pos), angle + degToRad(90), 0);
 
 			return true;
@@ -191,7 +191,6 @@ class bullet : baseObject
 					}
 				// collision with units
 				}
-			
 				
 			if(!attemptMove(vel))die(); // Map test and movement
 			}
@@ -202,11 +201,9 @@ class bullet : baseObject
 	
 	override bool draw(viewport v)
 		{		
-		float cx = pos.x + v.x - v.ox;
-		float cy = pos.y + v.y - v.oy;
-		if(cx > 0 && cx < SCREEN_W && cy > 0 && cy < SCREEN_H)
+		if(isOnScreen(pos))
 			{
-			al_draw_center_rotated_tinted_bitmap(bmp, c, cx, cy, angle + degToRad(90), 0);
+			drawCenterRotatedTintedBitmap(bmp, c, vpair(pos), angle + degToRad(90), 0);
 			return true;
 			}
 		return false;

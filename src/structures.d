@@ -90,7 +90,7 @@ class spawner : structure
 	this(pair _pos, int teamIndex)
 		{
 		super(_pos, teamIndex, g.bmp.fountain);
-		immutable int FIRE_COOLDOWN = 120;
+		immutable int FIRE_COOLDOWN = 30;//120;
 		primary.setMax(FIRE_COOLDOWN);
 		}
 
