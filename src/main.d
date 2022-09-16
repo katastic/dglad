@@ -22,13 +22,15 @@ import std.datetime.stopwatch : benchmark, StopWatch, AutoStart;
 pragma(lib, "dallegro5ldc");
 
 version(ALLEGRO_NO_PRAGMA_LIB){}else{
-	pragma(lib, "allegro");
+	pragma(lib, "allegro");	// these ARE in fact used.
 	pragma(lib, "allegro_primitives");
 	pragma(lib, "allegro_image");
 	pragma(lib, "allegro_font");
 	pragma(lib, "allegro_ttf");
 	pragma(lib, "allegro_color");
-}
+	pragma(lib, "allegro_audio");
+	pragma(lib, "allegro_acodec");
+	}
 
 import allegro5.allegro;
 import allegro5.allegro_primitives;
@@ -36,12 +38,14 @@ import allegro5.allegro_image;
 import allegro5.allegro_font;
 import allegro5.allegro_ttf;
 import allegro5.allegro_color;
+import allegro5.allegro_audio;
 
 import helper;
 import objects;
 import viewportsmod;
 import g;
 import mapsmod;
+import audio;
 
 display_t display;
 
@@ -88,6 +92,10 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	if (!al_init_ttf_addon())        assert(0, "al_init_ttf_addon failed!");
 	if (!al_init_primitives_addon()) assert(0, "al_init_primitives_addon failed!");
 
+//  my allegro lib is only using open sound system and this is failing here because most linux distros doesn't
+//  even support that anymore, disabling in kernel.
+	if(setupAudio()) assert(0, "audio setup failure.");
+	
 	al_register_event_source(queue, al_get_display_event_source(al_display));
 	al_register_event_source(queue, al_get_keyboard_event_source());
 	al_register_event_source(queue, al_get_mouse_event_source());

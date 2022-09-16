@@ -1,5 +1,17 @@
-BUG
+BUG/TODO
 --------------------------------
+
+	-> Sound
+	---> Are we drawing lighting to LIGHT ACCUMULATION BUFFER? Because we should. That would allow multiple light sources.
+
+	-> How do we tell UNIT TEAMs. The easiest (terrible) way will either have an icon, or tint all graphics.
+
+	- map contains unit lists
+	- party setup
+	- AI fights. AI A* pathfinding
+
+
+
 
 	- not sure if it matters but i tried making "top layer" sprites lit brighter. However, the same affect could have been prebaked by just using the same lighting function but making all non-top-layer sprites manually darker (in GIMP or preprocessing). 
 	Doesn't need to though. As for artistic taste, not sure it helps. It might a little.
