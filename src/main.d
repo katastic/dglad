@@ -92,6 +92,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	if (!al_init_ttf_addon())        assert(0, "al_init_ttf_addon failed!");
 	if (!al_init_primitives_addon()) assert(0, "al_init_primitives_addon failed!");
 
+	audio = new audioSystem();
 	audio.initialize();
 	
 	al_register_event_source(queue, al_get_display_event_source(al_display));
