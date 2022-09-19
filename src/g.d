@@ -4,6 +4,8 @@ import allegro5.allegro_image;
 import allegro5.allegro_font;
 import allegro5.allegro_ttf;
 import allegro5.allegro_color;
+import allegro5.allegro_audio;
+import allegro5.allegro_acodec;
 
 import std.stdio;
 import std.file;
@@ -193,6 +195,7 @@ void loadResources()
 		}
 	}
 
+alias sample = ALLEGRO_SAMPLE;
 alias COLOR = ALLEGRO_COLOR;
 alias color = ALLEGRO_COLOR; // sick of pressing space so much!
 alias BITMAP = ALLEGRO_BITMAP;

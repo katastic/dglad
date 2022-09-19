@@ -2,6 +2,8 @@ BUG/TODO
 --------------------------------
 
 	-> Sound
+		- music could be streamed instead of loaded once. Or screw it and load it into RAM.
+		
 	---> Are we drawing lighting to LIGHT ACCUMULATION BUFFER? Because we should. That would allow multiple light sources.
 
 	-> How do we tell UNIT TEAMs. The easiest (terrible) way will either have an icon, or tint all graphics.
@@ -10,6 +12,7 @@ BUG/TODO
 	- party setup
 	- AI fights. AI A* pathfinding
 
+	- water. animated. also possible things like reflections.
 
 
 

@@ -45,7 +45,7 @@ import objects;
 import viewportsmod;
 import g;
 import mapsmod;
-import audio;
+import audiomod;
 
 display_t display;
 
@@ -92,9 +92,7 @@ static if (false) // MULTISAMPLING. Not sure if helpful.
 	if (!al_init_ttf_addon())        assert(0, "al_init_ttf_addon failed!");
 	if (!al_init_primitives_addon()) assert(0, "al_init_primitives_addon failed!");
 
-//  my allegro lib is only using open sound system and this is failing here because most linux distros doesn't
-//  even support that anymore, disabling in kernel.
-	if(setupAudio()) assert(0, "audio setup failure.");
+	audio.initialize();
 	
 	al_register_event_source(queue, al_get_display_event_source(al_display));
 	al_register_event_source(queue, al_get_keyboard_event_source());

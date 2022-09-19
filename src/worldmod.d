@@ -16,6 +16,7 @@ import bulletsmod;
 import graph;
 import structures;
 import blood;
+import audiomod;
 
 import std.math : cos, sin, PI;
 import std.stdio;
